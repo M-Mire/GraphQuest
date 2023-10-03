@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root{
+    --first-color:#2e2e41;
+    --second-color:#5b85ff;
+    --third-color:#434354;
+    --text-color:#fff;
+    --box-shadow: 0 5px 25px rgb(2,2,2,0.1);
+    --text-shadow: 0 5px 25px rgb(2,2,2,0.1);
+    --navbar-deg:90deg;
+}
+
+body {
+    background-color: black;
+    color: var(--text-color);
+    overflow: hidden
+  
+}
+.app {
+    height: 100vh;
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+    grid-template-rows: repeat(20, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+
+}
+
+.navbar { 
+    height: 80px;
+    width: 100vw;
+    font-family: 'VT323', monospace;
+    color:green;
+    font-size: 52px;
+    padding: 10px;
+    grid-area: 1 / 1 / 4 / 21;
+ }
+
+
+.canvas {
+    background-color: var(--first-color);
+    grid-area: 3 / 1 / 17 / 16;
+    position: relative;
+}
+
+.canvas-edit {
+    background-color: white;
+    grid-area: 6 / 3 / 19 / 18;
+}
+.animation-code-block {
+    grid-area: 3 / 16 / 21 / 21;
+    background-color: purple;
+}
+
+.animation-traverse-block {
+    background-color: grey;
+    grid-area: 17 / 1 / 21 / 16;
+}
+
+nav {
+    position :absolute;
+    right: 0px;
+    width: 80px;
+    height: 300px;
+    display: flex; 
+    align-items: center;
+    justify-content: center; 
+    cursor: grab;
+}
+
+nav .nav-content{
+    display: flex; 
+    align-items: center;
+    justify-content: center; 
+    transform: rotate(-90deg); 
+}
+
+.nav-content .toggle-btn,
+.nav-content span .a {
+    height:60px;
+    width: 60px;
+    background:black;
+    display: flex;
+}
+
+div.toggle-btn,div.a{
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+}
+
+.nav-content .toggle-btn{
+    font-size: 35px;
+    color: #5b85ff;
+    z-index: 100;
+    cursor: pointer;
+    transform: rotate(0deg);
+    transition: all 0.3s ease;
+}
+
+nav.openDragNav .toggle-btn{
+    transform: rotate(135deg);
+}
+.nav-content span{
+    position: absolute;
+    transition: all 0.3s ease;
+    opacity: 0;
+}
+
+nav.openDragNav .nav-content span{
+    transform: rotate(calc(var(--i) * (360deg/4))) translateY(100px);
+    opacity: 1;  
+}
+.nav-content span .a{
+    text-decoration: none;
+    transform: rotate(90deg);
+}
+
+.nav-content span .a .i{
+    font-size: 24px;
+    color: #5b85ff;
+    transform: rotate(calc(var(--i) * (360deg/-4)));
+    opacity: 0.8;
+    transition: 0.2s;
+}
+ 
+.nav-content span .a:hover .i{
+    opacity: 1;
+}

@@ -4,7 +4,7 @@ import ShuffleIcon from "@mui/icons-material/Shuffle";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useState, useRef } from "react";
 
-export default function DraggableNav(props) {
+export default function DraggableNavEdit(props) {
   const [isDragNavOpen, toggleDragNav] = useState(false);
   const ref = useRef(null);
 

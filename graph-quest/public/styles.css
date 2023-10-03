@@ -58,6 +58,7 @@ body {
 .canvas-edit {
     background-color: white;
     grid-area: 6 / 3 / 19 / 18;
+    position: relative;
 }
 .animation-code-block {
     grid-area: 3 / 16 / 21 / 21;

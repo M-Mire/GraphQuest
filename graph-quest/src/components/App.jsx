@@ -22,7 +22,11 @@ const App = () => {
           }}
         />
       ) : (
-        <EditMode />
+        <EditMode
+          enableEditMode={() => {
+            setEditMode(false);
+          }}
+        />
       )}
     </div>
   );

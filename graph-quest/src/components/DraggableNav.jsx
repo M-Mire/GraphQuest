@@ -1,7 +1,4 @@
 import AddIcon from "@mui/icons-material/Add";
-import EditSharpIcon from "@mui/icons-material/EditSharp";
-import ShuffleIcon from "@mui/icons-material/Shuffle";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useState, useRef } from "react";
 
 export default function DraggableNav(props) {
@@ -44,25 +41,15 @@ export default function DraggableNav(props) {
               <AddIcon />
             </div>
           </div>
-          <span style={{ "--i": 1 }}>
-            <div
-              className="a"
-              onClick={() => {
-                props.enableEditMode();
-              }}>
-              <EditSharpIcon className="i" />
-            </div>
-          </span>
-          <span style={{ "--i": 2 }}>
-            <div className="a">
-              <ShuffleIcon className="i" />
-            </div>
-          </span>
-          <span style={{ "--i": 3 }}>
-            <div className="a">
-              <DeleteForeverIcon className="i" />
-            </div>
-          </span>
+          {props.NAV_ITEMS.map((nav_item) => {
+            return (
+              <span style={{ "--i": nav_item.id }} key={nav_item.id}>
+                <div className="a" onClick={nav_item.onClickFunc}>
+                  <nav_item.Icon className="i" />
+                </div>
+              </span>
+            );
+          })}
         </div>
       </nav>
     </>

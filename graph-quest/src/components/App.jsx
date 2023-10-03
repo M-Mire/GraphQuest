@@ -7,13 +7,6 @@ const App = () => {
 
   return (
     <div className="app">
-      <h1
-        onClick={() => {
-          setEditMode(!isEditMode);
-        }}>
-        Switch
-      </h1>
-
       <Navbar />
       {!isEditMode ? (
         <Animation

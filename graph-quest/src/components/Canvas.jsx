@@ -1,10 +1,11 @@
 import DraggableNav from "./DraggableNav";
+import Node from "./Node";
 import EditSharpIcon from "@mui/icons-material/EditSharp";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import React, { useState, useCallback } from "react";
 
-export default function Canvas({ enableEditMode }) {
+export default function Canvas({ enableEditMode, nodes }) {
   const NAV_ITEMS = [
     { id: 1, Icon: EditSharpIcon, onClickFunc: enableEditMode },
     {
@@ -41,6 +42,9 @@ export default function Canvas({ enableEditMode }) {
         ismousedown={isMouseDown}
         NAV_ITEMS={NAV_ITEMS}
       />
+      {nodes.map((node) => {
+        return <Node key={node.id} val={node.val} x={node.x} y={node.y} />;
+      })}
     </div>
   );
 }

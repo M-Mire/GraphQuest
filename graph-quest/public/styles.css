@@ -141,3 +141,25 @@ nav.openDragNav .nav-content span{
 .nav-content span .a:hover .i{
     opacity: 1;
 }
+
+.node{
+	background: white;
+	position:absolute;
+  border-style: solid;
+  text-align: center;
+  white-space: normal;
+}
+
+.innerNode{
+  border-style: solid;
+  white-space: normal;
+  background: "blue";   
+  z-index: 200;
+}
+
+.node,.innerNode{
+  display:flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}

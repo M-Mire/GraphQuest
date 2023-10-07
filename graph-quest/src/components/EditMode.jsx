@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import DraggableNav from "./DraggableNav";
 import Node from "./Node";
+import Edge from "./Edge";
 import EditSharpIcon from "@mui/icons-material/EditSharp";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -29,7 +30,7 @@ export default function EditMode({ enableEditMode, dispatch, nodes }) {
     // True Coordinate for x,y
     const { pageX: x, pageY: y, target } = e;
     const { className, textContent } = target;
-    console.log(className);
+    console.log(className, x, y);
     if (className !== "canvas-edit" && className !== "innerNode") {
       return;
     }
@@ -39,6 +40,12 @@ export default function EditMode({ enableEditMode, dispatch, nodes }) {
         setActiveNode(clickedNode);
       } else if (activeNode === clickedNode) {
         setActiveNode(-1);
+      } else if (activeNode !== -1 && clickedNode) {
+        console.log(clickedNode);
+        dispatch({
+          type: ACTIONS.ADD_CHILD_NODE,
+          payload: { parentNode: activeNode, childNode: clickedNode },
+        });
       }
       return;
     }
@@ -48,7 +55,7 @@ export default function EditMode({ enableEditMode, dispatch, nodes }) {
     const node_y = y - rect.top + window.scrollY;
     dispatch({
       type: ACTIONS.ADD_NODE,
-      payload: { x: node_x, y: node_y, val: count },
+      payload: { x: node_x, y: node_y, val: count, childNode: {} },
     });
     setCount(count + 1);
     return;
@@ -81,7 +88,7 @@ export default function EditMode({ enableEditMode, dispatch, nodes }) {
         ismousedown={isMouseDown}
         NAV_ITEMS={NAV_ITEMS}
       />
-      {nodes.map((node) => {
+      {nodes?.map((node) => {
         return (
           <Node
             key={node.id}
@@ -94,7 +101,17 @@ export default function EditMode({ enableEditMode, dispatch, nodes }) {
         );
       })}
       <br></br>
-      {nodes.length}
+      {nodes?.length}
+      <br></br>
+      {nodes?.map((node) => {
+        return (
+          <>
+            {node.val} {node.x} {node.y}
+            <br></br>
+          </>
+        );
+      })}
+      {/* <Edge /> */}
     </div>
   );
 }

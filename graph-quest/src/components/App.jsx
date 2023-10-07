@@ -5,12 +5,14 @@ import EditMode from "./EditMode";
 
 export const ACTIONS = {
   ADD_NODE: "ADD_NODE",
+  ADD_CHILD_NODE: "ADD_CHILD_NODE",
 };
 
 function reducer(nodes, action) {
   switch (action.type) {
     case ACTIONS.ADD_NODE:
       const { x, y, val } = action.payload;
+      console.log(nodes);
       return [
         ...nodes,
         {
@@ -20,8 +22,18 @@ function reducer(nodes, action) {
           y: y,
           visited: false,
           queued: false,
+          childNodes: new Set(),
         },
       ];
+    case ACTIONS.ADD_CHILD_NODE:
+      const { parentNode, childNode } = action.payload;
+      console.log(parentNode, childNode);
+      return nodes.map((node) => {
+        if (node.val === parentNode) {
+          return { ...node, childNodes: node.childNodes.add(childNode) };
+        }
+        return node;
+      });
   }
 }
 

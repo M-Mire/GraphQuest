@@ -27,7 +27,7 @@ function reducer(nodes, action) {
       ];
     case ACTIONS.ADD_CHILD_NODE:
       const { parentNode, childNode } = action.payload;
-      console.log(parentNode, childNode);
+      // console.log(parentNode, childNode);
       return nodes.map((node) => {
         if (node.val === parentNode) {
           return { ...node, childNodes: node.childNodes.add(childNode) };

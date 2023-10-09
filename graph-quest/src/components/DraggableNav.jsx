@@ -18,7 +18,6 @@ export default function DraggableNav(props) {
 
   return (
     <>
-      {props.canvasHeight}
       <nav
         ref={ref}
         className={isDragNavOpen ? "openDragNav" : null}

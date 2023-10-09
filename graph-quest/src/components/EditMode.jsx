@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import DraggableNav from "./DraggableNav";
 import Node from "./Node";
 import Edge from "./Edge";
@@ -7,11 +7,17 @@ import ShuffleIcon from "@mui/icons-material/Shuffle";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { ACTIONS } from "./App.jsx";
 
+const getCoords = (nodes, target) => {
+  const node = nodes.find((node) => node.val === target);
+  return { x: node.x, y: node.y };
+};
+
 export default function EditMode({ enableEditMode, dispatch, nodes }) {
   const [count, setCount] = useState(0);
-  const [measureMode, setMeasureMode] = useState({});
   const [isMouseDown, setMouseDown] = useState(false);
   const [activeNode, setActiveNode] = useState(-1);
+  const [cavnasSize, setCanvasSize] = useState({});
+  const elementRef = useRef(null);
 
   const NAV_ITEMS = [
     { id: 1, Icon: EditSharpIcon, onClickFunc: enableEditMode },
@@ -29,19 +35,18 @@ export default function EditMode({ enableEditMode, dispatch, nodes }) {
   function handleNode(e) {
     // True Coordinate for x,y
     const { pageX: x, pageY: y, target } = e;
-    const { className, textContent } = target;
-    console.log(className, x, y);
-    if (className !== "canvas-edit" && className !== "innerNode") {
+    const { nodeName } = target;
+    const textContent = target.getAttribute("name");
+    if (nodeName !== "svg" && nodeName !== "circle" && nodeName !== "text") {
       return;
     }
-    if (className === "innerNode") {
+    if (nodeName === "circle" || nodeName === "text") {
       const clickedNode = parseInt(textContent);
       if (activeNode === -1) {
         setActiveNode(clickedNode);
       } else if (activeNode === clickedNode) {
         setActiveNode(-1);
-      } else if (activeNode !== -1 && clickedNode) {
-        console.log(clickedNode);
+      } else if (activeNode !== -1 && clickedNode >= 0) {
         dispatch({
           type: ACTIONS.ADD_CHILD_NODE,
           payload: { parentNode: activeNode, childNode: clickedNode },
@@ -61,21 +66,18 @@ export default function EditMode({ enableEditMode, dispatch, nodes }) {
     return;
   }
 
-  const measuredRef = useCallback((node) => {
-    if (node !== null) {
-      setMeasureMode({
-        height: node.getBoundingClientRect().height,
-        top: node.getBoundingClientRect().top,
-        left: node.getBoundingClientRect().left,
-      });
-    }
+  useEffect(() => {
+    setCanvasSize({
+      height: elementRef.current.clientHeight,
+      width: elementRef.current.clientWidth,
+    });
   }, []);
 
   return (
     <div
       id="editMode"
       className="canvas-edit"
-      ref={measuredRef}
+      ref={elementRef}
       onMouseDown={(e) => {
         handleNode(e);
       }}
@@ -83,35 +85,42 @@ export default function EditMode({ enableEditMode, dispatch, nodes }) {
         setMouseDown(false);
       }}>
       <DraggableNav
-        canvasHeight={measureMode.height}
+        canvasHeight={cavnasSize.height}
         handleMousedown={() => setMouseDown(true)}
         ismousedown={isMouseDown}
         NAV_ITEMS={NAV_ITEMS}
       />
-      {nodes?.map((node) => {
-        return (
-          <Node
-            key={node.id}
-            val={node.val}
-            x={node.x}
-            y={node.y}
-            handleNode={handleNode}
-            curActiveNode={activeNode}
-          />
-        );
-      })}
-      <br></br>
-      {nodes?.length}
-      <br></br>
-      {nodes?.map((node) => {
-        return (
-          <>
-            {node.val} {node.x} {node.y}
-            <br></br>
-          </>
-        );
-      })}
-      {/* <Edge /> */}
+      <svg
+        id="canvas-edit-mode"
+        style={{ height: cavnasSize.height, width: cavnasSize.width }}>
+        {nodes?.map((node) => {
+          return (
+            <Node
+              key={node.id}
+              val={node.val}
+              x={node.x}
+              y={node.y}
+              curActiveNode={activeNode}
+            />
+          );
+        })}
+        {nodes
+          .filter((node) => node.childNodes.size > 0)
+          .map((node) => {
+            return Array.from(node.childNodes).map((child) => {
+              const childCoords = getCoords(nodes, child);
+              return (
+                <Edge
+                  key={"" + child.id + node.id}
+                  x1={node.x}
+                  y1={node.y}
+                  x2={childCoords.x}
+                  y2={childCoords.y}
+                />
+              );
+            });
+          })}
+      </svg>
     </div>
   );
 }

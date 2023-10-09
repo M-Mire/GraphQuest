@@ -1,61 +1,36 @@
-import { useRef, useEffect } from "react";
-function drawArrow(ctx, fromx, fromy, tox, toy, arrowWidth, color) {
-  //variables to be used when creating the arrow
-  var headlen = 10;
-  var angle = Math.atan2(toy - fromy, tox - fromx);
-
-  ctx.save();
-  ctx.strokeStyle = color;
-
-  //starting path of the arrow from the start square to the end square
-  //and drawing the stroke
-  ctx.beginPath();
-  ctx.moveTo(fromx, fromy);
-  ctx.lineTo(tox, toy);
-  ctx.lineWidth = arrowWidth;
-  ctx.stroke();
-
-  //starting a new path from the head of the arrow to one of the sides of
-  //the point
-  ctx.beginPath();
-  ctx.moveTo(tox, toy);
-  ctx.lineTo(
-    tox - headlen * Math.cos(angle - Math.PI / 7),
-    toy - headlen * Math.sin(angle - Math.PI / 7)
-  );
-
-  //path from the side point of the arrow, to the other side point
-  ctx.lineTo(
-    tox - headlen * Math.cos(angle + Math.PI / 7),
-    toy - headlen * Math.sin(angle + Math.PI / 7)
-  );
-
-  //path from the side point back to the tip of the arrow, and then
-  //again to the opposite side point
-  ctx.lineTo(tox, toy);
-  ctx.lineTo(
-    tox - headlen * Math.cos(angle - Math.PI / 7),
-    toy - headlen * Math.sin(angle - Math.PI / 7)
-  );
-
-  //draws the paths created above
-  ctx.stroke();
-  ctx.restore();
-}
-export default function Edge() {
-  const ref = useRef();
-
-  useEffect(() => {
-    if (ref.current) {
-      const ctx = ref.current.getContext("2d");
-      // do something here with the canvas
-      drawArrow(ctx, 10, 10, 100, 100, 10, "red");
-      //   drawArrow(ctx, 100, 10, 40, 140, 3, "black");
-    }
-  }, []);
+// function hello(x1, x2, y1, y2) {
+//   if (x2 < x1 && y1 < y2) {
+//     return x2 + 16;
+//   } else if (y2 > y1 && x2 < x1) {
+//     return y2 - 32;
+//   } else if (x2 > x1 && y1 < y2) {
+//     return x2 - 16;
+//   } else if (x2 < x1 && y1 > y2) {
+//   }
+// }
+export default function Edge({ x1, x2, y1, y2 }) {
+  console.log(x1, x2, y1, y2);
   return (
-    <canvas id="myCanvas" ref={ref} width="600" height="700">
-      Your browser does not support the canvas tag.
-    </canvas>
+    <>
+      <defs>
+        <marker
+          id="markerArrow"
+          markerWidth="13"
+          markerHeight="13"
+          refX="2"
+          refY="6"
+          orient="auto">
+          <path d="M2,2 L2,11 L10,6 L2,2" style={{ fill: "#fff" }} />
+        </marker>
+      </defs>
+      <line
+        x1={x1}
+        y1={y1}
+        x2={x2}
+        y2={y2}
+        markerEnd={"url(#markerArrow)"}
+        style={{ stroke: "blue", strokeWidth: 2 }}
+      />
+    </>
   );
 }

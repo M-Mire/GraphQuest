@@ -16,18 +16,18 @@
 }
 
 body {
-    background-color: black;
+    background-color: 7D7C7C;
     color: var(--text-color);
-    overflow: hidden
+    /* overflow: hidden */
   
 }
 .app {
     height: 100vh;
-    display: grid;
-    grid-template-columns: repeat(20, 1fr);
-    grid-template-rows: repeat(20, 1fr);
+    display: grid; 
+    grid-template-columns: repeat(50, 1fr); 
+    grid-template-rows: repeat(35, 1fr); 
     grid-column-gap: 0px;
-    grid-row-gap: 0px;
+    grid-row-gap: 0px; 
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
      -khtml-user-select: none; /* Konqueror HTML */
@@ -39,35 +39,40 @@ body {
 }
 
 .navbar { 
-    height: 80px;
-    width: 100vw;
-    font-family: 'VT323', monospace;
-    color:green;
-    font-size: 52px;
-    padding: 10px;
-    grid-area: 1 / 1 / 4 / 21;
+    color:black;
+    grid-area: 1 / 4 / 5 / 51;
+    background-color: red;
+ }
+
+ .sidebar {
+    grid-area: 1 / 1 / 36 / 4;
+    background-color: blue;
  }
 
 
 .canvas {
-    background-color: var(--first-color);
-    grid-area: 3 / 1 / 17 / 16;
+    grid-area: 6 / 5 / 35 / 39;
     position: relative;
+    -moz-box-shadow: 0 0 3px #ccc;
+    -webkit-box-shadow: 0 0 3px #ccc;
+    box-shadow: 0 0 3px #ccc;
 }
 
 .canvas-edit {
-    background-color: var(--first-color);
-    grid-area: 6 / 3 / 19 / 18;
+    grid-area: 6 / 5 / 35 / 39;
     position: relative;
+    -moz-box-shadow: 0 0 3px #ccc;
+    -webkit-box-shadow: 0 0 3px #ccc;
+    box-shadow: 0 0 3px #ccc;
 }
 .animation-code-block {
-    grid-area: 3 / 16 / 21 / 21;
+    grid-area: 17 / 40 / 36 / 51;
     background-color: purple;
 }
 
 .animation-traverse-block {
     background-color: grey;
-    grid-area: 17 / 1 / 21 / 16;
+    grid-area: 5 / 40 / 17 / 51;
 }
 
 nav {

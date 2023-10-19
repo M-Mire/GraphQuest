@@ -35,6 +35,7 @@ export default function Canvas({ enableEditMode, nodes }) {
               x={node.x}
               y={node.y}
               visited={node.visited}
+              visitedChildrens={node.visitedChildrens}
             />
           );
         })}

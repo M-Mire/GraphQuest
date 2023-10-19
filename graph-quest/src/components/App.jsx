@@ -3,49 +3,12 @@ import Navbar from "./Navbar";
 import Animation from "./Animation";
 import EditMode from "./EditMode";
 import Sidebar from "./Sidebar";
-
-class Graph {
-  constructor() {
-    this.graph = new Map();
-    this.TRACKER = [];
-  }
-
-  addEdge(u, v) {
-    if (!this.graph.has(u)) {
-      this.graph.set(u, []);
-    }
-    this.graph.get(u).push(v);
-  }
-  getTracker() {
-    return this.TRACKER;
-  }
-
-  BFS(root) {
-    const visited = new Set();
-    const queue = [root];
-    this.TRACKER.push("V:" + root);
-    visited.add(root);
-
-    while (queue.length > 0) {
-      const currQueue = [...queue].reverse();
-      const vertex = queue.shift();
-      this.TRACKER.push("C:" + vertex);
-
-      for (const neighbour of this.graph.get(vertex) || []) {
-        if (!visited.has(neighbour)) {
-          this.TRACKER.push("V:" + neighbour);
-          visited.add(neighbour);
-          queue.push(neighbour);
-        }
-      }
-    }
-  }
-}
+import { Graph } from "../GraphAlgorithm/Graph";
 
 export const ACTIONS = {
   ADD_NODE: "ADD_NODE",
   ADD_CHILD_NODE: "ADD_CHILD_NODE",
-  NODE_VISITED: "NODE_VISITED",
+  NODE_ANIMATE: "NODE_ANIMATE",
 };
 
 function reducer(nodes, action) {
@@ -61,7 +24,7 @@ function reducer(nodes, action) {
           x: x,
           y: y,
           visited: false,
-          queued: false,
+          visitedChildrens: false,
           childNodes: new Set(),
         },
       ];
@@ -75,13 +38,26 @@ function reducer(nodes, action) {
         }
         return node;
       });
-    case ACTIONS.NODE_VISITED:
-      return nodes.map((node) => {
-        if (node.val === action.payload.val) {
-          return { ...node, visited: true };
-        }
-        return node;
-      });
+    case ACTIONS.NODE_ANIMATE:
+      const { value, command } = action.payload;
+      switch (command) {
+        case "V":
+          return nodes.map((node) => {
+            if (node.val === value) {
+              return { ...node, visited: true };
+            }
+            return node;
+          });
+        case "F":
+          return nodes.map((node) => {
+            if (node.val === value) {
+              return { ...node, visitedChildrens: true };
+            }
+            return node;
+          });
+      }
+    default:
+      return nodes;
   }
 }
 
@@ -97,7 +73,7 @@ const App = () => {
     if (rootNode >= 0) {
       const g = new Graph();
       nodes
-        .filter((node) => node.childNodes.size > 0)
+        .filter((node) => node.childNodes && node.childNodes.size > 0)
         .map((node) => {
           return Array.from(node.childNodes).map((child, id) => {
             return g.addEdge(node.val, child);
@@ -113,17 +89,15 @@ const App = () => {
     const timerId = setInterval(() => {
       if (currentIndex < tracker.length) {
         const [command, val] = tracker[currentIndex].split(":");
-        if (command === "V") {
-          dispatch({
-            type: ACTIONS.NODE_VISITED,
-            payload: { val: parseInt(val) },
-          });
-        }
+        dispatch({
+          type: ACTIONS.NODE_ANIMATE,
+          payload: { value: parseInt(val), command: command },
+        });
         setCurrentIndex(currentIndex + 1);
       } else {
         clearInterval(timerId);
       }
-    }, 1000);
+    }, 300);
 
     return () => {
       clearInterval(timerId);

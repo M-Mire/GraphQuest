@@ -1,6 +1,21 @@
 import { useState } from "react";
-
-export default function Node({ x, y, val, curActiveNode, visited }) {
+const COLOUR_SELECTION = (isClicked, visited, visitedChildrens) => {
+  return isClicked
+    ? "blue"
+    : visited
+    ? visitedChildrens
+      ? "grey"
+      : "purple"
+    : "none";
+};
+export default function Node({
+  x,
+  y,
+  val,
+  curActiveNode,
+  visited,
+  visitedChildrens,
+}) {
   const [isClicked, setClicked] = useState(false);
   const RECT = 70;
   return (
@@ -17,7 +32,7 @@ export default function Node({ x, y, val, curActiveNode, visited }) {
         cx={x}
         cy={y}
         r="16"
-        fill={isClicked ? "blue" : visited ? "purple" : "none"}
+        fill={COLOUR_SELECTION(isClicked, visited, visitedChildrens)}
       />
       <circle
         name={val}
@@ -26,7 +41,7 @@ export default function Node({ x, y, val, curActiveNode, visited }) {
         r="18"
         stroke="black"
         strokeWidth="3"
-        fill={isClicked ? "blue" : visited ? "purple" : "none"}
+        fill={COLOUR_SELECTION(isClicked, visited, visitedChildrens)}
         onMouseDown={(e) => {
           if (curActiveNode === -1 || curActiveNode === val) {
             setClicked(!isClicked);

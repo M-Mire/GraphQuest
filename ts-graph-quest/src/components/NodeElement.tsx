@@ -11,7 +11,7 @@ export interface Node {
 
 interface NodeElementProps {
   node: Node;
-  activeNode: number;
+  activeNode?: number;
 }
 
 const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
@@ -95,8 +95,8 @@ const COLOUR_SELECTION = (
   return isClicked
     ? "blue"
     : visited
-      ? visitedChildrens
-        ? "grey"
-        : "purple"
-      : "none";
+    ? visitedChildrens
+      ? "grey"
+      : "purple"
+    : "none";
 };

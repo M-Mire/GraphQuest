@@ -23,7 +23,11 @@ const textWidthStyle = {
   textOverflow: "ellipsis",
 };
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+  rootValue: number | null;
+  setRootValue: React.Dispatch<React.SetStateAction<number | null>>;
+}
+const Navbar: React.FC<NavbarProps> = ({ rootValue, setRootValue }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -59,7 +63,7 @@ const Navbar: React.FC = () => {
           </Menu>
         </div>
         <div className="flex-1"></div>
-        <ControlButtons />
+        <ControlButtons rootValue={rootValue} setRootValue={setRootValue} />
       </Toolbar>
     </AppBar>
   );

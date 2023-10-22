@@ -10,14 +10,28 @@ const iconSize = "small";
 const paddingStyle = "p-0.5";
 const buttonMargin = "m-1";
 
-const ControlButtons: React.FC = () => {
+interface ControlButtonsProps {
+  rootValue: number | null;
+  setRootValue: React.Dispatch<React.SetStateAction<number | null>>;
+}
+
+const ControlButtons: React.FC<ControlButtonsProps> = ({
+  rootValue,
+  setRootValue,
+}) => {
   return (
     <div className="w-full h-12 flex justify-center items-end mt-2">
       <div className="bg-white rounded-t-lg shadow-md p-1 rounded-b-lg">
         <div className="flex justify-between">
           <div
             className={`control-button-bg bg-green-500 rounded-full ${paddingStyle} ${buttonMargin}`}>
-            <IconButton color="primary">
+            <IconButton
+              color="primary"
+              onClick={() => {
+                setRootValue(
+                  rootValue !== null && !isNaN(rootValue) ? rootValue : 0
+                );
+              }}>
               <PlayArrowIcon fontSize={iconSize} style={{ fill: "#FFF" }} />
             </IconButton>
           </div>

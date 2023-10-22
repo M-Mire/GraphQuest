@@ -5,6 +5,7 @@ import NodeElement, {
   newNode,
   Node,
 } from "./NodeElement";
+import Edge from "./Edge";
 
 interface EditModeProps {
   dispatch: React.Dispatch<ActionNode>;
@@ -32,7 +33,9 @@ const EditMode: React.FC<EditModeProps> = ({
     if (nodeName === "circle" || nodeName === "text") {
       const textContent = targetAsElem.getAttribute("name");
       if (textContent) {
-        const clickedNode = nodes.find((node) => node.val === parseInt(textContent))!.val;
+        const clickedNode = nodes.find(
+          (node) => node.val === parseInt(textContent)
+        )!.val;
         if (activeNode === -1) {
           setActiveNode(clickedNode);
         } else if (activeNode === clickedNode) {
@@ -57,7 +60,6 @@ const EditMode: React.FC<EditModeProps> = ({
       });
       incrementNodeCount();
       return;
-
     }
   };
   return (
@@ -77,6 +79,22 @@ const EditMode: React.FC<EditModeProps> = ({
               <NodeElement key={node.id} node={node} activeNode={activeNode} />
             );
           })}
+          {nodes
+            .filter((node) => node.childNodes.size > 0)
+            .map((node) => {
+              return Array.from(node.childNodes).map((child, id) => {
+                const childCoords = getCoords(nodes, child);
+                return (
+                  <Edge
+                    key={id}
+                    x1={node.x}
+                    y1={node.y}
+                    x2={childCoords.x}
+                    y2={childCoords.y}
+                  />
+                );
+              });
+            })}
         </svg>
       </div>
       <div className="w-1/4 relative"></div>
@@ -85,3 +103,8 @@ const EditMode: React.FC<EditModeProps> = ({
 };
 
 export default EditMode;
+
+const getCoords = (nodes: Node[], target: number) => {
+  const node = nodes.find((node: Node) => node.val === target)!;
+  return { x: node.x, y: node.y };
+};

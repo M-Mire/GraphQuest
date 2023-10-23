@@ -25,7 +25,7 @@ const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
         y={node.y - RECT / 2}
         height={RECT}
         width={RECT}
-        fill="white"></rect>
+        fill="transparent"></rect>
       <circle
         name={"" + node.val}
         cx={node.x}

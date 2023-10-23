@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import NodeElement, { Node } from "./NodeElement";
 import Edge from "./Edge";
 
@@ -8,7 +8,6 @@ interface CanvasProps {
 
 const EditMode: React.FC<CanvasProps> = ({ nodes }) => {
   const elementRef = useRef<HTMLDivElement | null>(null);
-  const [activeNode, setActiveNode] = useState<number>(-1);
 
   return (
     <>
@@ -22,9 +21,7 @@ const EditMode: React.FC<CanvasProps> = ({ nodes }) => {
           width="100%"
           style={{ position: "absolute", top: 0, left: 0 }}>
           {nodes?.map((node) => {
-            return (
-              <NodeElement key={node.id} node={node} activeNode={activeNode} />
-            );
+            return <NodeElement key={node.id} node={node} />;
           })}
           {nodes
             .filter((node) => node.childNodes.size > 0)

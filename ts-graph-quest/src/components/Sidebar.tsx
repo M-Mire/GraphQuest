@@ -27,7 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-    <div className="w-16 bg-gray-800">
+    <div className="w-16 bg-atomOneDark">
       <div className="p-2 text-white">
         <div className="mb-4">
           <AccountTreeIcon fontSize="large" />

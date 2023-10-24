@@ -7,6 +7,7 @@ export enum Command {
 export enum Line {
   EntryLine = "EntryLine",
   FinishedLine = "FinishedLine",
+  LineReset = "LineReset",
 }
 
 export default class Graph {

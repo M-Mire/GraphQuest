@@ -13,6 +13,8 @@ interface CanvasProps {
   currentIndex: number;
   setCurrentIndex: React.Dispatch<React.SetStateAction<number>>;
   isPlay: boolean;
+  dispatchLineNumbers: React.Dispatch<ActionLine>;
+  lineNumbers: number[];
 }
 
 function isCommand(command: Command | Line): command is Command {
@@ -23,20 +25,6 @@ export interface ActionLine {
   payload: number;
 }
 
-const lineReducer: React.Reducer<number[], ActionLine> = (
-  lineNumbers,
-  action
-) => {
-  switch (action.type) {
-    case Line.EntryLine:
-      return [...lineNumbers, action.payload];
-    case Line.FinishedLine:
-      return lineNumbers.filter((number) => number !== action.payload);
-    default:
-      return lineNumbers;
-  }
-};
-
 const Animation: React.FC<CanvasProps> = ({
   nodes,
   rootValue,
@@ -45,10 +33,10 @@ const Animation: React.FC<CanvasProps> = ({
   currentIndex,
   setCurrentIndex,
   isPlay,
+  dispatchLineNumbers,
+  lineNumbers,
 }) => {
   const [tracker, setTracker] = useState<Array<[Command | Line, any]>>([]);
-
-  const [lineNumbers, dispatchLineNumbers] = useReducer(lineReducer, []);
 
   useEffect(() => {
     if (rootValue !== null) {

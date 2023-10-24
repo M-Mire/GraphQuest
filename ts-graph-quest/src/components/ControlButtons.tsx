@@ -6,23 +6,14 @@ import FastForwardIcon from "@mui/icons-material/FastForward";
 import FastRewindIcon from "@mui/icons-material/FastRewind";
 import RotateLeftIcon from "@mui/icons-material/RotateLeft";
 import { Node, ACTIONS_NODE, ActionNode } from "./NodeElement";
+import { NavbarProps } from "./Navbar";
+import { Line } from "../GraphAlgorithm/Graph";
 
 const iconSize = "small";
 const paddingStyle = "p-0.5";
 const buttonMargin = "m-1";
 
-interface ControlButtonsProps {
-  rootValue: number | null;
-  setRootValue: React.Dispatch<React.SetStateAction<number | null>>;
-  setSpeed: React.Dispatch<React.SetStateAction<number>>;
-  speed: number;
-  dispatch: React.Dispatch<ActionNode>;
-  setCurrentIndex: React.Dispatch<React.SetStateAction<number>>;
-  setPlay: React.Dispatch<React.SetStateAction<boolean>>;
-  play: boolean;
-}
-
-const ControlButtons: React.FC<ControlButtonsProps> = ({
+const ControlButtons: React.FC<NavbarProps> = ({
   rootValue,
   setRootValue,
   setSpeed,
@@ -30,7 +21,8 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
   dispatch,
   setCurrentIndex,
   setPlay,
-  play,
+  isPlay,
+  dispatchLineNumbers,
 }) => {
   return (
     <div className="w-full h-12 flex justify-center items-end mt-2">
@@ -46,7 +38,6 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
                   rootValue !== null && !isNaN(rootValue) ? rootValue : 0
                 );
                 setPlay(true);
-                console.log("value is now " + play);
               }}>
               <PlayArrowIcon fontSize={iconSize} style={{ fill: "#FFF" }} />
             </IconButton>
@@ -106,6 +97,11 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
                     payload: NaN,
                   });
                   setCurrentIndex(0);
+                  setPlay(false);
+                  dispatchLineNumbers({
+                    type: Line.LineReset,
+                    payload: 0,
+                  });
                 }}
               />
             </IconButton>

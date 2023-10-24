@@ -8,6 +8,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ControlButtons from "./ControlButtons";
 import { ActionNode } from "./NodeElement";
+import { ActionLine } from "./Animation";
 
 const navbarStyle = {
   backgroundColor: "transparent",
@@ -24,7 +25,7 @@ const textWidthStyle = {
   textOverflow: "ellipsis",
 };
 
-interface NavbarProps {
+export interface NavbarProps {
   rootValue: number | null;
   setRootValue: React.Dispatch<React.SetStateAction<number | null>>;
   setSpeed: React.Dispatch<React.SetStateAction<number>>;
@@ -33,6 +34,7 @@ interface NavbarProps {
   setCurrentIndex: React.Dispatch<React.SetStateAction<number>>;
   setPlay: React.Dispatch<React.SetStateAction<boolean>>;
   isPlay: boolean;
+  dispatchLineNumbers: React.Dispatch<ActionLine>;
 }
 const Navbar: React.FC<NavbarProps> = ({
   rootValue,
@@ -43,6 +45,7 @@ const Navbar: React.FC<NavbarProps> = ({
   setCurrentIndex,
   setPlay,
   isPlay,
+  dispatchLineNumbers,
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -87,7 +90,8 @@ const Navbar: React.FC<NavbarProps> = ({
           dispatch={dispatch}
           setCurrentIndex={setCurrentIndex}
           setPlay={setPlay}
-          play={isPlay}
+          isPlay={isPlay}
+          dispatchLineNumbers={dispatchLineNumbers}
         />
       </Toolbar>
     </AppBar>

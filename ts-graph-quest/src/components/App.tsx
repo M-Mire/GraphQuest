@@ -4,7 +4,7 @@ import Navbar from "./Navbar";
 import EditMode from "./EditMode";
 import Animation, { ActionLine } from "./Animation";
 import { ACTIONS_NODE, ActionNode, Node } from "./NodeElement";
-import { Command } from "../GraphAlgorithm/Graph";
+import { Command, Line } from "../GraphAlgorithm/Graph";
 
 const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
   switch (action.type) {
@@ -47,6 +47,22 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
   }
 };
 
+const lineReducer: React.Reducer<number[], ActionLine> = (
+  lineNumbers,
+  action
+) => {
+  switch (action.type) {
+    case Line.EntryLine:
+      return [...lineNumbers, action.payload];
+    case Line.FinishedLine:
+      return lineNumbers.filter((number) => number !== action.payload);
+    case Line.LineReset:
+      return [];
+    default:
+      return lineNumbers;
+  }
+};
+
 const App: React.FC = () => {
   const [rootValue, setRootValue] = useState<number | null>(null);
   const [nodes, dispatch] = useReducer(nodeReducer, []);
@@ -55,6 +71,7 @@ const App: React.FC = () => {
   const [speed, setSpeed] = useState<number>(500);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlay, setPlay] = useState<boolean>(false);
+  const [lineNumbers, dispatchLineNumbers] = useReducer(lineReducer, []);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -74,6 +91,7 @@ const App: React.FC = () => {
           setCurrentIndex={setCurrentIndex}
           setPlay={setPlay}
           isPlay={isPlay}
+          dispatchLineNumbers={dispatchLineNumbers}
         />
         <div className="flex h-full">
           {!isEditMode ? (
@@ -85,6 +103,8 @@ const App: React.FC = () => {
               currentIndex={currentIndex}
               setCurrentIndex={setCurrentIndex}
               isPlay={isPlay}
+              lineNumbers={lineNumbers}
+              dispatchLineNumbers={dispatchLineNumbers}
             />
           ) : (
             <EditMode

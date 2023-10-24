@@ -7,6 +7,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ControlButtons from "./ControlButtons";
+import { Node, ACTIONS_NODE, ActionNode } from "./NodeElement";
 
 const navbarStyle = {
   backgroundColor: "transparent",
@@ -26,8 +27,17 @@ const textWidthStyle = {
 interface NavbarProps {
   rootValue: number | null;
   setRootValue: React.Dispatch<React.SetStateAction<number | null>>;
+  setSpeed: React.Dispatch<React.SetStateAction<number>>;
+  speed: number;
+  dispatch: React.Dispatch<ActionNode>;
 }
-const Navbar: React.FC<NavbarProps> = ({ rootValue, setRootValue }) => {
+const Navbar: React.FC<NavbarProps> = ({
+  rootValue,
+  setRootValue,
+  setSpeed,
+  speed,
+  dispatch,
+}) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -63,7 +73,13 @@ const Navbar: React.FC<NavbarProps> = ({ rootValue, setRootValue }) => {
           </Menu>
         </div>
         <div className="flex-1"></div>
-        <ControlButtons rootValue={rootValue} setRootValue={setRootValue} />
+        <ControlButtons
+          rootValue={rootValue}
+          setRootValue={setRootValue}
+          setSpeed={setSpeed}
+          speed={speed}
+          dispatch={dispatch}
+        />
       </Toolbar>
     </AppBar>
   );

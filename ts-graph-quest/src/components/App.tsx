@@ -4,7 +4,7 @@ import Navbar from "./Navbar";
 import EditMode from "./EditMode";
 import Animation, { ActionLine } from "./Animation";
 import { ACTIONS_NODE, ActionNode, Node } from "./NodeElement";
-import { Command, Line } from "../GraphAlgorithm/Graph";
+import { Command } from "../GraphAlgorithm/Graph";
 
 const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
   switch (action.type) {
@@ -38,6 +38,10 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
         default:
           return nodes;
       }
+    case ACTIONS_NODE.NODE_RESET:
+      return nodes.map((node) => {
+        return { ...node, visited: false, visitedChildrens: false };
+      });
     default:
       return nodes;
   }
@@ -48,6 +52,7 @@ const App: React.FC = () => {
   const [nodes, dispatch] = useReducer(nodeReducer, []);
   const [nodeCount, setNodeCount] = useState<number>(0);
   const [isEditMode, setEditMode] = useState<boolean>(false);
+  const [speed, setSpeed] = useState<number>(2000);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -58,13 +63,20 @@ const App: React.FC = () => {
         isEditMode={isEditMode}
       />
       <div className="flex-1">
-        <Navbar rootValue={rootValue} setRootValue={setRootValue} />
+        <Navbar
+          rootValue={rootValue}
+          setRootValue={setRootValue}
+          setSpeed={setSpeed}
+          speed={speed}
+          dispatch={dispatch}
+        />
         <div className="flex h-full">
           {!isEditMode ? (
             <Animation
               nodes={nodes}
               rootValue={rootValue}
               dispatch={dispatch}
+              speed={speed}
             />
           ) : (
             <EditMode

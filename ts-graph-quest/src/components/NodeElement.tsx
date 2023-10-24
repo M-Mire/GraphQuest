@@ -84,6 +84,7 @@ export const ACTIONS_NODE = {
   ADD_NODE: "ADD_NODE",
   ADD_CHILD_NODE: "ADD_CHILD_NODE",
   NODE_ANIMATE: "NODE_ANIMATE",
+  NODE_RESET: "NODE_RESET",
 };
 export type ActionNode = { type: string; payload: any };
 

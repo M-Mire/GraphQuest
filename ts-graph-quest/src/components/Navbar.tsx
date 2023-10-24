@@ -7,7 +7,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ControlButtons from "./ControlButtons";
-import { Node, ACTIONS_NODE, ActionNode } from "./NodeElement";
+import { ActionNode } from "./NodeElement";
 
 const navbarStyle = {
   backgroundColor: "transparent",
@@ -30,6 +30,9 @@ interface NavbarProps {
   setSpeed: React.Dispatch<React.SetStateAction<number>>;
   speed: number;
   dispatch: React.Dispatch<ActionNode>;
+  setCurrentIndex: React.Dispatch<React.SetStateAction<number>>;
+  setPlay: React.Dispatch<React.SetStateAction<boolean>>;
+  isPlay: boolean;
 }
 const Navbar: React.FC<NavbarProps> = ({
   rootValue,
@@ -37,6 +40,9 @@ const Navbar: React.FC<NavbarProps> = ({
   setSpeed,
   speed,
   dispatch,
+  setCurrentIndex,
+  setPlay,
+  isPlay,
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -79,6 +85,9 @@ const Navbar: React.FC<NavbarProps> = ({
           setSpeed={setSpeed}
           speed={speed}
           dispatch={dispatch}
+          setCurrentIndex={setCurrentIndex}
+          setPlay={setPlay}
+          play={isPlay}
         />
       </Toolbar>
     </AppBar>

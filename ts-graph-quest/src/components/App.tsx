@@ -52,7 +52,9 @@ const App: React.FC = () => {
   const [nodes, dispatch] = useReducer(nodeReducer, []);
   const [nodeCount, setNodeCount] = useState<number>(0);
   const [isEditMode, setEditMode] = useState<boolean>(false);
-  const [speed, setSpeed] = useState<number>(2000);
+  const [speed, setSpeed] = useState<number>(500);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPlay, setPlay] = useState<boolean>(false);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -69,6 +71,9 @@ const App: React.FC = () => {
           setSpeed={setSpeed}
           speed={speed}
           dispatch={dispatch}
+          setCurrentIndex={setCurrentIndex}
+          setPlay={setPlay}
+          isPlay={isPlay}
         />
         <div className="flex h-full">
           {!isEditMode ? (
@@ -77,6 +82,9 @@ const App: React.FC = () => {
               rootValue={rootValue}
               dispatch={dispatch}
               speed={speed}
+              currentIndex={currentIndex}
+              setCurrentIndex={setCurrentIndex}
+              isPlay={isPlay}
             />
           ) : (
             <EditMode

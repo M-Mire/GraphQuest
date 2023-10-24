@@ -10,6 +10,9 @@ interface CanvasProps {
   rootValue: number | null;
   dispatch: React.Dispatch<ActionNode>;
   speed: number;
+  currentIndex: number;
+  setCurrentIndex: React.Dispatch<React.SetStateAction<number>>;
+  isPlay: boolean;
 }
 
 function isCommand(command: Command | Line): command is Command {
@@ -39,9 +42,12 @@ const Animation: React.FC<CanvasProps> = ({
   rootValue,
   dispatch,
   speed,
+  currentIndex,
+  setCurrentIndex,
+  isPlay,
 }) => {
   const [tracker, setTracker] = useState<Array<[Command | Line, any]>>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+
   const [lineNumbers, dispatchLineNumbers] = useReducer(lineReducer, []);
 
   useEffect(() => {
@@ -62,7 +68,7 @@ const Animation: React.FC<CanvasProps> = ({
 
   useEffect(() => {
     const timerId = setInterval(() => {
-      if (currentIndex < tracker.length) {
+      if (currentIndex < tracker.length && isPlay) {
         const [command, val] = tracker[currentIndex];
         if (isCommand(command)) {
           dispatch({
@@ -86,7 +92,7 @@ const Animation: React.FC<CanvasProps> = ({
     return () => {
       clearInterval(timerId);
     };
-  }, [tracker, currentIndex, dispatch]);
+  }, [tracker, currentIndex, dispatch, isPlay]);
 
   return (
     <>

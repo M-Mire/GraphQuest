@@ -17,6 +17,9 @@ interface ControlButtonsProps {
   setSpeed: React.Dispatch<React.SetStateAction<number>>;
   speed: number;
   dispatch: React.Dispatch<ActionNode>;
+  setCurrentIndex: React.Dispatch<React.SetStateAction<number>>;
+  setPlay: React.Dispatch<React.SetStateAction<boolean>>;
+  play: boolean;
 }
 
 const ControlButtons: React.FC<ControlButtonsProps> = ({
@@ -25,6 +28,9 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
   setSpeed,
   speed,
   dispatch,
+  setCurrentIndex,
+  setPlay,
+  play,
 }) => {
   return (
     <div className="w-full h-12 flex justify-center items-end mt-2">
@@ -35,16 +41,23 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
             <IconButton
               color="primary"
               onClick={() => {
+                console.log("clicked here");
                 setRootValue(
                   rootValue !== null && !isNaN(rootValue) ? rootValue : 0
                 );
+                setPlay(true);
+                console.log("value is now " + play);
               }}>
               <PlayArrowIcon fontSize={iconSize} style={{ fill: "#FFF" }} />
             </IconButton>
           </div>
           <div
             className={`control-button-bg bg-yellow-500 rounded-full ${paddingStyle} ${buttonMargin}`}>
-            <IconButton color="primary">
+            <IconButton
+              color="primary"
+              onClick={() => {
+                setPlay(false);
+              }}>
               <PauseIcon fontSize={iconSize} style={{ fill: "#FFF" }} />
             </IconButton>
           </div>
@@ -71,6 +84,10 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
                 onClick={() => {
                   if (speed > 250) {
                     setSpeed(speed - 250);
+                  } else if (speed <= 250) {
+                    setSpeed(speed - 50);
+                  } else {
+                    setSpeed(25);
                   }
                 }}
               />
@@ -88,6 +105,7 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
                     type: ACTIONS_NODE.NODE_RESET,
                     payload: NaN,
                   });
+                  setCurrentIndex(0);
                 }}
               />
             </IconButton>

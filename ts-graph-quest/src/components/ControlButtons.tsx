@@ -10,7 +10,7 @@ import { NavbarProps } from "./Navbar";
 import { Line } from "../GraphAlgorithm/Graph";
 
 const iconSize = "small";
-const paddingStyle = "p-0.5";
+const paddingStyle = "p-1";
 const buttonMargin = "m-1";
 
 const ControlButtons: React.FC<NavbarProps> = ({
@@ -33,7 +33,6 @@ const ControlButtons: React.FC<NavbarProps> = ({
             <IconButton
               color="primary"
               onClick={() => {
-                console.log("clicked here");
                 setRootValue(
                   rootValue !== null && !isNaN(rootValue) ? rootValue : 0
                 );

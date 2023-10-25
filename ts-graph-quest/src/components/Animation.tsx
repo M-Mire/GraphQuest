@@ -4,6 +4,7 @@ import TraverseCode from "./TraverseCode";
 import TraverseAnimation from "./TraverseAnimation";
 import { Node, ACTIONS_NODE, ActionNode } from "./NodeElement";
 import Graph, { Command, Line } from "../GraphAlgorithm/Graph";
+import PseudoCode from "./PseudoCode";
 
 interface CanvasProps {
   nodes: Node[];
@@ -37,6 +38,16 @@ const Animation: React.FC<CanvasProps> = ({
   lineNumbers,
 }) => {
   const [tracker, setTracker] = useState<Array<[Command | Line, any]>>([]);
+  const calculateRedRectangleHeight = () => {
+    const screenHeight = window.innerHeight;
+    const blueRectangleHeight = 0.75 * screenHeight; // 75% of screen height
+    const redRectangleHeight = screenHeight - blueRectangleHeight;
+    return redRectangleHeight;
+  };
+
+  const [redRectangleHeight, setRedRectangleHeight] = useState(
+    calculateRedRectangleHeight()
+  );
 
   useEffect(() => {
     if (rootValue !== null) {
@@ -49,7 +60,7 @@ const Animation: React.FC<CanvasProps> = ({
           });
         });
       g.BFS(rootValue);
-      console.log(g.getTracker());
+      // console.log(g.getTracker());
       setTracker(g.getTracker());
     }
   }, [rootValue]);
@@ -84,10 +95,13 @@ const Animation: React.FC<CanvasProps> = ({
 
   return (
     <>
-      <Canvas nodes={nodes} />
-      <div className="w-1/4 relative">
-        <TraverseCode lineNumbers={lineNumbers} />
-        <TraverseAnimation />
+      <div className="relative w-full h-full">
+        <Canvas nodes={nodes} />
+        <TraverseAnimation nodes={nodes} />
+        <div className="absolute right-0 top-0 w-1/4 h-full over">
+          <TraverseCode lineNumbers={lineNumbers} />
+          <PseudoCode />
+        </div>
       </div>
     </>
   );

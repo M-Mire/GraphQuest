@@ -6,15 +6,15 @@ interface CanvasProps {
   nodes: Node[];
 }
 
-const EditMode: React.FC<CanvasProps> = ({ nodes }) => {
+const Canvas: React.FC<CanvasProps> = ({ nodes }) => {
   const elementRef = useRef<HTMLDivElement | null>(null);
-
+  <div className=" bg-blue-500"></div>;
   return (
     <>
       <div
         id="editMode"
         ref={elementRef}
-        className="flex-1 bg-gray-200"
+        className="absolute left-0 top-0 w-3/4 h-3/4 bg-gray-200"
         style={{ position: "relative" }}>
         <svg
           height="100%"
@@ -45,7 +45,7 @@ const EditMode: React.FC<CanvasProps> = ({ nodes }) => {
   );
 };
 
-export default EditMode;
+export default Canvas;
 
 const getCoords = (nodes: Node[], target: number) => {
   const node = nodes.find((node: Node) => node.val === target)!;

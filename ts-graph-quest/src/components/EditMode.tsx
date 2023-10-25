@@ -67,7 +67,7 @@ const EditMode: React.FC<EditModeProps> = ({
       <div
         id="editMode"
         ref={elementRef}
-        className="flex-1 bg-gray-200"
+        className="absolute left-0 top-0 w-3/4 h-3/4 bg-gray-200"
         onMouseDown={(e) => handleClick(e)}
         style={{ position: "relative" }}>
         <svg

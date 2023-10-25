@@ -74,51 +74,55 @@ const App: React.FC = () => {
   const [lineNumbers, dispatchLineNumbers] = useReducer(lineReducer, []);
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar
-        setRootValue={setRootValue}
-        rootValue={rootValue}
-        toggleEdit={setEditMode}
-        isEditMode={isEditMode}
-      />
-      <div className="flex-1">
-        <Navbar
-          rootValue={rootValue}
+    <>
+      <div className="h-screen flex overflow-hidden">
+        <Sidebar
           setRootValue={setRootValue}
-          setSpeed={setSpeed}
-          speed={speed}
-          dispatch={dispatch}
-          setCurrentIndex={setCurrentIndex}
-          setPlay={setPlay}
-          isPlay={isPlay}
-          dispatchLineNumbers={dispatchLineNumbers}
+          rootValue={rootValue}
+          toggleEdit={setEditMode}
+          isEditMode={isEditMode}
         />
-        <div className="flex h-full">
-          {!isEditMode ? (
-            <Animation
-              nodes={nodes}
+        <div className="flex-1 flex flex-col">
+          <div className="h-[4rem] w-full">
+            <Navbar
               rootValue={rootValue}
-              dispatch={dispatch}
+              setRootValue={setRootValue}
+              setSpeed={setSpeed}
               speed={speed}
-              currentIndex={currentIndex}
+              dispatch={dispatch}
               setCurrentIndex={setCurrentIndex}
+              setPlay={setPlay}
               isPlay={isPlay}
-              lineNumbers={lineNumbers}
               dispatchLineNumbers={dispatchLineNumbers}
             />
-          ) : (
-            <EditMode
-              dispatch={dispatch}
-              nodes={nodes}
-              nodeCount={nodeCount}
-              incrementNodeCount={() => {
-                setNodeCount(nodeCount + 1);
-              }}
-            />
-          )}
+          </div>
+          <div className="bg-gray-200 flex-1">
+            {!isEditMode ? (
+              <Animation
+                nodes={nodes}
+                rootValue={rootValue}
+                dispatch={dispatch}
+                speed={speed}
+                currentIndex={currentIndex}
+                setCurrentIndex={setCurrentIndex}
+                isPlay={isPlay}
+                lineNumbers={lineNumbers}
+                dispatchLineNumbers={dispatchLineNumbers}
+              />
+            ) : (
+              <EditMode
+                dispatch={dispatch}
+                nodes={nodes}
+                nodeCount={nodeCount}
+                incrementNodeCount={() => {
+                  setNodeCount(nodeCount + 1);
+                }}
+              />
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

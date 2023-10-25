@@ -88,7 +88,7 @@ export const ACTIONS_NODE = {
 };
 export type ActionNode = { type: string; payload: any };
 
-const COLOUR_SELECTION = (
+export const COLOUR_SELECTION = (
   isClicked: boolean,
   visited: boolean,
   visitedChildrens: boolean
@@ -101,3 +101,7 @@ const COLOUR_SELECTION = (
       : "purple"
     : "none";
 };
+
+export function updateVisitedChildrens(node: Node, newValue: boolean) {
+  node.visitedChildrens = newValue;
+}

@@ -68,8 +68,8 @@ const Animation: React.FC<CanvasProps> = ({
 
   useEffect(() => {
     const timerId = setInterval(() => {
-      if (currentIndex < tracker.length && isPlay) {
-        const [command, val] = tracker[currentIndex];
+      if (currentIndex < (tracker.length as number) && isPlay) {
+        const [command, val] = tracker[currentIndex] as [Command | Line, any];
         if (isCommand(command)) {
           dispatch({
             type: ACTIONS_NODE.NODE_ANIMATE,

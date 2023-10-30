@@ -8,6 +8,9 @@ export default {
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
+      colors: {
+        atomOneDark: "#282C34",
+      },
     },
   },
   plugins: [],

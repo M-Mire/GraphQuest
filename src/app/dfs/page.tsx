@@ -8,9 +8,9 @@ import Graph, { Command, Line } from "~/app/_GraphAlgorithm/Graph";
 import { useState, useReducer } from "react";
 
 const pageConfiguration = {
-  algorithmName: "Breadth-First Search",
+  algorithmName: "Depth-First Search",
   runAlgorithm: (g: Graph, rootValue: number) => {
-    g.BFS(rootValue);
+    g.DFS(rootValue);
   },
 };
 

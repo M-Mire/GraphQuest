@@ -84,7 +84,7 @@ const EditMode: React.FC<EditModeProps> = ({
           {nodes
             .filter((node) => node.childNodes.size > 0)
             .map((node) => {
-              return Array.from(node.childNodes).map((child, id) => {
+              return Array.from(node.childNodes).map((child: number, id) => {
                 const childCoords = getCoords(nodes, child);
                 return (
                   <Edge

@@ -36,7 +36,7 @@ export interface NavbarProps {
   setPlay: React.Dispatch<React.SetStateAction<boolean>>;
   isPlay: boolean;
   dispatchLineNumbers: React.Dispatch<ActionLine>;
-  algorithmName: String;
+  algorithmName: string;
 }
 const Navbar: React.FC<NavbarProps> = ({
   rootValue,
@@ -88,7 +88,7 @@ const Navbar: React.FC<NavbarProps> = ({
             <MenuItem onClick={handleClose}>
               <Link href="/dfs">Depth-first Search</Link>
             </MenuItem>
-            <MenuItem onClick={handleClose}>Dijkstra's algorithm</MenuItem>
+            <MenuItem onClick={handleClose}>Dijkstra&apos;s algorithm</MenuItem>
           </Menu>
         </div>
         <div className="flex-1"></div>

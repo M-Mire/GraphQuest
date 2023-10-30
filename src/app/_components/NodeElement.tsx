@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Command } from "../_GraphAlgorithm/Graph";
+
 export interface Node {
   id: number;
   val: number;
@@ -6,7 +8,7 @@ export interface Node {
   y: number;
   visited: boolean;
   visitedChildrens: boolean;
-  childNodes: Set<any>;
+  childNodes: Set<number>;
 }
 
 interface NodeElementProps {
@@ -42,7 +44,7 @@ const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
         stroke="black"
         strokeWidth="3"
         fill={COLOUR_SELECTION(isClicked, node.visited, node.visitedChildrens)}
-        onMouseDown={(e) => {
+        onMouseDown={() => {
           if (activeNode === -1 || activeNode === node.val) {
             setClicked(!isClicked);
           }
@@ -56,7 +58,7 @@ const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
         fill="black"
         textAnchor="middle"
         className="no-select"
-        onMouseDown={(e) => {
+        onMouseDown={() => {
           if (activeNode === -1 || activeNode === node.val) {
             setClicked(!isClicked);
           }
@@ -88,7 +90,20 @@ export const ACTIONS_NODE = {
   NODE_ANIMATE: "NODE_ANIMATE",
   NODE_RESET: "NODE_RESET",
 };
-export type ActionNode = { type: string; payload: any };
+export type ActionNode = {
+  type: string;
+  payload:
+    | {
+        parentNode: number;
+        childNode: number;
+      }
+    | {
+        value: number;
+        command: Command;
+      }
+    | number
+    | Node;
+};
 
 export const COLOUR_SELECTION = (
   isClicked: boolean,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState, useEffect } from "react";
 import Canvas from "~/app/_components/Canvas";
 import TraverseCode from "~/app/_components/TraverseCode";
 import TraverseAnimation from "~/app/_components/TraverseAnimation";
@@ -39,17 +39,7 @@ const Animation: React.FC<CanvasProps> = ({
   lineNumbers,
   runAlgorithm,
 }) => {
-  const [tracker, setTracker] = useState<Array<[Command | Line, any]>>([]);
-  const calculateRedRectangleHeight = () => {
-    const screenHeight = window.innerHeight;
-    const blueRectangleHeight = 0.75 * screenHeight;
-    const redRectangleHeight = screenHeight - blueRectangleHeight;
-    return redRectangleHeight;
-  };
-
-  const [redRectangleHeight, setRedRectangleHeight] = useState(
-    calculateRedRectangleHeight(),
-  );
+  const [tracker, setTracker] = useState<Array<[Command | Line, number]>>([]);
 
   useEffect(() => {
     if (rootValue !== null) {
@@ -57,7 +47,7 @@ const Animation: React.FC<CanvasProps> = ({
       nodes
         .filter((node) => node.childNodes && node.childNodes.size > 0)
         .map((node) => {
-          return Array.from(node.childNodes).map((child, id) => {
+          return Array.from(node.childNodes).map((child: number) => {
             return g.addEdge(node.val, child);
           });
         });
@@ -68,12 +58,15 @@ const Animation: React.FC<CanvasProps> = ({
 
   useEffect(() => {
     const timerId = setInterval(() => {
-      if (currentIndex < (tracker.length as number) && isPlay) {
-        const [command, val] = tracker[currentIndex] as [Command | Line, any];
+      if (currentIndex < tracker.length && isPlay) {
+        const [command, val] = tracker[currentIndex]! as [
+          Command | Line,
+          number,
+        ];
         if (isCommand(command)) {
           dispatch({
             type: ACTIONS_NODE.NODE_ANIMATE,
-            payload: { value: parseInt(val), command: command },
+            payload: { value: val, command: command },
           });
         } else {
           if (Object.values(Line).includes(command)) {

@@ -11,15 +11,15 @@ export enum Line {
 }
 
 export default class Graph {
-  private graph: Map<any, any[]>;
-  private TRACKER: Array<[Command | Line, any]>;
+  private graph: Map<number, number[]>;
+  private TRACKER: Array<[Command | Line, number]>;
 
   constructor() {
     this.graph = new Map();
     this.TRACKER = [];
   }
 
-  addEdge(u: any, v: any) {
+  addEdge(u: number, v: number) {
     if (!this.graph.has(u)) {
       this.graph.set(u, []);
     }
@@ -48,10 +48,10 @@ export default class Graph {
     while (queue.length > 0) {
       this.TRACKER.push([Line.EntryLine, 6]);
       this.TRACKER.push([Line.EntryLine, 7]);
-      const vertex = queue.shift();
+      const vertex = queue.shift()!;
       this.TRACKER.push([Line.FinishedLine, 7]);
       this.TRACKER.push([Command.EnteredQueue, vertex]);
-      for (const neighbour of this.graph.get(vertex) || []) {
+      for (const neighbour of this.graph.get(vertex) ?? []) {
         this.TRACKER.push([Line.EntryLine, 8]);
         if (!visited.has(neighbour)) {
           this.TRACKER.push([Line.EntryLine, 9]);
@@ -78,12 +78,12 @@ export default class Graph {
     this.TRACKER.push([Command.Visited, root]);
 
     while (queue.length > 0) {
-      const vertex = queue.pop();
+      const vertex = queue.pop()!;
       this.TRACKER.push([Command.EnteredQueue, vertex]);
       if (!visited.has(vertex)) {
         visited.add(vertex);
         this.TRACKER.push([Command.Visited, vertex]);
-        const neighbours = (this.graph.get(vertex) || []).sort().reverse();
+        const neighbours = (this.graph.get(vertex) ?? []).sort().reverse();
         for (const neighbour of neighbours) {
           if (!visited.has(neighbour)) {
             this.TRACKER.push([Command.Visited, neighbour]);

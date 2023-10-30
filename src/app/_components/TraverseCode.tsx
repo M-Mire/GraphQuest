@@ -27,12 +27,17 @@ interface TraverseCodeProps {
 const iconSize = "small";
 const TraverseCode: React.FC<TraverseCodeProps> = ({ lineNumbers }) => {
   const [isCopy, setCopy] = useState<boolean>(false);
-  const handleCopyClick = () => {
-    navigator.clipboard.writeText(code);
-    setCopy(true);
-    setTimeout(() => {
-      setCopy(false);
-    }, 3000);
+  const handleCopyClick = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopy(true);
+      setTimeout(() => {
+        setCopy(false);
+      }, 3000);
+    } catch (error) {
+      // Handle any errors that may occur when copying text
+      console.error("Failed to copy text:", error);
+    }
   };
   return (
     <div className="rounded-md bg-[#40454A]">
@@ -75,7 +80,10 @@ const TraverseCode: React.FC<TraverseCodeProps> = ({ lineNumbers }) => {
         showLineNumbers={true}
         customStyle={{ fontSize: "10px" }}
         lineProps={(lineNumber) => {
-          const style: any = { display: "block", width: "fit-content" };
+          const style: React.CSSProperties = {
+            display: "block",
+            width: "fit-content",
+          };
           lineNumbers.forEach((line) => {
             if (line === lineNumber) {
               style.backgroundColor = "#FFDB81";

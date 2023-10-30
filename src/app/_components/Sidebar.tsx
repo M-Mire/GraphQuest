@@ -27,7 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-    <div className="bg-atomOneDark h-full w-16">
+    <div className="h-full w-16 bg-atomOneDark">
       <div className="p-2 text-white">
         <div className="mb-4">
           <AccountTreeIcon fontSize="large" />
@@ -48,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             inputProps: { min: 0, style: whiteText },
           }}
           InputLabelProps={{ style: whiteText, shrink: true }}
-          value={rootValue || ""}
+          value={rootValue ?? ""}
           onChange={handleRootInputChange}
         />
         <div style={{ textAlign: "center", marginTop: "20px" }}>

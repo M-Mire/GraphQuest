@@ -17,9 +17,12 @@ const pageConfiguration = {
 const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
   switch (action.type) {
     case ACTIONS_NODE.ADD_NODE:
-      return [...nodes, action.payload];
+      return [...nodes, action.payload] as Node[];
     case ACTIONS_NODE.ADD_CHILD_NODE:
-      const { parentNode, childNode } = action.payload;
+      const { parentNode, childNode } = action.payload as {
+        parentNode: number;
+        childNode: number;
+      };
       return nodes.map((node) => {
         if (node.val === parentNode) {
           return { ...node, childNodes: node.childNodes.add(childNode) };
@@ -27,7 +30,10 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
         return node;
       });
     case ACTIONS_NODE.NODE_ANIMATE:
-      const { value, command } = action.payload;
+      const { value, command } = action.payload as {
+        value: number;
+        command: Command;
+      };
       switch (command) {
         case Command.Visited:
           return nodes.map((node) => {

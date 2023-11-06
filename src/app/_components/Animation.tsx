@@ -17,6 +17,9 @@ interface CanvasProps {
   dispatchLineNumbers: React.Dispatch<ActionLine>;
   lineNumbers: number[];
   runAlgorithm: (g: Graph, rootValue: number) => void;
+  code: string;
+  algorithmName: string;
+  provideEdgeLength?: boolean;
 }
 
 function isCommand(command: Command | Line): command is Command {
@@ -38,6 +41,9 @@ const Animation: React.FC<CanvasProps> = ({
   dispatchLineNumbers,
   lineNumbers,
   runAlgorithm,
+  code,
+  algorithmName,
+  provideEdgeLength,
 }) => {
   const [tracker, setTracker] = useState<Array<[Command | Line, number]>>([]);
 
@@ -90,10 +96,14 @@ const Animation: React.FC<CanvasProps> = ({
   return (
     <>
       <div className="relative h-full w-full">
-        <Canvas nodes={nodes} />
+        <Canvas nodes={nodes} provideEdgeLength={provideEdgeLength} />
         <TraverseAnimation nodes={nodes} />
         <div className="over absolute right-0 top-0 h-full w-1/4">
-          <TraverseCode lineNumbers={lineNumbers} />
+          <TraverseCode
+            lineNumbers={lineNumbers}
+            code={code}
+            algorithmName={algorithmName}
+          />
           <PseudoCode />
         </div>
       </div>

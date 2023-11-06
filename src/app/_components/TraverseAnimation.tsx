@@ -93,15 +93,10 @@ const TraverseAnimation: React.FC<TraverseAnimationProps> = ({ nodes }) => {
     }
   }, [nodes]);
 
-  //Arrow
-  // useEffect(() => {
-
-  // }, [ nodes]);
-
   return (
     <div
       ref={containerRef}
-      className="bg-atomOneDark absolute bottom-0 left-0 h-1/4 w-3/4"
+      className="absolute bottom-0 left-0 h-1/4 w-3/4 bg-atomOneDark"
       style={{ overflowX: "auto" }}
     >
       <svg width={totalWidth} className="relative h-full">
@@ -110,8 +105,9 @@ const TraverseAnimation: React.FC<TraverseAnimationProps> = ({ nodes }) => {
           const y = rectHeight / 2;
           return (
             <>
-              <g key={`rect-${node.val}`}>
+              <g key={`g-${node.val}`}>
                 <rect
+                  key={`rect-${node.val}`}
                   x={x}
                   y={y}
                   width={rectWidth}
@@ -125,6 +121,7 @@ const TraverseAnimation: React.FC<TraverseAnimationProps> = ({ nodes }) => {
                   strokeWidth={3}
                 />
                 <text
+                  key={`text-${node.val}`}
                   x={x + rectWidth / 2}
                   y={y + rectHeight / 2}
                   textAnchor="middle"

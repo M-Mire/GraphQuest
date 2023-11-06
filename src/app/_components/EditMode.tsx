@@ -4,7 +4,7 @@ import NodeElement, {
   ActionNode,
   newNode,
   Node,
-} from "./NodeElement";
+} from "~/app/_components/NodeElement";
 import Edge from "~/app/_components/Edge";
 
 interface EditModeProps {
@@ -12,6 +12,7 @@ interface EditModeProps {
   nodes: Node[];
   nodeCount: number;
   incrementNodeCount: () => void;
+  provideEdgeLength?: boolean;
 }
 
 const EditMode: React.FC<EditModeProps> = ({
@@ -19,6 +20,7 @@ const EditMode: React.FC<EditModeProps> = ({
   nodes,
   nodeCount,
   incrementNodeCount,
+  provideEdgeLength,
 }) => {
   const elementRef = useRef<HTMLDivElement | null>(null);
   const [activeNode, setActiveNode] = useState<number>(-1);
@@ -93,6 +95,10 @@ const EditMode: React.FC<EditModeProps> = ({
                     y1={node.y}
                     x2={childCoords.x}
                     y2={childCoords.y}
+                    provideEdgeLength={provideEdgeLength}
+                    node={node}
+                    childNode={child}
+                    dispatch={dispatch}
                   />
                 );
               });

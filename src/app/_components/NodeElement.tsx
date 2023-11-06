@@ -9,6 +9,7 @@ export interface Node {
   visited: boolean;
   visitedChildrens: boolean;
   childNodes: Set<number>;
+  distances: Map<number, number>;
 }
 
 interface NodeElementProps {
@@ -81,6 +82,7 @@ export function newNode(x: number, y: number, count: number): Node {
     visited: false,
     visitedChildrens: false,
     childNodes: new Set(),
+    distances: new Map(),
   };
 }
 
@@ -89,6 +91,7 @@ export const ACTIONS_NODE = {
   ADD_CHILD_NODE: "ADD_CHILD_NODE",
   NODE_ANIMATE: "NODE_ANIMATE",
   NODE_RESET: "NODE_RESET",
+  NODE_DISTANCE: "NODE_DISTANCE",
 };
 export type ActionNode = {
   type: string;
@@ -100,6 +103,11 @@ export type ActionNode = {
     | {
         value: number;
         command: Command;
+      }
+    | {
+        node: Node;
+        childNode: number;
+        parsedDistance: number;
       }
     | number
     | Node;

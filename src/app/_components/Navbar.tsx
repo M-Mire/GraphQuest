@@ -88,7 +88,9 @@ const Navbar: React.FC<NavbarProps> = ({
             <MenuItem onClick={handleClose}>
               <Link href="/dfs">Depth-first Search</Link>
             </MenuItem>
-            <MenuItem onClick={handleClose}>Dijkstra&apos;s algorithm</MenuItem>
+            <MenuItem onClick={handleClose}>
+              <Link href="/dijkstra">Dijkstra&apos;s algorithm</Link>
+            </MenuItem>
           </Menu>
         </div>
         <div className="flex-1"></div>

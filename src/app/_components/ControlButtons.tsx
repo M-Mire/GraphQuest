@@ -37,6 +37,42 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
   isPlay,
   dispatchLineNumbers,
 }) => {
+  const handlePlayClick = () => {
+    setRootValue(rootValue !== null && !isNaN(rootValue) ? rootValue : 0);
+    setPlay(true);
+  };
+
+  const handlePauseClick = () => {
+    setPlay(false);
+  };
+  const handleResetClick = () => {
+    dispatch({
+      type: ACTIONS_NODE.NODE_RESET,
+      payload: NaN,
+    });
+    setCurrentIndex(0);
+    setPlay(false);
+    dispatchLineNumbers({
+      type: Line.LineReset,
+      payload: 0,
+    });
+  };
+
+  const handleFastForwardClick = () => {
+    if (speed > 250) {
+      setSpeed(speed - 250);
+    } else if (speed <= 250) {
+      setSpeed(speed - 50);
+    } else {
+      setSpeed(25);
+    }
+  };
+
+  const handleRewindClick = () => {
+    if (speed < 3000) {
+      setSpeed(speed + 250);
+    }
+  };
   return (
     <div className="mt-2 flex h-12 w-full items-end justify-center">
       <div className="rounded-b-lg rounded-t-lg bg-white p-1 shadow-md">
@@ -44,85 +80,37 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
           <div
             className={`control-button-bg rounded-full bg-green-500 ${paddingStyle} ${buttonMargin}`}
           >
-            <IconButton
-              color="primary"
-              onClick={() => {
-                setRootValue(
-                  rootValue !== null && !isNaN(rootValue) ? rootValue : 0,
-                );
-                setPlay(true);
-              }}
-            >
+            <IconButton color="primary" onClick={handlePlayClick}>
               <PlayArrowIcon fontSize={iconSize} style={{ fill: "#FFF" }} />
             </IconButton>
           </div>
           <div
             className={`control-button-bg rounded-full bg-yellow-500 ${paddingStyle} ${buttonMargin}`}
           >
-            <IconButton
-              color="primary"
-              onClick={() => {
-                setPlay(false);
-              }}
-            >
+            <IconButton color="primary" onClick={handlePauseClick}>
               <PauseIcon fontSize={iconSize} style={{ fill: "#FFF" }} />
             </IconButton>
           </div>
           <div
             className={`control-button-bg rounded-full bg-red-500 ${paddingStyle} ${buttonMargin}`}
           >
-            <IconButton color="primary">
-              <FastRewindIcon
-                fontSize={iconSize}
-                style={{ fill: "#FFF" }}
-                onClick={() => {
-                  if (speed < 3000) {
-                    setSpeed(speed + 250);
-                  }
-                }}
-              />
+            <IconButton color="primary" onClick={handleRewindClick}>
+              <FastRewindIcon fontSize={iconSize} style={{ fill: "#FFF" }} />
             </IconButton>
           </div>
           <div
             className={`control-button-bg rounded-full bg-blue-500 ${paddingStyle} ${buttonMargin}`}
           >
-            <IconButton color="primary">
-              <FastForwardIcon
-                fontSize={iconSize}
-                style={{ fill: "#FFF" }}
-                onClick={() => {
-                  if (speed > 250) {
-                    setSpeed(speed - 250);
-                  } else if (speed <= 250) {
-                    setSpeed(speed - 50);
-                  } else {
-                    setSpeed(25);
-                  }
-                }}
-              />
+            <IconButton color="primary" onClick={handleFastForwardClick}>
+              <FastForwardIcon fontSize={iconSize} style={{ fill: "#FFF" }} />
             </IconButton>
           </div>
 
           <div
             className={`control-button-bg rounded-full bg-purple-500 ${paddingStyle} ${buttonMargin}`}
           >
-            <IconButton color="primary">
-              <RotateLeftIcon
-                fontSize={iconSize}
-                style={{ fill: "#FFF" }}
-                onClick={() => {
-                  dispatch({
-                    type: ACTIONS_NODE.NODE_RESET,
-                    payload: NaN,
-                  });
-                  setCurrentIndex(0);
-                  setPlay(false);
-                  dispatchLineNumbers({
-                    type: Line.LineReset,
-                    payload: 0,
-                  });
-                }}
-              />
+            <IconButton color="primary" onClick={handleResetClick}>
+              <RotateLeftIcon fontSize={iconSize} style={{ fill: "#FFF" }} />
             </IconButton>
           </div>
         </div>

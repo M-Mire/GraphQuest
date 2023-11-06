@@ -6,11 +6,12 @@ import { ACTIONS_NODE, ActionNode, Node } from "~/app/_components/NodeElement";
 import Animation, { ActionLine } from "~/app/_components/Animation";
 import Graph, { Command, Line } from "~/app/_GraphAlgorithm/Graph";
 import { useState, useReducer } from "react";
-import { pageConfigurationDFS as pageConfiguration } from "~/app/_pageConfigs/config";
+import { pageConfigurationDijkstra as pageConfiguration } from "~/app/_pageConfigs/config";
 
 const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
   switch (action.type) {
     case ACTIONS_NODE.ADD_NODE:
+      console.log(nodes);
       return [...nodes, action.payload] as Node[];
     case ACTIONS_NODE.ADD_CHILD_NODE:
       const { parentNode, childNode } = action.payload as {
@@ -19,7 +20,11 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
       };
       return nodes.map((node) => {
         if (node.val === parentNode) {
-          return { ...node, childNodes: node.childNodes.add(childNode) };
+          return {
+            ...node,
+            childNodes: node.childNodes.add(childNode),
+            distances: node.distances.set(childNode, 0),
+          };
         }
         return node;
       });
@@ -49,6 +54,25 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
     case ACTIONS_NODE.NODE_RESET:
       return nodes.map((node) => {
         return { ...node, visited: false, visitedChildrens: false };
+      });
+    case ACTIONS_NODE.NODE_DISTANCE:
+      const {
+        node,
+        childNode: child,
+        parsedDistance,
+      } = action.payload as {
+        node: Node;
+        childNode: number;
+        parsedDistance: number;
+      };
+      return nodes.map((n) => {
+        if (n === node) {
+          return {
+            ...n,
+            distances: n.distances.set(child, parsedDistance),
+          };
+        }
+        return n;
       });
     default:
       return nodes;
@@ -120,6 +144,7 @@ export default function BFS() {
                 runAlgorithm={pageConfiguration.runAlgorithm}
                 code={pageConfiguration.code}
                 algorithmName={pageConfiguration.algorithmName}
+                provideEdgeLength={true}
               />
             ) : (
               <EditMode
@@ -129,6 +154,7 @@ export default function BFS() {
                 incrementNodeCount={() => {
                   setNodeCount(nodeCount + 1);
                 }}
+                provideEdgeLength={true}
               />
             )}
           </div>

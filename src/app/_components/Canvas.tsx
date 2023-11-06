@@ -4,9 +4,10 @@ import Edge from "~/app/_components/Edge";
 
 interface CanvasProps {
   nodes: Node[];
+  provideEdgeLength?: boolean;
 }
 
-const Canvas: React.FC<CanvasProps> = ({ nodes }) => {
+const Canvas: React.FC<CanvasProps> = ({ nodes, provideEdgeLength }) => {
   const elementRef = useRef<HTMLDivElement | null>(null);
   <div className=" bg-blue-500"></div>;
   return (
@@ -37,6 +38,9 @@ const Canvas: React.FC<CanvasProps> = ({ nodes }) => {
                     y1={node.y}
                     x2={childCoords.x}
                     y2={childCoords.y}
+                    provideEdgeLength={provideEdgeLength}
+                    node={node}
+                    childNode={child}
                   />
                 );
               });

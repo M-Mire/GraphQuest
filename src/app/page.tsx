@@ -6,13 +6,7 @@ import { ACTIONS_NODE, ActionNode, Node } from "~/app/_components/NodeElement";
 import Animation, { ActionLine } from "~/app/_components/Animation";
 import Graph, { Command, Line } from "~/app/_GraphAlgorithm/Graph";
 import { useState, useReducer } from "react";
-
-const pageConfiguration = {
-  algorithmName: "Breadth-First Search",
-  runAlgorithm: (g: Graph, rootValue: number) => {
-    g.BFS(rootValue);
-  },
-};
+import { pageConfigurationBFS as pageConfiguration } from "~/app/_pageConfigs/config";
 
 const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
   switch (action.type) {
@@ -124,6 +118,8 @@ export default function BFS() {
                 lineNumbers={lineNumbers}
                 dispatchLineNumbers={dispatchLineNumbers}
                 runAlgorithm={pageConfiguration.runAlgorithm}
+                code={pageConfiguration.code}
+                algorithmName={pageConfiguration.algorithmName}
               />
             ) : (
               <EditMode

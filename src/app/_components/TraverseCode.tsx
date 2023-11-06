@@ -5,27 +5,17 @@ import IconButton from "@mui/material/IconButton";
 import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 import CheckIcon from "@mui/icons-material/Check";
 
-const code = `BFS(root: number) {
-  const visited = new Set();
-  const queue = [root];
-  visited.add(root);
-
-  while (queue.length > 0) {
-    const vertex = queue.shift();
-    for (const neighbour of this.graph.get(vertex) || []) {
-      if (!visited.has(neighbour)) {
-        visited.add(neighbour);
-        queue.push(neighbour);
-      }
-    }
-  }
-}`;
-
 interface TraverseCodeProps {
   lineNumbers: number[];
+  code: string;
+  algorithmName: string;
 }
 const iconSize = "small";
-const TraverseCode: React.FC<TraverseCodeProps> = ({ lineNumbers }) => {
+const TraverseCode: React.FC<TraverseCodeProps> = ({
+  lineNumbers,
+  code,
+  algorithmName,
+}) => {
   const [isCopy, setCopy] = useState<boolean>(false);
   const handleCopyClick = async () => {
     try {
@@ -35,41 +25,36 @@ const TraverseCode: React.FC<TraverseCodeProps> = ({ lineNumbers }) => {
         setCopy(false);
       }, 3000);
     } catch (error) {
-      // Handle any errors that may occur when copying text
       console.error("Failed to copy text:", error);
     }
   };
   return (
     <div className="rounded-md bg-[#40454A]">
       <div className="flex items-center justify-between px-4 text-xs text-white">
-        <p>Breadth-First Search</p>
+        <p>{algorithmName}</p>
         {isCopy ? (
-          <button className="inline-flex items-center py-1">
-            <span className="text-base">
-              <IconButton color="primary">
-                <CheckIcon
-                  fontSize={iconSize}
-                  style={{ fill: "#FFF", fontSize: "1rem" }}
-                />
-              </IconButton>
-            </span>
+          <div className="inline-flex items-center py-1">
+            <IconButton color="primary">
+              <CheckIcon
+                fontSize={iconSize}
+                style={{ fill: "#FFF", fontSize: "1rem" }}
+              />
+            </IconButton>
             Copied!
-          </button>
+          </div>
         ) : (
-          <button
+          <div
             className="inline-flex items-center py-1"
             onClick={handleCopyClick}
           >
-            <span className="text-base">
-              <IconButton color="primary">
-                <ContentPasteIcon
-                  fontSize={iconSize}
-                  style={{ fill: "#FFF", fontSize: "1rem" }}
-                />
-              </IconButton>
-            </span>
+            <IconButton color="primary">
+              <ContentPasteIcon
+                fontSize={iconSize}
+                style={{ fill: "#FFF", fontSize: "1rem" }}
+              />
+            </IconButton>
             Copy Code
-          </button>
+          </div>
         )}
       </div>
       <SyntaxHighlighter

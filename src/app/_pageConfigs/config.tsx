@@ -1,13 +1,15 @@
-import Graph from "~/app/_GraphAlgorithm/Graph";
+import Graph, { GraphDistance } from "~/app/_GraphAlgorithm/Graph";
 
 interface pageConfigurationType {
   algorithmName: string;
-  runAlgorithm: (g: Graph, rootValue: number) => void;
+  useDistance: boolean;
+  runAlgorithm: (g: Graph | GraphDistance, rootValue: number) => void;
   code: string;
 }
 
 export const pageConfigurationBFS: pageConfigurationType = {
   algorithmName: "Breadth-First Search",
+  useDistance: false,
   runAlgorithm: (g: Graph, rootValue: number) => {
     g.BFS(rootValue);
   },
@@ -30,6 +32,7 @@ export const pageConfigurationBFS: pageConfigurationType = {
 
 export const pageConfigurationDFS: pageConfigurationType = {
   algorithmName: "Depth-First Search",
+  useDistance: false,
   runAlgorithm: (g: Graph, rootValue: number) => {
     g.DFS(rootValue);
   },
@@ -54,6 +57,7 @@ export const pageConfigurationDFS: pageConfigurationType = {
 
 export const pageConfigurationDijkstra: pageConfigurationType = {
   algorithmName: "Dijkstra Algorithm",
+  useDistance: true,
   runAlgorithm: (g: Graph, rootValue: number) => {
     g.DFS(rootValue);
   },

@@ -3,7 +3,11 @@ import Canvas from "~/app/_components/Canvas";
 import TraverseCode from "~/app/_components/TraverseCode";
 import TraverseAnimation from "~/app/_components/TraverseAnimation";
 import { Node, ACTIONS_NODE, ActionNode } from "./NodeElement";
-import Graph, { Command, Line } from "~/app/_GraphAlgorithm/Graph";
+import Graph, {
+  Command,
+  GraphDistance,
+  Line,
+} from "~/app/_GraphAlgorithm/Graph";
 import PseudoCode from "~/app/_components/PseudoCode";
 
 interface CanvasProps {
@@ -16,7 +20,7 @@ interface CanvasProps {
   isPlay: boolean;
   dispatchLineNumbers: React.Dispatch<ActionLine>;
   lineNumbers: number[];
-  runAlgorithm: (g: Graph, rootValue: number) => void;
+  runAlgorithm: (g: Graph | GraphDistance, rootValue: number) => void;
   code: string;
   algorithmName: string;
   provideEdgeLength?: boolean;
@@ -45,7 +49,9 @@ const Animation: React.FC<CanvasProps> = ({
   algorithmName,
   provideEdgeLength,
 }) => {
-  const [tracker, setTracker] = useState<Array<[Command | Line, number]>>([]);
+  const [tracker, setTracker] = useState<
+    Array<[Command | Line, number | number[] | Map<number, number>]>
+  >([]);
 
   useEffect(() => {
     if (rootValue !== null) {

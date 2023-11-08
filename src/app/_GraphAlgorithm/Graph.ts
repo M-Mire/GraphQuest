@@ -2,6 +2,8 @@ export enum Command {
   EnteredQueue = "EnteredQueue",
   PoppedQueue = "PoppedQueue",
   Visited = "Visited",
+  VisitPairs = "VisitPairs",
+  UpdateMap = "UpdateMap",
 }
 
 export enum Line {
@@ -11,13 +13,13 @@ export enum Line {
 }
 
 export default class Graph {
-  private graph: Map<number, number[]>;
-  private distances: Map<string, number>;
-  private TRACKER: Array<[Command | Line, number]>;
+  public graph: Map<number, number[]>;
+  public TRACKER: Array<
+    [Command | Line, number | number[] | Map<number, number>]
+  >;
 
   constructor() {
     this.graph = new Map();
-    this.distances = new Map();
     this.TRACKER = [];
   }
 
@@ -29,11 +31,6 @@ export default class Graph {
     if (uEdges) {
       uEdges.push(v);
     }
-  }
-
-  addEdgeDistance(u: number, v: number, distance: number) {
-    this.addEdge(u, v);
-    this.distances.set(`${u}-${v}`, distance); // Store distance in the distances map
   }
 
   getTracker() {
@@ -81,11 +78,11 @@ export default class Graph {
 
   DFS(root: number) {
     const visited = new Set();
-    const queue = [root];
+    const stack = [root];
     this.TRACKER.push([Command.Visited, root]);
 
-    while (queue.length > 0) {
-      const vertex = queue.pop()!;
+    while (stack.length > 0) {
+      const vertex = stack.pop()!;
       this.TRACKER.push([Command.EnteredQueue, vertex]);
       if (!visited.has(vertex)) {
         visited.add(vertex);
@@ -94,57 +91,82 @@ export default class Graph {
         for (const neighbour of neighbours) {
           if (!visited.has(neighbour)) {
             this.TRACKER.push([Command.Visited, neighbour]);
-            queue.push(neighbour);
+            stack.push(neighbour);
           }
         }
         this.TRACKER.push([Command.PoppedQueue, vertex]);
       }
     }
   }
-
-  // DIJKSTRA(root: number): Map<number, number> {
-  //   const distance = new Map();
-  //   const visited = new Set();
-
-  //   this.graph.forEach((_, node) => {
-  //     distance.set(node, Infinity);
-  //   });
-  //   distance.set(root, 0);
-
-  //   while (visited.size < this.graph.size) {
-  //     let minDistance: number = Infinity;
-  //     let minDistanceNode = -1;
-
-  //     this.graph.forEach((_, node) => {
-  //       if (!visited.has(node) && distance.get(node)! < minDistance) {
-  //         minDistance = distance.get(node)!;
-  //         minDistanceNode = node;
-  //       }
-  //     });
-
-  //     if (minDistanceNode === -1) {
-  //       break;
-  //     }
-
-  //     visited.add(minDistanceNode);
-
-  //     const neighbors: number[] = Array.from(
-  //       this.graph.get(minDistanceNode) ?? [],
-  //     );
-  //     for (const neighbor of neighbors) {
-  //       const edgeWeight = this.distances.get(`${minDistanceNode}-${neighbor}`);
-  //       if (neighbor !== undefined && edgeWeight !== undefined) {
-  //         const altDistance = distance.get(minDistanceNode)! + edgeWeight;
-  //         if (altDistance < (distance.get(neighbor) || Infinity)) {
-  //           distance.set(neighbor, altDistance);
-  //         }
-  //       }
-  //     }
-  //   }
-  //   return distance;
-  // }
 }
-// const graph = new Graph();
+
+export class GraphDistance extends Graph {
+  private ALLNODES: Map<number, number>;
+  private distances: Map<string, number>;
+
+  constructor() {
+    super();
+    this.distances = new Map();
+    this.ALLNODES = new Map();
+  }
+  addEdgeDistance(u: number, v: number, distance: number) {
+    this.addEdge(u, v);
+    this.ALLNODES.set(u, 0);
+    this.ALLNODES.set(v, 0);
+    this.distances.set(`${u}-${v}`, distance);
+  }
+
+  DIJKSTRA(root: number) {
+    const distance = new Map();
+    const visited = new Set();
+
+    this.ALLNODES.forEach((_, node) => {
+      distance.set(node, Infinity);
+    });
+
+    distance.set(root, 0);
+    const distanceCopyRoot = new Map(distance);
+    this.TRACKER.push([Command.UpdateMap, distanceCopyRoot]);
+    while (visited.size < this.graph.size) {
+      let minDistance: number = Infinity;
+      let minDistanceNode = -1;
+      this.graph.forEach((_, node) => {
+        if (!visited.has(node) && distance.get(node)! < minDistance) {
+          minDistance = distance.get(node)!;
+          minDistanceNode = node;
+        }
+      });
+      if (minDistanceNode === -1) {
+        break;
+      }
+
+      visited.add(minDistanceNode);
+      // console.log(minDistanceNode + " has entered the stack");
+      this.TRACKER.push([Command.Visited, minDistanceNode]);
+      const neighbors: number[] = Array.from(
+        this.graph.get(minDistanceNode) ?? [],
+      );
+      for (const neighbor of neighbors) {
+        const edgeWeight = this.distances.get(`${minDistanceNode}-${neighbor}`);
+        // console.log("-\n" + minDistanceNode + " -> " + neighbor);
+        this.TRACKER.push([Command.VisitPairs, [minDistanceNode, neighbor]]);
+        if (neighbor !== undefined && edgeWeight !== undefined) {
+          const altDistance = distance.get(minDistanceNode)! + edgeWeight;
+          if (altDistance < (distance.get(neighbor) || Infinity)) {
+            distance.set(neighbor, altDistance);
+          }
+        }
+        const distanceCopy = new Map(distance);
+        this.TRACKER.push([Command.UpdateMap, distanceCopy]);
+      }
+      // console.log("All visited for " + minDistanceNode);
+      this.TRACKER.push([Command.PoppedQueue, minDistanceNode]);
+    }
+    // console.log(this.getTracker());
+  }
+}
+
+// const graph = new GraphDistance();
 
 // graph.addEdgeDistance(0, 1, 5);
 // graph.addEdgeDistance(0, 2, 1);
@@ -159,9 +181,4 @@ export default class Graph {
 // graph.addEdgeDistance(4, 5, 1);
 
 // const rootId = 0;
-// let shortestDistances: Map<number, number> = graph.DIJKSTRA(rootId);
-
-// console.log("Shortest Distances from Node 0 (Dijkstra's Algorithm):");
-// shortestDistances.forEach((distance, node) => {
-//   console.log(`Node ${node}: Distance ${distance}`);
-// });
+// graph.DIJKSTRA(rootId);

@@ -30,17 +30,17 @@ const Canvas: React.FC<CanvasProps> = ({ nodes, provideEdgeLength }) => {
             .filter((node) => node.childNodes.size > 0)
             .map((node) => {
               return Array.from(node.childNodes).map((child: number, id) => {
-                const childCoords = getCoords(nodes, child);
+                const childNode: Node = getChildNode(nodes, child);
                 return (
                   <Edge
                     key={id}
                     x1={node.x}
                     y1={node.y}
-                    x2={childCoords.x}
-                    y2={childCoords.y}
+                    x2={childNode.x}
+                    y2={childNode.y}
                     provideEdgeLength={provideEdgeLength}
                     node={node}
-                    childNode={child}
+                    childNode={childNode}
                   />
                 );
               });
@@ -53,7 +53,7 @@ const Canvas: React.FC<CanvasProps> = ({ nodes, provideEdgeLength }) => {
 
 export default Canvas;
 
-const getCoords = (nodes: Node[], target: number) => {
-  const node = nodes.find((node: Node) => node.val === target)!;
-  return { x: node.x, y: node.y };
+const getChildNode = (nodes: Node[], target: number) => {
+  const node: Node = nodes.find((node: Node) => node.val === target)!;
+  return node;
 };

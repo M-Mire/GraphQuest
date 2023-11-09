@@ -11,7 +11,6 @@ import { pageConfigurationDijkstra as pageConfiguration } from "~/app/_pageConfi
 const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
   switch (action.type) {
     case ACTIONS_NODE.ADD_NODE:
-      console.log(nodes);
       return [...nodes, action.payload] as Node[];
     case ACTIONS_NODE.ADD_CHILD_NODE:
       const { parentNode, childNode } = action.payload as {
@@ -23,16 +22,17 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
           return {
             ...node,
             childNodes: node.childNodes.add(childNode),
-            distances: node.distances.set(childNode, 0),
+            distances: node.distances.set(childNode, 1),
           };
         }
         return node;
       });
     case ACTIONS_NODE.NODE_ANIMATE:
       const { value, command } = action.payload as {
-        value: number;
+        value: number | number[];
         command: Command;
       };
+      let pairValue: number[];
       switch (command) {
         case Command.Visited:
           return nodes.map((node) => {
@@ -45,6 +45,29 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
           return nodes.map((node) => {
             if (node.val === value) {
               return { ...node, visitedChildrens: true };
+            }
+            return node;
+          });
+        case Command.Unvisit:
+          return nodes.map((node) => {
+            if (node.val === value) {
+              return { ...node, visited: false };
+            }
+            return node;
+          });
+        case Command.VisitPairs:
+          pairValue = value as number[];
+          return nodes.map((node) => {
+            if (node.val === pairValue[0] || node.val === pairValue[1]) {
+              return { ...node, currentlyVisitedPair: true };
+            }
+            return node;
+          });
+        case Command.UnvisitPairs:
+          pairValue = value as number[];
+          return nodes.map((node) => {
+            if (node.val === pairValue[0] || node.val === pairValue[1]) {
+              return { ...node, currentlyVisitedPair: false };
             }
             return node;
           });
@@ -85,9 +108,11 @@ const lineReducer: React.Reducer<number[], ActionLine> = (
 ) => {
   switch (action.type) {
     case Line.EntryLine:
-      return [...lineNumbers, action.payload];
+      return [...lineNumbers, action.payload as number];
     case Line.FinishedLine:
-      return lineNumbers.filter((number) => number !== action.payload);
+      return lineNumbers.filter(
+        (number) => number !== (action.payload as number),
+      );
     case Line.LineReset:
       return [];
     default:
@@ -145,6 +170,7 @@ export default function BFS() {
                 code={pageConfiguration.code}
                 algorithmName={pageConfiguration.algorithmName}
                 provideEdgeLength={true}
+                addEdge={pageConfiguration.addEdge}
               />
             ) : (
               <EditMode

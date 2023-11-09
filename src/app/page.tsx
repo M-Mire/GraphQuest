@@ -120,6 +120,7 @@ export default function BFS() {
                 runAlgorithm={pageConfiguration.runAlgorithm}
                 code={pageConfiguration.code}
                 algorithmName={pageConfiguration.algorithmName}
+                addEdge={pageConfiguration.addEdge}
               />
             ) : (
               <EditMode

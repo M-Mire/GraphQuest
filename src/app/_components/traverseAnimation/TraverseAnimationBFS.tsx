@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Node, COLOUR_SELECTION } from "./NodeElement";
+import { Node, COLOUR_SELECTION } from "~/app/_components/NodeElement";
 interface TraverseAnimationProps {
   nodes: Node[];
 }

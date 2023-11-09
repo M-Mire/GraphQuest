@@ -3,7 +3,9 @@ export enum Command {
   PoppedQueue = "PoppedQueue",
   Visited = "Visited",
   VisitPairs = "VisitPairs",
+  UnvisitPairs = "UnvisitPairs",
   UpdateMap = "UpdateMap",
+  Unvisit = "Unvisit",
 }
 
 export enum Line {
@@ -109,11 +111,11 @@ export class GraphDistance extends Graph {
     this.distances = new Map();
     this.ALLNODES = new Map();
   }
-  addEdgeDistance(u: number, v: number, distance: number) {
+  addEdgeDistance(u: number, v: number, distance?: number) {
     this.addEdge(u, v);
     this.ALLNODES.set(u, 0);
     this.ALLNODES.set(v, 0);
-    this.distances.set(`${u}-${v}`, distance);
+    if (distance !== undefined) this.distances.set(`${u}-${v}`, distance);
   }
 
   DIJKSTRA(root: number) {
@@ -150,6 +152,7 @@ export class GraphDistance extends Graph {
         const edgeWeight = this.distances.get(`${minDistanceNode}-${neighbor}`);
         // console.log("-\n" + minDistanceNode + " -> " + neighbor);
         this.TRACKER.push([Command.VisitPairs, [minDistanceNode, neighbor]]);
+        this.TRACKER.push([Command.Visited, neighbor]);
         if (neighbor !== undefined && edgeWeight !== undefined) {
           const altDistance = distance.get(minDistanceNode)! + edgeWeight;
           if (altDistance < (distance.get(neighbor) || Infinity)) {
@@ -158,6 +161,8 @@ export class GraphDistance extends Graph {
         }
         const distanceCopy = new Map(distance);
         this.TRACKER.push([Command.UpdateMap, distanceCopy]);
+        this.TRACKER.push([Command.Unvisit, neighbor]);
+        this.TRACKER.push([Command.UnvisitPairs, [minDistanceNode, neighbor]]);
       }
       // console.log("All visited for " + minDistanceNode);
       this.TRACKER.push([Command.PoppedQueue, minDistanceNode]);

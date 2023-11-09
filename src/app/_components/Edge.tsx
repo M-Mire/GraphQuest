@@ -8,7 +8,7 @@ interface EdgeProps {
   y2: number;
   provideEdgeLength?: boolean;
   node?: Node;
-  childNode?: number;
+  childNode?: Node;
   dispatch?: React.Dispatch<ActionNode>;
 }
 
@@ -24,22 +24,23 @@ const Edge: React.FC<EdgeProps> = ({
 }) => {
   const [editable, setEditable] = useState(false);
   const [distance, setDistance] = useState<string | undefined>(
-    node?.distances.get(childNode!)?.toString(),
+    node?.distances.get(childNode!.val)?.toString(),
   );
 
-  // Initialise!
   useEffect(() => {
+    //Handles displaying the cost
     if (provideEdgeLength && node) {
-      let distanceValue = node.distances.get(childNode!);
+      let distanceValue = node.distances.get(childNode!.val);
+      //On the off chance distanceValue isn't defined do it here.
       if (distanceValue === undefined) {
-        distanceValue = 0;
+        distanceValue = 1;
         if (dispatch) {
           dispatch({
             type: ACTIONS_NODE.NODE_DISTANCE,
             payload: {
               node: node,
-              childNode: childNode!,
-              parsedDistance: 0,
+              childNode: childNode!.val,
+              parsedDistance: 1,
             },
           });
         }
@@ -62,13 +63,13 @@ const Edge: React.FC<EdgeProps> = ({
     setEditable(false);
 
     if (provideEdgeLength && node) {
-      const parsedDistance = parseInt(distance ?? "0");
+      const parsedDistance = parseInt(distance ?? "1");
       if (!isNaN(parsedDistance) && dispatch) {
         dispatch({
           type: ACTIONS_NODE.NODE_DISTANCE,
           payload: {
             node: node,
-            childNode: childNode!,
+            childNode: childNode!.val,
             parsedDistance: parsedDistance,
           },
         });
@@ -120,7 +121,13 @@ const Edge: React.FC<EdgeProps> = ({
         x2={edgeEndX}
         y2={edgeEndY}
         markerEnd={"url(#markerArrow)"}
-        style={{ stroke: "black", strokeWidth: 2 }}
+        style={{
+          stroke:
+            node?.currentlyVisitedPair && childNode?.currentlyVisitedPair
+              ? "yellow"
+              : "black",
+          strokeWidth: 2,
+        }}
       />
       {provideEdgeLength && distance !== undefined ? (
         <foreignObject

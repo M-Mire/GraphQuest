@@ -10,6 +10,7 @@ export interface Node {
   visitedChildrens: boolean;
   childNodes: Set<number>;
   distances: Map<number, number>;
+  currentlyVisitedPair: boolean;
 }
 
 interface NodeElementProps {
@@ -83,6 +84,7 @@ export function newNode(x: number, y: number, count: number): Node {
     visitedChildrens: false,
     childNodes: new Set(),
     distances: new Map(),
+    currentlyVisitedPair: false,
   };
 }
 
@@ -101,7 +103,7 @@ export type ActionNode = {
         childNode: number;
       }
     | {
-        value: number;
+        value: number | number[];
         command: Command;
       }
     | {

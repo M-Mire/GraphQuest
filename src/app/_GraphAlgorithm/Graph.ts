@@ -119,7 +119,7 @@ export class GraphDistance extends Graph {
   }
 
   DIJKSTRA(root: number) {
-    const distance = new Map();
+    const distance = new Map<number, number>();
     const visited = new Set();
 
     this.ALLNODES.forEach((_, node) => {
@@ -130,7 +130,7 @@ export class GraphDistance extends Graph {
     const distanceCopyRoot = new Map(distance);
     this.TRACKER.push([Command.UpdateMap, distanceCopyRoot]);
     while (visited.size < this.graph.size) {
-      let minDistance: number = Infinity;
+      let minDistance = Infinity;
       let minDistanceNode = -1;
       this.graph.forEach((_, node) => {
         if (!visited.has(node) && distance.get(node)! < minDistance) {
@@ -154,8 +154,9 @@ export class GraphDistance extends Graph {
         this.TRACKER.push([Command.VisitPairs, [minDistanceNode, neighbor]]);
         this.TRACKER.push([Command.Visited, neighbor]);
         if (neighbor !== undefined && edgeWeight !== undefined) {
-          const altDistance = distance.get(minDistanceNode)! + edgeWeight;
-          if (altDistance < (distance.get(neighbor) || Infinity)) {
+          const altDistance: number =
+            distance.get(minDistanceNode)! + edgeWeight;
+          if (altDistance < (distance.get(neighbor) ?? Infinity)) {
             distance.set(neighbor, altDistance);
           }
         }

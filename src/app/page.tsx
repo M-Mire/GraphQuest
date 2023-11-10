@@ -61,9 +61,11 @@ const lineReducer: React.Reducer<number[], ActionLine> = (
 ) => {
   switch (action.type) {
     case Line.EntryLine:
-      return [...lineNumbers, action.payload];
+      return [...lineNumbers, action.payload as number];
     case Line.FinishedLine:
-      return lineNumbers.filter((number) => number !== action.payload);
+      return lineNumbers.filter(
+        (number) => number !== (action.payload as number),
+      );
     case Line.LineReset:
       return [];
     default:

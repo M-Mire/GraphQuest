@@ -98,6 +98,7 @@ const EditMode: React.FC<EditModeProps> = ({
                     provideEdgeLength={provideEdgeLength}
                     node={node}
                     childNode={childNode}
+                    dispatch={dispatch}
                   />
                 );
               });

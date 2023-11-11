@@ -81,7 +81,7 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
     case ACTIONS_NODE.NODE_DISTANCE:
       const {
         node,
-        childNode: child,
+        childNode: childVal,
         parsedDistance,
       } = action.payload as {
         node: Node;
@@ -90,10 +90,8 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
       };
       return nodes.map((n) => {
         if (n === node) {
-          return {
-            ...n,
-            distances: n.distances.set(child, parsedDistance),
-          };
+          n.distances.set(childVal, parsedDistance);
+          return n;
         }
         return n;
       });

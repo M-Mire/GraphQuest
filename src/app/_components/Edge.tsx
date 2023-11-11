@@ -23,31 +23,16 @@ const Edge: React.FC<EdgeProps> = ({
   dispatch,
 }) => {
   const [editable, setEditable] = useState(false);
-  const [distance, setDistance] = useState<string | undefined>(
-    node?.distances.get(childNode!.val)?.toString(),
+  const [localDistance, setLocalDistance] = useState<string | undefined>(
+    undefined,
   );
+  // const edgeKey = `${node?.val}-${childNode?.val ?? ""}`;
 
   useEffect(() => {
-    //Handles displaying the cost
-    if (provideEdgeLength && node) {
-      let distanceValue = node.distances.get(childNode!.val);
-      //On the off chance distanceValue isn't defined do it here.
-      if (distanceValue === undefined) {
-        distanceValue = 1;
-        if (dispatch) {
-          dispatch({
-            type: ACTIONS_NODE.NODE_DISTANCE,
-            payload: {
-              node: node,
-              childNode: childNode!.val,
-              parsedDistance: 1,
-            },
-          });
-        }
-      }
-      setDistance(distanceValue.toString());
+    if (provideEdgeLength) {
+      setLocalDistance(node?.distances.get(childNode!.val)?.toString());
     }
-  }, [provideEdgeLength, node, childNode, dispatch]);
+  }, [provideEdgeLength]);
 
   const handleTextClick = () => {
     if (provideEdgeLength) {
@@ -56,15 +41,17 @@ const Edge: React.FC<EdgeProps> = ({
   };
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDistance(event.target.value);
+    setLocalDistance(event.target.value);
   };
 
   const handleTextBlur = () => {
     setEditable(false);
 
     if (provideEdgeLength && node) {
-      const parsedDistance = parseInt(distance ?? "1");
-      if (!isNaN(parsedDistance) && dispatch) {
+      const parsedDistance = parseInt(localDistance ?? "1");
+      console.log("triggered before" + " " + parsedDistance);
+      if (!isNaN(parsedDistance) && dispatch !== undefined) {
+        console.log("triggered");
         dispatch({
           type: ACTIONS_NODE.NODE_DISTANCE,
           payload: {
@@ -73,7 +60,7 @@ const Edge: React.FC<EdgeProps> = ({
             parsedDistance: parsedDistance,
           },
         });
-        setDistance(parsedDistance.toString());
+        setLocalDistance(parsedDistance.toString());
       }
     }
   };
@@ -129,27 +116,27 @@ const Edge: React.FC<EdgeProps> = ({
           strokeWidth: 2,
         }}
       />
-      {provideEdgeLength && distance !== undefined ? (
+      {provideEdgeLength && localDistance !== undefined ? (
         <foreignObject
           x={midX}
           y={midY}
           width="40"
           height="30"
           style={{
-            rotate: `${rotationAngle}deg)`, // this is going to break the rotation. Remove ")" to get it to work; however, it's super far from the line, so additional adjustments are needed
+            rotate: `${rotationAngle}deg)`,
             transformOrigin: "50% 50%",
           }}
         >
           {editable ? (
             <input
               type="text"
-              value={distance}
+              value={localDistance}
               onChange={handleTextChange}
               onBlur={handleTextBlur}
-              onKeyDown={handleInputKeyPress}
+              onKeyPress={handleInputKeyPress}
             />
           ) : (
-            <span onClick={handleTextClick}>{distance}</span>
+            <span onClick={handleTextClick}>{localDistance}</span>
           )}
         </foreignObject>
       ) : null}

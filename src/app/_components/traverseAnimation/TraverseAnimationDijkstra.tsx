@@ -7,7 +7,7 @@ interface TraverseAnimationProps {
   nodes: Node[];
 }
 
-const TraverseAnimation: React.FC<TraverseAnimationProps> = ({
+const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
   tracker,
   currentIndex,
   nodes,
@@ -131,4 +131,4 @@ const TraverseAnimation: React.FC<TraverseAnimationProps> = ({
   );
 };
 
-export default TraverseAnimation;
+export default TraverseAnimationDijkstra;

@@ -26,7 +26,6 @@ const Edge: React.FC<EdgeProps> = ({
   const [localDistance, setLocalDistance] = useState<string | undefined>(
     undefined,
   );
-  // const edgeKey = `${node?.val}-${childNode?.val ?? ""}`;
 
   useEffect(() => {
     if (provideEdgeLength) {
@@ -133,10 +132,12 @@ const Edge: React.FC<EdgeProps> = ({
               value={localDistance}
               onChange={handleTextChange}
               onBlur={handleTextBlur}
-              onKeyPress={handleInputKeyPress}
+              onKeyDown={handleInputKeyPress}
             />
           ) : (
-            <span onClick={handleTextClick}>{localDistance}</span>
+            <span onClick={handleTextClick}>
+              {node?.distances.get(childNode!.val)?.toString()}
+            </span>
           )}
         </foreignObject>
       ) : null}

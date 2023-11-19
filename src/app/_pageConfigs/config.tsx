@@ -21,21 +21,18 @@ export const pageConfigurationBFS: pageConfigurationType = {
   addEdge: (g: Graph | GraphDistance, from: number, to: number) => {
     g.addEdge(from, to);
   },
-  code: `BFS(root: number) {
-        const visited = new Set();
-        const queue = [root];
-        visited.add(root);
+  code: `BFS(root: number):
+  visited = Set()
+  queue = [root]
+  visited.add(root)
+  
+  while queue is not empty:
+      vertex = queue.dequeue()   // Dequeue the first element from the queue
       
-        while (queue.length > 0) {
-          const vertex = queue.shift();
-          for (const neighbour of this.graph.get(vertex) || []) {
-            if (!visited.has(neighbour)) {
-              visited.add(neighbour);
-              queue.push(neighbour);
-            }
-          }
-        }
-      }`,
+      for neighbour in graph.get(vertex) or an empty list:
+          if neighbour is not in visited:
+              visited.add(neighbour)
+              queue.enqueue(neighbour)`,
 };
 
 export const pageConfigurationDFS: pageConfigurationType = {
@@ -80,7 +77,33 @@ export const pageConfigurationDijkstra: pageConfigurationType = {
   ) => {
     if (g instanceof GraphDistance) g.addEdgeDistance(from, to, distance);
   },
-  code: ``,
+  code: `DIJKSTRA(root):
+  distance = new Map() // Map to store distances from the root
+  visited = new Set() // Set to track visited nodes
+
+  for each node in ALLNODES:
+      distance.set(node, Infinity)
+
+  distance.set(root, 0) // Set distance to root as 0
+  while visited.size < graph.size:
+      minDistance = Infinity
+      minDistanceNode = -1
+      for each node in ALLNODES:
+          if node is not visited and distance[node] < minDistance:
+              minDistance = distance[node]
+              minDistanceNode = node
+
+      if minDistanceNode == -1:
+          break
+      visited.add(minDistanceNode) // Mark the node as visited
+      neighbors = get neighbors of minDistanceNode
+
+      for each neighbor in neighbors:
+          edgeWeight = get edgeWeight between minDistanceNode and neighbor
+          if neighbor is defined and edgeWeight is defined:
+              altDistance = distance[minDistanceNode] + edgeWeight
+              if altDistance < (distance[neighbor] or Infinity):
+                  distance[neighbor] = altDistance`,
 };
 
 export default {};

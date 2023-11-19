@@ -8,10 +8,16 @@ import Graph, {
   Command,
   GraphDistance,
   Line,
+  TrackerArray,
+  TrackerElementType,
+  InstructionType,
+  Order,
+  MultipleInstructions,
+  SingleInstruction,
 } from "~/app/_GraphAlgorithm/Graph";
 import PseudoCode from "~/app/_components/PseudoCode";
 
-interface CanvasProps {
+interface AnimationProps {
   nodes: Node[];
   rootValue: number | null;
   dispatch: React.Dispatch<ActionNode>;
@@ -33,15 +39,24 @@ interface CanvasProps {
   provideEdgeLength?: boolean;
 }
 
-function isCommand(command: Command | Line): command is Command {
-  return (command as Command) in Command;
-}
-export interface ActionLine {
-  type: Line;
-  payload: number | number[];
+function isCommand(type: InstructionType): type is Command {
+  return (type as Command) in Command;
 }
 
-const Animation: React.FC<CanvasProps> = ({
+function isLine(type: InstructionType): type is Line {
+  return (type as Line) in Line;
+}
+
+function isOrder(type: InstructionType): type is Order {
+  return type === Order.Entry;
+}
+
+export interface ActionLine {
+  type: Line;
+  payload: number | Map<number, number> | number[];
+}
+
+const Animation: React.FC<AnimationProps> = ({
   nodes,
   rootValue,
   dispatch,
@@ -57,9 +72,23 @@ const Animation: React.FC<CanvasProps> = ({
   provideEdgeLength,
   addEdge,
 }) => {
-  const [tracker, setTracker] = useState<
-    Array<[Command | Line, number | number[] | Map<number, number>]>
-  >([]);
+  const [tracker, setTracker] = useState<TrackerArray>([]);
+  const handleSingleCall = (
+    Instruction: InstructionType,
+    val: TrackerElementType,
+  ) => {
+    if (isCommand(Instruction)) {
+      dispatch({
+        type: ACTIONS_NODE.NODE_ANIMATE,
+        payload: { value: val, command: Instruction },
+      });
+    } else if (isLine(Instruction)) {
+      dispatchLineNumbers({
+        type: Instruction,
+        payload: val,
+      });
+    }
+  };
 
   useEffect(() => {
     if (rootValue !== null) {
@@ -89,23 +118,19 @@ const Animation: React.FC<CanvasProps> = ({
   useEffect(() => {
     const timerId = setInterval(() => {
       if (currentIndex < tracker.length && isPlay) {
-        const [command, val] = tracker[currentIndex]! as [
-          Command | Line,
-          number | number[],
-        ];
-        if (isCommand(command)) {
-          dispatch({
-            type: ACTIONS_NODE.NODE_ANIMATE,
-            payload: { value: val, command: command },
-          });
-        } else {
-          if (Object.values(Line).includes(command)) {
-            dispatchLineNumbers({
-              type: command,
-              payload: val,
-            });
+        const [command, val] = tracker[currentIndex]!;
+
+        if (isOrder(command)) {
+          // Loop through the Command and Line
+          const tmp = val as Array<SingleInstruction>;
+          for (const [cmd, value] of tmp) {
+            handleSingleCall(cmd, value);
           }
+        } else {
+          //Single call to Command and Line
+          handleSingleCall(command, val as TrackerElementType);
         }
+
         setCurrentIndex(currentIndex + 1);
       } else {
         clearInterval(timerId);

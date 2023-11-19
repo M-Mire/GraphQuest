@@ -103,7 +103,7 @@ export type ActionNode = {
         childNode: number;
       }
     | {
-        value: number | number[];
+        value: number | Map<number, number> | number[];
         command: Command;
       }
     | {

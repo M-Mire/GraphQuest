@@ -44,11 +44,9 @@ const TraverseAnimation: React.FC<TraverseAnimationProps> = ({ nodes }) => {
             accumulator.splice(updatedIndex, 1, updatedNode);
             if (node.visitedChildrens || existingVisitedNode.visitedChildrens) {
               if (visitStack.length === 0) {
-                console.log(updatedNode);
                 setVisitStack([updatedNode]);
               } else {
                 if (!visitStack.some((vs) => vs.id === updatedNode.id)) {
-                  console.log(updatedNode);
                   setVisitStack([...visitStack, updatedNode]);
                 }
               }
@@ -73,7 +71,6 @@ const TraverseAnimation: React.FC<TraverseAnimationProps> = ({ nodes }) => {
     if (visitedNodes.length === 0) {
       const firstVisitedNode = nodes.find((node) => node.visited);
       if (firstVisitedNode) {
-        console.log(firstVisitedNode);
         setArrowPoint([0, firstVisitedNode.id]);
       }
     } else {
@@ -88,7 +85,6 @@ const TraverseAnimation: React.FC<TraverseAnimationProps> = ({ nodes }) => {
         const getPrevArrowPoint = arrowPoint[0];
         const getCurrId = nextVisitedNode.id;
         setArrowPoint([getPrevArrowPoint + 1, getCurrId]);
-        console.log(nextVisitedNode);
       }
     }
   }, [nodes]);
@@ -104,43 +100,41 @@ const TraverseAnimation: React.FC<TraverseAnimationProps> = ({ nodes }) => {
           const x = i * (rectWidth + rectMargin) + padding;
           const y = rectHeight / 2;
           return (
-            <>
-              <g key={`g-${node.val}`}>
-                <rect
-                  key={`rect-${node.val}`}
-                  x={x}
-                  y={y}
-                  width={rectWidth}
-                  height={rectHeight}
-                  fill={COLOUR_SELECTION(
-                    false,
-                    node.visited,
-                    node.visitedChildrens,
-                  )}
-                  stroke="white"
-                  strokeWidth={3}
-                />
-                <text
-                  key={`text-${node.val}`}
-                  x={x + rectWidth / 2}
-                  y={y + rectHeight / 2}
-                  textAnchor="middle"
-                  alignmentBaseline="middle"
-                  fill="white"
-                >
-                  {node.val}
-                </text>
-              </g>
+            <g key={`g-${node.id}`}>
+              <rect
+                key={`rect-${node.id}`}
+                x={x}
+                y={y}
+                width={rectWidth}
+                height={rectHeight}
+                fill={COLOUR_SELECTION(
+                  false,
+                  node.visited,
+                  node.visitedChildrens,
+                )}
+                stroke="white"
+                strokeWidth={3}
+              />
+              <text
+                key={`text-${node.id}`}
+                x={x + rectWidth / 2}
+                y={y + rectHeight / 2}
+                textAnchor="middle"
+                alignmentBaseline="middle"
+                fill="white"
+              >
+                {node.val}
+              </text>
               {arrowPoint !== null && i === arrowPoint[0] ? (
                 <polygon
-                  key={`arrow-${i}`}
+                  key={`arrow-${node.id}`}
                   points={`${x + rectWidth / 2},${y - arrowSize} ${
                     x + rectWidth / 2 - arrowSize / 2
                   },${y} ${x + rectWidth / 2 + arrowSize / 2},${y}`}
                   fill="red"
                 />
               ) : null}
-            </>
+            </g>
           );
         })}
       </svg>

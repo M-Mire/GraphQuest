@@ -1,8 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Node, COLOUR_SELECTION } from "~/app/_components/NodeElement";
-import Graph, { Command, Line } from "~/app/_GraphAlgorithm/Graph";
+import Graph, {
+  Command,
+  Line,
+  TrackerArray,
+} from "~/app/_GraphAlgorithm/Graph";
+
 interface TraverseAnimationProps {
-  tracker: Array<[Command | Line, number | number[] | Map<number, number>]>;
+  tracker: TrackerArray;
   currentIndex: number;
   nodes: Node[];
 }

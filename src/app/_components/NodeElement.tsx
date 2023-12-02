@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Command } from "../_GraphAlgorithm/Graph";
-
+import ContextMenu from "~/app/_components/ContextMenu";
 export interface Node {
   id: number;
   val: number;
@@ -21,6 +21,16 @@ interface NodeElementProps {
 const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
   const [isClicked, setClicked] = useState<boolean>(false);
   const RECT = 70;
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (e.button === 2) {
+      return;
+    }
+    if (activeNode === -1 || activeNode === node.val) {
+      setClicked(!isClicked);
+    }
+  };
+
   return (
     <>
       <rect
@@ -46,10 +56,8 @@ const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
         stroke="black"
         strokeWidth="3"
         fill={COLOUR_SELECTION(isClicked, node.visited, node.visitedChildrens)}
-        onMouseDown={() => {
-          if (activeNode === -1 || activeNode === node.val) {
-            setClicked(!isClicked);
-          }
+        onMouseDown={(e) => {
+          handleClick(e);
         }}
       />
       <text
@@ -60,10 +68,8 @@ const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
         fill="black"
         textAnchor="middle"
         className="no-select"
-        onMouseDown={() => {
-          if (activeNode === -1 || activeNode === node.val) {
-            setClicked(!isClicked);
-          }
+        onMouseDown={(e) => {
+          handleClick(e);
         }}
       >
         {node.val}

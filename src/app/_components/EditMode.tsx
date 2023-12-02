@@ -26,9 +26,14 @@ const EditMode: React.FC<EditModeProps> = ({
   const [activeNode, setActiveNode] = useState<number>(-1);
 
   const handleClick = (e: React.MouseEvent) => {
+    if (e.button === 2) {
+      return;
+    }
+
     const { pageX: x, pageY: y, target } = e;
     const targetAsElem = target as HTMLElement;
     const nodeName = targetAsElem.tagName;
+
     if (nodeName !== "svg" && nodeName !== "circle" && nodeName !== "text") {
       return;
     }
@@ -71,6 +76,7 @@ const EditMode: React.FC<EditModeProps> = ({
         ref={elementRef}
         className="absolute left-0 top-0 h-3/4 w-3/4 bg-gray-200"
         onMouseDown={(e) => handleClick(e)}
+        onContextMenu={(e) => handleContextMenu(e)}
         style={{ position: "relative" }}
       >
         <svg
@@ -115,4 +121,8 @@ export default EditMode;
 const getChildNode = (nodes: Node[], target: number) => {
   const node: Node = nodes.find((node: Node) => node.val === target)!;
   return node;
+};
+
+const handleContextMenu = (e: React.MouseEvent) => {
+  e.preventDefault();
 };

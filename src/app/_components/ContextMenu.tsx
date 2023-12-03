@@ -1,51 +1,95 @@
+import { useState } from "react";
 interface ContextMenuProps {
   x: number;
   y: number;
-  onClose: () => void;
-  onDeleteNode: () => void;
-  onMoveNode: () => void;
-  onRemoveEdge: () => void;
 }
 
-const ContextMenu: React.FC<ContextMenuProps> = ({
-  x,
-  y,
-  onClose,
-  onDeleteNode,
-  onMoveNode,
-  onRemoveEdge,
-}) => {
-  const style: React.CSSProperties = {
-    position: "absolute",
-    top: `${y}px`,
-    left: `${x}px`,
-    border: "1px solid #ccc",
-    backgroundColor: "#fff",
-    padding: "5px",
-    zIndex: 9999,
+const ContextMenu: React.FC<ContextMenuProps> = ({ x, y }) => {
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+
+  const handleClick = (action: string) => {
+    console.log(`Clicked: ${action}`);
   };
 
-  const handleDelete = () => {
-    onDeleteNode();
-    onClose();
+  const handleMouseEnter = (action: string) => {
+    setHoveredItem(action);
   };
 
-  const handleMove = () => {
-    onMoveNode();
-    onClose();
+  const handleMouseLeave = () => {
+    setHoveredItem(null);
   };
 
-  const handleRemoveEdge = () => {
-    onRemoveEdge();
-    onClose();
+  const contextMenuItemStyle = {
+    width: 120,
+    padding: 8,
+    backgroundColor: "#111", // Darker shade
+    border: "2px solid #444", // Border color
+    borderRadius: 5,
+    color: "white",
+    cursor: "pointer",
+    opacity: hoveredItem ? (hoveredItem === "Delete Node" ? 0.9 : 1) : 1, // Adjust opacity when hovered
+    transition: "opacity 0.3s ease",
+  };
+
+  const menuItemBackground = {
+    fill: "#111", // Darker shade
+    opacity: hoveredItem ? (hoveredItem === "Delete Node" ? 0.9 : 1) : 0,
+    transition: "opacity 0.3s ease",
   };
 
   return (
-    <div style={style}>
-      <div onClick={handleDelete}>Delete Node</div>
-      <div onClick={handleMove}>Move Node</div>
-      <div onClick={handleRemoveEdge}>Remove Edge</div>
-    </div>
+    <>
+      <g transform={`translate(${x}, ${y})`}>
+        <rect
+          key={`rect-test`}
+          width={130}
+          height={80}
+          fill="none"
+          stroke="white"
+          strokeWidth={3}
+        />
+        <rect
+          x={10}
+          y={15}
+          width={100}
+          height={30}
+          style={menuItemBackground}
+          onClick={() => handleClick("Delete Node")}
+          onMouseEnter={() => handleMouseEnter("Delete Node")}
+          onMouseLeave={handleMouseLeave}
+        />
+        <text
+          x={10}
+          y={25}
+          style={contextMenuItemStyle}
+          onClick={() => handleClick("Delete Node")}
+          onMouseEnter={() => handleMouseEnter("Delete Node")}
+          onMouseLeave={handleMouseLeave}
+        >
+          Delete Node
+        </text>
+        <rect
+          x={10}
+          y={45}
+          width={100}
+          height={30}
+          style={menuItemBackground}
+          onClick={() => handleClick("Move Node")}
+          onMouseEnter={() => handleMouseEnter("Move Node")}
+          onMouseLeave={handleMouseLeave}
+        />
+        <text
+          x={10}
+          y={55}
+          style={contextMenuItemStyle}
+          onClick={() => handleClick("Move Node")}
+          onMouseEnter={() => handleMouseEnter("Move Node")}
+          onMouseLeave={handleMouseLeave}
+        >
+          Move Node
+        </text>
+      </g>
+    </>
   );
 };
 

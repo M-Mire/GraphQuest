@@ -6,6 +6,7 @@ import NodeElement, {
   Node,
 } from "~/app/_components/NodeElement";
 import Edge from "~/app/_components/Edge";
+import ContextMenu from "~/app/_components/ContextMenu";
 
 interface EditModeProps {
   dispatch: React.Dispatch<ActionNode>;

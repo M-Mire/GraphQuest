@@ -2,7 +2,7 @@ import Graph, { GraphDistance } from "~/app/_GraphAlgorithm/Graph";
 
 interface pageConfigurationType {
   algorithmName: string;
-  useDistance: boolean;
+  provideEdgeLength: boolean;
   runAlgorithm: (g: Graph | GraphDistance, rootValue: number) => void;
   addEdge: (
     g: Graph | GraphDistance,
@@ -14,7 +14,7 @@ interface pageConfigurationType {
 }
 export const pageConfigurationBFS: pageConfigurationType = {
   algorithmName: "Breadth-First Search",
-  useDistance: false,
+  provideEdgeLength: false,
   runAlgorithm: (g: Graph, rootValue: number) => {
     g.BFS(rootValue);
   },
@@ -37,7 +37,7 @@ export const pageConfigurationBFS: pageConfigurationType = {
 
 export const pageConfigurationDFS: pageConfigurationType = {
   algorithmName: "Depth-First Search",
-  useDistance: false,
+  provideEdgeLength: false,
   runAlgorithm: (g: Graph, rootValue: number) => {
     g.DFS(rootValue);
   },
@@ -65,7 +65,7 @@ export const pageConfigurationDFS: pageConfigurationType = {
 
 export const pageConfigurationDijkstra: pageConfigurationType = {
   algorithmName: "Dijkstra Algorithm",
-  useDistance: true,
+  provideEdgeLength: true,
   runAlgorithm: (g: Graph | GraphDistance, rootValue: number) => {
     if (g instanceof GraphDistance) g.DIJKSTRA(rootValue);
   },
@@ -106,4 +106,4 @@ export const pageConfigurationDijkstra: pageConfigurationType = {
                   distance[neighbor] = altDistance`,
 };
 
-export default {};
+export default pageConfigurationType;

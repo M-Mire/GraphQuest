@@ -1,40 +1,49 @@
-import { useState } from "react";
+import React, { useState } from "react";
+
+import NodeElement, {
+  ACTIONS_NODE,
+  ActionNode,
+  newNode,
+  Node,
+} from "~/app/_components/NodeElement";
+
 interface ContextMenuProps {
-  x: number;
-  y: number;
+  node: Node;
+  dispatch: React.Dispatch<ActionNode>;
 }
 
-const ContextMenu: React.FC<ContextMenuProps> = ({ x, y }) => {
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+const ContextMenu: React.FC<ContextMenuProps> = ({ node, dispatch }) => {
+  const { x, y } = node;
+  const [hoveredText, setHoveredText] = useState<string | null>(null);
 
-  const handleClick = (action: string) => {
-    console.log(`Clicked: ${action}`);
+  const handleDelete = () => {
+    dispatch({
+      type: ACTIONS_NODE.DELETE_NODE,
+      payload: node,
+    });
   };
 
-  const handleMouseEnter = (action: string) => {
-    setHoveredItem(action);
+  const handleTextHover = (text: string) => {
+    setHoveredText(text);
   };
 
-  const handleMouseLeave = () => {
-    setHoveredItem(null);
+  const handleTextLeave = () => {
+    setHoveredText(null);
   };
 
-  const contextMenuItemStyle = {
-    width: 120,
-    padding: 8,
-    backgroundColor: "#111", // Darker shade
-    border: "2px solid #444", // Border color
-    borderRadius: 5,
-    color: "white",
-    cursor: "pointer",
-    opacity: hoveredItem ? (hoveredItem === "Delete Node" ? 0.9 : 1) : 1, // Adjust opacity when hovered
-    transition: "opacity 0.3s ease",
-  };
-
-  const menuItemBackground = {
-    fill: "#111", // Darker shade
-    opacity: hoveredItem ? (hoveredItem === "Delete Node" ? 0.9 : 1) : 0,
-    transition: "opacity 0.3s ease",
+  const getRectStyles = (text: string) => {
+    if (text === hoveredText) {
+      return {
+        stroke: "blue",
+        strokeWidth: 2,
+        fillOpacity: 0.4,
+      };
+    }
+    return {
+      fill: "transparent",
+      stroke: "transparent",
+      strokeWidth: 0,
+    };
   };
 
   return (
@@ -42,49 +51,51 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ x, y }) => {
       <g transform={`translate(${x}, ${y})`}>
         <rect
           key={`rect-test`}
-          width={130}
+          width={150}
           height={80}
-          fill="none"
+          fill={`bg-AtomDark`}
+          fillOpacity={0.8}
+          rx={15}
           stroke="white"
           strokeWidth={3}
         />
         <rect
-          x={10}
-          y={15}
-          width={100}
-          height={30}
-          style={menuItemBackground}
-          onClick={() => handleClick("Delete Node")}
-          onMouseEnter={() => handleMouseEnter("Delete Node")}
-          onMouseLeave={handleMouseLeave}
+          x={5}
+          y={37}
+          width={140}
+          height={16}
+          {...getRectStyles("Delete Node")}
+          onMouseEnter={() => handleTextHover("Delete Node")}
+          onMouseLeave={handleTextLeave}
+          rx={2}
+          onClick={handleDelete}
         />
         <text
           x={10}
-          y={25}
-          style={contextMenuItemStyle}
-          onClick={() => handleClick("Delete Node")}
-          onMouseEnter={() => handleMouseEnter("Delete Node")}
-          onMouseLeave={handleMouseLeave}
+          y={50}
+          fill="white"
+          onMouseEnter={() => handleTextHover("Delete Node")}
+          onMouseLeave={handleTextLeave}
+          onClick={handleDelete}
         >
           Delete Node
         </text>
         <rect
-          x={10}
-          y={45}
-          width={100}
-          height={30}
-          style={menuItemBackground}
-          onClick={() => handleClick("Move Node")}
-          onMouseEnter={() => handleMouseEnter("Move Node")}
-          onMouseLeave={handleMouseLeave}
+          x={5}
+          y={7}
+          width={140}
+          height={16}
+          {...getRectStyles("Move Node")}
+          onMouseEnter={() => handleTextHover("Move Node")}
+          onMouseLeave={handleTextLeave}
+          rx={2}
         />
         <text
           x={10}
-          y={55}
-          style={contextMenuItemStyle}
-          onClick={() => handleClick("Move Node")}
-          onMouseEnter={() => handleMouseEnter("Move Node")}
-          onMouseLeave={handleMouseLeave}
+          y={20}
+          fill="white"
+          onMouseEnter={() => handleTextHover("Move Node")}
+          onMouseLeave={handleTextLeave}
         >
           Move Node
         </text>

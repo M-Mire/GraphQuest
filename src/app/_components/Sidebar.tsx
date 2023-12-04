@@ -20,16 +20,14 @@ const Sidebar: React.FC<SidebarProps> = ({ setRootValue, rootValue }) => {
     const value = parseInt(event.target.value);
     setRootValue(value);
   };
-
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams()!;
   const isEditTest = searchParams.get("edit");
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
       const params = new URLSearchParams(searchParams);
       params.set(name, value);
-
       return params.toString();
     },
     [searchParams],
@@ -38,17 +36,16 @@ const Sidebar: React.FC<SidebarProps> = ({ setRootValue, rootValue }) => {
   const deleteQueryString = useCallback(
     (name: string) => {
       const params = new URLSearchParams(searchParams);
-      params.delete(name);
-
-      return params.toString();
+      const paramsObject: Record<string, string> = {};
+      params.forEach((value, key) => {
+        paramsObject[key] = value;
+      });
+      delete paramsObject[name];
+      const newParams = new URLSearchParams(paramsObject);
+      return newParams.toString();
     },
     [searchParams],
   );
-
-  // const editHref =
-  //   isEditTest === undefined
-  //     ? pathname + "?" + createQueryString("edit", "true")
-  //     : pathname + "?" + deleteQueryString("edit");
 
   return (
     <div className="h-full w-16 bg-atomOneDark">

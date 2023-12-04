@@ -28,6 +28,20 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
         }
         return node;
       });
+    case ACTIONS_NODE.DELETE_NODE:
+      const deleteNode = action.payload as Node;
+      const filteredNode = nodes.filter((node) => node !== deleteNode);
+      return filteredNode.map((node) => {
+        if (node.childNodes.has(deleteNode.val)) {
+          const updatedChildNodes = new Set(node.childNodes);
+          updatedChildNodes.delete(deleteNode.val);
+          return {
+            ...node,
+            childNodes: updatedChildNodes,
+          };
+        }
+        return node;
+      });
     case ACTIONS_NODE.NODE_ANIMATE:
       const { value, command } = action.payload as {
         value: number | number[];

@@ -1,4 +1,7 @@
 import { useRef, useState } from "react";
+import { useCallback } from "react";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
+
 import NodeElement, {
   ACTIONS_NODE,
   ActionNode,
@@ -25,12 +28,20 @@ const EditMode: React.FC<EditModeProps> = ({
 }) => {
   const elementRef = useRef<HTMLDivElement | null>(null);
   const [activeNode, setActiveNode] = useState<number>(-1);
+  const router = useRouter();
+  const searchParams = useSearchParams()!;
+  const [rightClick, setRightClick] = useState<number>(-1);
+
+  const createNodeQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams);
+      params.append(name, value);
+      return params.toString();
+    },
+    [searchParams],
+  );
 
   const handleClick = (e: React.MouseEvent) => {
-    if (e.button === 2) {
-      return;
-    }
-
     const { pageX: x, pageY: y, target } = e;
     const targetAsElem = target as HTMLElement;
     const nodeName = targetAsElem.tagName;
@@ -44,6 +55,11 @@ const EditMode: React.FC<EditModeProps> = ({
         const clickedNode = nodes.find(
           (node) => node.val === parseInt(textContent),
         )!.val;
+        // Handles right click
+        if (e.button === 2) {
+          setRightClick(clickedNode);
+          return;
+        }
         if (activeNode === -1) {
           setActiveNode(clickedNode);
         } else if (activeNode === clickedNode) {
@@ -57,14 +73,25 @@ const EditMode: React.FC<EditModeProps> = ({
       }
       return;
     }
+    if (e.button === 2) {
+      setRightClick(-1);
+      return;
+    }
 
     if (elementRef.current) {
       const rect = elementRef.current.getBoundingClientRect();
       const node_x = x - rect.left + window.scrollX;
       const node_y = y - rect.top + window.scrollY;
+      const addNode = newNode(node_x, node_y, nodeCount);
+      const serializedObj = encodeURIComponent(JSON.stringify(addNode));
+      // // console.log(serializedObj);
+      // const deserializedObj = JSON.parse(decodeURIComponent(serializedObj));
+      // console.log(deserializedObj);
+      // console.log(Router.asPath);
+      // router.push(`/?${createNodeQueryString("node", serializedObj)}`);
       dispatch({
         type: ACTIONS_NODE.ADD_NODE,
-        payload: newNode(node_x, node_y, nodeCount),
+        payload: addNode,
       });
       incrementNodeCount();
       return;
@@ -87,7 +114,22 @@ const EditMode: React.FC<EditModeProps> = ({
         >
           {nodes?.map((node) => {
             return (
-              <NodeElement key={node.id} node={node} activeNode={activeNode} />
+              <>
+                <NodeElement
+                  key={node.id}
+                  node={node}
+                  activeNode={activeNode}
+                />
+              </>
+            );
+          })}
+          {nodes?.map((node) => {
+            return (
+              <>
+                {node.val === rightClick ? (
+                  <ContextMenu node={node} dispatch={dispatch} />
+                ) : null}
+              </>
             );
           })}
           {nodes

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Command } from "../_GraphAlgorithm/Graph";
-import ContextMenu from "~/app/_components/ContextMenu";
+
 export interface Node {
   id: number;
   val: number;
@@ -100,6 +100,7 @@ export const ACTIONS_NODE = {
   NODE_ANIMATE: "NODE_ANIMATE",
   NODE_RESET: "NODE_RESET",
   NODE_DISTANCE: "NODE_DISTANCE",
+  DELETE_NODE: "DELETE_NODE",
 };
 export type ActionNode = {
   type: string;

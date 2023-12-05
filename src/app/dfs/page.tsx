@@ -5,7 +5,9 @@ import { pageConfigurationDFS as pageConfiguration } from "~/app/_pageConfigs/co
 export default function DFSPage() {
   return (
     <>
-      <MainPage pageConfiguration={pageConfiguration} />
+      {/* <MainPage pageConfiguration={pageConfiguration} />
+       */}
+      <h1>Work in process</h1>
     </>
   );
 }

@@ -108,6 +108,7 @@ export type ActionNode = {
     | {
         parentNode: number;
         childNode: number;
+        weight: number;
       }
     | {
         value: number | Map<number, number> | number[];

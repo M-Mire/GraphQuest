@@ -14,16 +14,17 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
     case ACTIONS_NODE.ADD_NODE:
       return [...nodes, action.payload] as Node[];
     case ACTIONS_NODE.ADD_CHILD_NODE:
-      const { parentNode, childNode } = action.payload as {
+      const { parentNode, childNode, weight } = action.payload as {
         parentNode: number;
         childNode: number;
+        weight: number;
       };
       return nodes.map((node) => {
         if (node.val === parentNode) {
           return {
             ...node,
             childNodes: node.childNodes.add(childNode),
-            distances: node.distances.set(childNode, 1),
+            distances: node.distances.set(childNode, weight),
           };
         }
         return node;

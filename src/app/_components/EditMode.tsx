@@ -10,6 +10,7 @@ import NodeElement, {
 } from "~/app/_components/NodeElement";
 import Edge from "~/app/_components/Edge";
 import ContextMenu from "~/app/_components/ContextMenu";
+import InputWeight from "~/app/_components/InputWeight";
 
 interface EditModeProps {
   dispatch: React.Dispatch<ActionNode>;
@@ -31,6 +32,8 @@ const EditMode: React.FC<EditModeProps> = ({
   const router = useRouter();
   const searchParams = useSearchParams()!;
   const [rightClick, setRightClick] = useState<number>(-1);
+  const [isInputWeight, setInputWeight] = useState<boolean>(false);
+  const [inputWeightNums, setInputWeightNums] = useState<number[]>([]);
 
   const createNodeQueryString = useCallback(
     (name: string, value: string) => {
@@ -58,6 +61,7 @@ const EditMode: React.FC<EditModeProps> = ({
         // Handles right click
         if (e.button === 2) {
           setRightClick(clickedNode);
+          if (activeNode === clickedNode) setActiveNode(-1);
           return;
         }
         if (activeNode === -1) {
@@ -65,10 +69,19 @@ const EditMode: React.FC<EditModeProps> = ({
         } else if (activeNode === clickedNode) {
           setActiveNode(-1);
         } else if (activeNode !== null && clickedNode >= 0) {
-          dispatch({
-            type: ACTIONS_NODE.ADD_CHILD_NODE,
-            payload: { parentNode: activeNode, childNode: clickedNode },
-          });
+          if (provideEdgeLength) {
+            setInputWeight(true);
+            setInputWeightNums([activeNode, clickedNode]);
+          } else {
+            dispatch({
+              type: ACTIONS_NODE.ADD_CHILD_NODE,
+              payload: {
+                parentNode: activeNode,
+                childNode: clickedNode,
+                weight: 0,
+              },
+            });
+          }
         }
       }
       return;
@@ -110,7 +123,12 @@ const EditMode: React.FC<EditModeProps> = ({
         <svg
           height="100%"
           width="100%"
-          style={{ position: "absolute", top: 0, left: 0 }}
+          style={{
+            display: "block",
+            margin: "auto",
+            position: "relative",
+            border: "1px solid black",
+          }}
         >
           {nodes?.map((node) => {
             return (
@@ -127,7 +145,7 @@ const EditMode: React.FC<EditModeProps> = ({
             return (
               <>
                 {node.val === rightClick ? (
-                  <ContextMenu node={node} dispatch={dispatch} />
+                  <ContextMenu key={node.id} node={node} dispatch={dispatch} />
                 ) : null}
               </>
             );
@@ -152,6 +170,14 @@ const EditMode: React.FC<EditModeProps> = ({
                 );
               });
             })}
+          {isInputWeight ? (
+            <InputWeight
+              nums={inputWeightNums}
+              dispatch={dispatch}
+              setInputWeight={setInputWeight}
+              setInputWeightNums={setInputWeightNums}
+            />
+          ) : null}
         </svg>
       </div>
       <div className="relative w-1/4"></div>

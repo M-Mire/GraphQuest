@@ -23,6 +23,21 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ node, dispatch }) => {
     });
   };
 
+  const handleMove = () => {
+    const handleMouseMove = (event: MouseEvent) => {
+      console.log("x:", event.clientX, "y:", event.clientY);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+
+    const handleMouseUp = () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+
+    window.addEventListener("mouseup", handleMouseUp);
+  };
+
   const handleTextHover = (text: string) => {
     setHoveredText(text);
   };
@@ -50,7 +65,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ node, dispatch }) => {
     <>
       <g transform={`translate(${x}, ${y})`}>
         <rect
-          key={`rect-test`}
+          key={`rect-${node.val}`}
           width={150}
           height={80}
           fill={`bg-AtomDark`}
@@ -60,6 +75,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ node, dispatch }) => {
           strokeWidth={3}
         />
         <rect
+          key={`rectDelete-${node.val}`}
           x={5}
           y={37}
           width={140}
@@ -71,6 +87,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ node, dispatch }) => {
           onClick={handleDelete}
         />
         <text
+          key={`textDelete-${node.val}`}
           x={10}
           y={50}
           fill="white"
@@ -81,6 +98,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ node, dispatch }) => {
           Delete Node
         </text>
         <rect
+          key={`rectMove<-${node.val}`}
           x={5}
           y={7}
           width={140}
@@ -88,14 +106,17 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ node, dispatch }) => {
           {...getRectStyles("Move Node")}
           onMouseEnter={() => handleTextHover("Move Node")}
           onMouseLeave={handleTextLeave}
+          onClick={handleMove}
           rx={2}
         />
         <text
+          key={`textMove-${node.val}`}
           x={10}
           y={20}
           fill="white"
           onMouseEnter={() => handleTextHover("Move Node")}
           onMouseLeave={handleTextLeave}
+          onClick={handleMove}
         >
           Move Node
         </text>

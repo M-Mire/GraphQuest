@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { getCoords } from "~/app/utils/getCoords";
 
 import NodeElement, {
   ACTIONS_NODE,
@@ -10,9 +11,21 @@ import NodeElement, {
 interface ContextMenuProps {
   node: Node;
   dispatch: React.Dispatch<ActionNode>;
+  setCtxMenu: React.Dispatch<React.SetStateAction<number>>;
+  setMoveNode: React.Dispatch<React.SetStateAction<boolean>>;
+  isCtxMenu: number;
+  nodes: Node[];
+  elementRef: React.MutableRefObject<HTMLDivElement | null>;
 }
 
-const ContextMenu: React.FC<ContextMenuProps> = ({ node, dispatch }) => {
+const ContextMenu: React.FC<ContextMenuProps> = ({
+  node,
+  dispatch,
+  setMoveNode,
+  setCtxMenu,
+  isCtxMenu,
+  elementRef,
+}) => {
   const { x, y } = node;
   const [hoveredText, setHoveredText] = useState<string | null>(null);
 
@@ -24,8 +37,20 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ node, dispatch }) => {
   };
 
   const handleMove = () => {
+    setMoveNode(true);
     const handleMouseMove = (event: MouseEvent) => {
       console.log("x:", event.clientX, "y:", event.clientY);
+      const rect = elementRef.current!.getBoundingClientRect();
+      const node_x = event.clientX - rect.left + window.scrollX;
+      const node_y = event.clientY - rect.top + window.scrollY;
+      dispatch({
+        type: ACTIONS_NODE.UPDATE_COORDS,
+        payload: {
+          val: isCtxMenu,
+          x: node_x,
+          y: node_y,
+        },
+      });
     };
 
     window.addEventListener("mousemove", handleMouseMove);
@@ -33,6 +58,8 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ node, dispatch }) => {
     const handleMouseUp = () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
+      setMoveNode(false);
+      setCtxMenu(-1);
     };
 
     window.addEventListener("mouseup", handleMouseUp);

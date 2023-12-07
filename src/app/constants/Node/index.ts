@@ -1,0 +1,3 @@
+export const DEFAULT_RECTANGLE_SIZE = 70;
+export const DEFAULT_RADIUS_SMALL_CIRCLE = 16;
+export const DEFAULT_RADIUS_BIG_CIRCLE = 18;

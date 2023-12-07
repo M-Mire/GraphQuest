@@ -31,9 +31,12 @@ const EditMode: React.FC<EditModeProps> = ({
   const [activeNode, setActiveNode] = useState<number>(-1);
   const router = useRouter();
   const searchParams = useSearchParams()!;
-  const [rightClick, setRightClick] = useState<number>(-1);
+  const [isCtxMenu, setCtxMenu] = useState<number>(-1);
   const [isInputWeight, setInputWeight] = useState<boolean>(false);
   const [inputWeightNums, setInputWeightNums] = useState<number[]>([]);
+
+  //move
+  const [isMoveNode, setMoveNode] = useState<boolean>(false);
 
   const createNodeQueryString = useCallback(
     (name: string, value: string) => {
@@ -60,7 +63,7 @@ const EditMode: React.FC<EditModeProps> = ({
         )!.val;
         // Handles right click
         if (e.button === 2) {
-          setRightClick(clickedNode);
+          setCtxMenu(clickedNode);
           if (activeNode === clickedNode) setActiveNode(-1);
           return;
         }
@@ -87,11 +90,11 @@ const EditMode: React.FC<EditModeProps> = ({
       return;
     }
     if (e.button === 2) {
-      setRightClick(-1);
+      setCtxMenu(-1);
       return;
     }
 
-    if (elementRef.current) {
+    if (elementRef.current && !isMoveNode) {
       const rect = elementRef.current.getBoundingClientRect();
       const node_x = x - rect.left + window.scrollX;
       const node_y = y - rect.top + window.scrollY;
@@ -144,8 +147,17 @@ const EditMode: React.FC<EditModeProps> = ({
           {nodes?.map((node) => {
             return (
               <>
-                {node.val === rightClick ? (
-                  <ContextMenu key={node.id} node={node} dispatch={dispatch} />
+                {node.val === isCtxMenu && !isMoveNode ? (
+                  <ContextMenu
+                    key={node.id}
+                    node={node}
+                    dispatch={dispatch}
+                    setMoveNode={setMoveNode}
+                    setCtxMenu={setCtxMenu}
+                    isCtxMenu={isCtxMenu}
+                    nodes={nodes}
+                    elementRef={elementRef}
+                  />
                 ) : null}
               </>
             );

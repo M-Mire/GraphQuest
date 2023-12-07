@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { Command } from "../_GraphAlgorithm/Graph";
-
+import {
+  DEFAULT_RECTANGLE_SIZE,
+  DEFAULT_RADIUS_SMALL_CIRCLE,
+  DEFAULT_RADIUS_BIG_CIRCLE,
+} from "~/app/constants/Node/index";
+import { getCoords } from "~/app/utils/getCoords";
 export interface Node {
   id: number;
   val: number;
@@ -20,7 +25,6 @@ interface NodeElementProps {
 
 const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
   const [isClicked, setClicked] = useState<boolean>(false);
-  const RECT = 70;
 
   const handleClick = (e: React.MouseEvent) => {
     if (e.button === 2) {
@@ -35,24 +39,24 @@ const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
     <>
       <rect
         name={"" + node.val}
-        x={node.x - RECT / 2}
-        y={node.y - RECT / 2}
-        height={RECT}
-        width={RECT}
+        x={getCoords(node.x)}
+        y={getCoords(node.y)}
+        height={DEFAULT_RECTANGLE_SIZE}
+        width={DEFAULT_RECTANGLE_SIZE}
         fill="transparent"
       ></rect>
       <circle
         name={"" + node.val}
         cx={node.x}
         cy={node.y}
-        r="16"
+        r={DEFAULT_RADIUS_SMALL_CIRCLE}
         fill={COLOUR_SELECTION(isClicked, node.visited, node.visitedChildrens)}
       />
       <circle
         name={"" + node.val}
         cx={node.x}
         cy={node.y}
-        r="18"
+        r={DEFAULT_RADIUS_BIG_CIRCLE}
         stroke="black"
         strokeWidth="3"
         fill={COLOUR_SELECTION(isClicked, node.visited, node.visitedChildrens)}
@@ -101,6 +105,7 @@ export const ACTIONS_NODE = {
   NODE_RESET: "NODE_RESET",
   NODE_DISTANCE: "NODE_DISTANCE",
   DELETE_NODE: "DELETE_NODE",
+  UPDATE_COORDS: "UPDATE_COORDS",
 };
 export type ActionNode = {
   type: string;
@@ -118,6 +123,11 @@ export type ActionNode = {
         node: Node;
         childNode: number;
         parsedDistance: number;
+      }
+    | {
+        val: number;
+        x: number;
+        y: number;
       }
     | number
     | Node;

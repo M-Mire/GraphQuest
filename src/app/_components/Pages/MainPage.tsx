@@ -111,6 +111,19 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
         }
         return n;
       });
+
+    case ACTIONS_NODE.UPDATE_COORDS:
+      const { val, x, y } = action.payload as {
+        val: number;
+        x: number;
+        y: number;
+      };
+      return nodes.map((n) => {
+        if (n.val === val) {
+          return { ...n, x: x, y: y };
+        }
+        return n;
+      });
     default:
       return nodes;
   }

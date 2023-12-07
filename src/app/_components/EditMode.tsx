@@ -11,6 +11,7 @@ import NodeElement, {
 import Edge from "~/app/_components/Edge";
 import ContextMenu from "~/app/_components/ContextMenu";
 import InputWeight from "~/app/_components/InputWeight";
+import { getCoords } from "../utils/getCoords";
 
 interface EditModeProps {
   dispatch: React.Dispatch<ActionNode>;
@@ -94,10 +95,11 @@ const EditMode: React.FC<EditModeProps> = ({
       return;
     }
 
-    if (elementRef.current && !isMoveNode) {
-      const rect = elementRef.current.getBoundingClientRect();
-      const node_x = x - rect.left + window.scrollX;
-      const node_y = y - rect.top + window.scrollY;
+    if (!isMoveNode) {
+      const { node_x, node_y } = getCoords(x, y, elementRef) as {
+        node_x: number;
+        node_y: number;
+      };
       const addNode = newNode(node_x, node_y, nodeCount);
       const serializedObj = encodeURIComponent(JSON.stringify(addNode));
       // // console.log(serializedObj);

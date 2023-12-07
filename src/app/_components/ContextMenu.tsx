@@ -39,10 +39,16 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   const handleMove = () => {
     setMoveNode(true);
     const handleMouseMove = (event: MouseEvent) => {
-      console.log("x:", event.clientX, "y:", event.clientY);
       const rect = elementRef.current!.getBoundingClientRect();
-      const node_x = event.clientX - rect.left + window.scrollX;
-      const node_y = event.clientY - rect.top + window.scrollY;
+
+      const { node_x, node_y } = getCoords(
+        event.clientX,
+        event.clientY,
+        elementRef,
+      ) as {
+        node_x: number;
+        node_y: number;
+      };
       dispatch({
         type: ACTIONS_NODE.UPDATE_COORDS,
         payload: {

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Node, COLOUR_SELECTION } from "~/app/_components/NodeElement";
+import { COLOUR_SELECTION } from "~/app/_components/NodeElement";
+import Node from "~/app/model/Node";
 interface TraverseAnimationProps {
   nodes: Node[];
 }
@@ -16,7 +17,7 @@ const TraverseAnimation: React.FC<TraverseAnimationProps> = ({ nodes }) => {
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [visitedNodes, setVisitedNodes] = useState<Node[]>([]);
-  const [arrowPoint, setArrowPoint] = useState<[number, number] | null>(null);
+  const [arrowPoint, setArrowPoint] = useState<[number, string] | null>(null);
   const [visitStack, setVisitStack] = useState<Node[]>([]);
 
   useEffect(() => {

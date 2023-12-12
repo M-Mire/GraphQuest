@@ -3,7 +3,8 @@ import Canvas from "~/app/_components/Canvas";
 import TraverseCode from "~/app/_components/TraverseCode";
 import TraverseAnimationBFS from "~/app/_components/traverseAnimation/TraverseAnimationBFS";
 import TraverseAnimationDijkstra from "~/app/_components/traverseAnimation/TraverseAnimationDijkstra";
-import { Node, ACTIONS_NODE, ActionNode } from "./NodeElement";
+import { ACTIONS_NODE, ActionNode } from "./NodeElement";
+import Node from "~/app/model/Node";
 import Graph, {
   Command,
   GraphDistance,

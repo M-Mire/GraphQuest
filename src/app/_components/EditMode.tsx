@@ -1,13 +1,12 @@
 import { useRef, useState } from "react";
 import { useCallback } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-
+import Node from "~/app/model/Node";
 import NodeElement, {
   ACTIONS_NODE,
   ActionNode,
-  newNode,
-  Node,
 } from "~/app/_components/NodeElement";
+import createNewNode from "~/app/utils/createNewNode";
 import Edge from "~/app/_components/Edge";
 import ContextMenu from "~/app/_components/ContextMenu";
 import InputWeight from "~/app/_components/InputWeight";
@@ -48,6 +47,41 @@ const EditMode: React.FC<EditModeProps> = ({
     [searchParams],
   );
 
+  // const updateNodeQueryString = useCallback(
+  //   (
+  //     name: string,
+  //     valueToRemove: string,
+  //     parentNode: number,
+  //     childNode: number,
+  //   ) => {
+  //     const params = new URLSearchParams(searchParams);
+  //     const values = params.getAll(name);
+
+  //     if (values.length) {
+  //       params.delete(name);
+  //       for (const value of values) {
+  //         if (value !== valueToRemove) {
+  //           params.append(name, value);
+  //         }
+  //       }
+  //     }
+  //     const updateNode = nodes.find((node) => node.val === parentNode);
+  //     updateNode.childNodes.add(childNode);
+  //     console.log(updateNode);
+
+  //     params.append(name, encodeURIComponent(JSON.stringify(updateNode)));
+  //     console.log(
+  //       encodeURIComponent(JSON.stringify(updateNode)),
+  //       " \n",
+  //       valueToRemove,
+  //     );
+
+  //     console.log(JSON.parse(decodeURIComponent(valueToRemove)));
+  //     return params.toString();
+  //   },
+  //   [searchParams],
+  // );
+
   const handleClick = (e: React.MouseEvent) => {
     const { pageX: x, pageY: y, target } = e;
     const targetAsElem = target as HTMLElement;
@@ -77,6 +111,17 @@ const EditMode: React.FC<EditModeProps> = ({
             setInputWeight(true);
             setInputWeightNums([activeNode, clickedNode]);
           } else {
+            const parentNodeEncoded = encodeURIComponent(
+              JSON.stringify(nodes.find((node) => node.val === activeNode)),
+            );
+            // router.push(
+            //   `/?${updateNodeQueryString(
+            //     "node",
+            //     parentNodeEncoded,
+            //     activeNode,
+            //     clickedNode,
+            //   )}`,
+            // );
             dispatch({
               type: ACTIONS_NODE.ADD_CHILD_NODE,
               payload: {
@@ -85,6 +130,7 @@ const EditMode: React.FC<EditModeProps> = ({
                 weight: 0,
               },
             });
+            // add updatequery for node
           }
         }
       }
@@ -100,7 +146,7 @@ const EditMode: React.FC<EditModeProps> = ({
         node_x: number;
         node_y: number;
       };
-      const addNode = newNode(node_x, node_y, nodeCount);
+      const addNode = createNewNode(node_x, node_y, nodeCount);
       const serializedObj = encodeURIComponent(JSON.stringify(addNode));
       // // console.log(serializedObj);
       // const deserializedObj = JSON.parse(decodeURIComponent(serializedObj));
@@ -137,33 +183,23 @@ const EditMode: React.FC<EditModeProps> = ({
         >
           {nodes?.map((node) => {
             return (
-              <>
-                <NodeElement
-                  key={node.id}
-                  node={node}
-                  activeNode={activeNode}
-                />
-              </>
+              <NodeElement key={node.id} node={node} activeNode={activeNode} />
             );
           })}
-          {nodes?.map((node) => {
-            return (
-              <>
-                {node.val === isCtxMenu && !isMoveNode ? (
-                  <ContextMenu
-                    key={node.id}
-                    node={node}
-                    dispatch={dispatch}
-                    setMoveNode={setMoveNode}
-                    setCtxMenu={setCtxMenu}
-                    isCtxMenu={isCtxMenu}
-                    nodes={nodes}
-                    elementRef={elementRef}
-                  />
-                ) : null}
-              </>
-            );
-          })}
+          {nodes?.map((node) =>
+            node.val === isCtxMenu && !isMoveNode ? (
+              <ContextMenu
+                key={node.id}
+                node={node}
+                dispatch={dispatch}
+                setMoveNode={setMoveNode}
+                setCtxMenu={setCtxMenu}
+                isCtxMenu={isCtxMenu}
+                nodes={nodes}
+                elementRef={elementRef}
+              />
+            ) : null,
+          )}
           {nodes
             .filter((node) => node.childNodes.size > 0)
             .map((node) => {

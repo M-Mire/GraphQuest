@@ -5,18 +5,7 @@ import {
   DEFAULT_RADIUS_SMALL_CIRCLE,
   DEFAULT_RADIUS_BIG_CIRCLE,
 } from "~/app/constants/Node/index";
-import { getCoords } from "~/app/utils/getCoords";
-export interface Node {
-  id: number;
-  val: number;
-  x: number;
-  y: number;
-  visited: boolean;
-  visitedChildrens: boolean;
-  childNodes: Set<number>;
-  distances: Map<number, number>;
-  currentlyVisitedPair: boolean;
-}
+import Node from "~/app/model/Node";
 
 interface NodeElementProps {
   node: Node;
@@ -34,11 +23,16 @@ const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
       setClicked(!isClicked);
     }
   };
+  const rectKey = `rect-${node.val}`;
+  const outerCircleKey = `outer-circle-${node.val}`;
+  const innerCircleKey = `inner-circle-${node.val}`;
+  const textKey = `text-${node.val}`;
 
   return (
     <>
       <rect
-        name={"" + node.val}
+        key={rectKey}
+        name={`${node.val}`}
         x={node.x - DEFAULT_RECTANGLE_SIZE / 2}
         y={node.y - DEFAULT_RECTANGLE_SIZE / 2}
         height={DEFAULT_RECTANGLE_SIZE}
@@ -46,14 +40,16 @@ const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
         fill="transparent"
       ></rect>
       <circle
-        name={"" + node.val}
+        key={outerCircleKey}
+        name={`${node.val}`}
         cx={node.x}
         cy={node.y}
         r={DEFAULT_RADIUS_SMALL_CIRCLE}
         fill={COLOUR_SELECTION(isClicked, node.visited, node.visitedChildrens)}
       />
       <circle
-        name={"" + node.val}
+        key={innerCircleKey}
+        name={`${node.val}`}
         cx={node.x}
         cy={node.y}
         r={DEFAULT_RADIUS_BIG_CIRCLE}
@@ -65,7 +61,8 @@ const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
         }}
       />
       <text
-        name={"" + node.val}
+        key={textKey}
+        name={`${node.val}`}
         x={node.x}
         y={node.y + 5.333333}
         fontSize="16"
@@ -83,20 +80,6 @@ const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
 };
 
 export default NodeElement;
-
-export function newNode(x: number, y: number, count: number): Node {
-  return {
-    id: Date.now(),
-    val: count,
-    x: x,
-    y: y,
-    visited: false,
-    visitedChildrens: false,
-    childNodes: new Set(),
-    distances: new Map(),
-    currentlyVisitedPair: false,
-  };
-}
 
 export const ACTIONS_NODE = {
   ADD_NODE: "ADD_NODE",

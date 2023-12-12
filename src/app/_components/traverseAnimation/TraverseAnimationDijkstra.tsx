@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Node, COLOUR_SELECTION } from "~/app/_components/NodeElement";
+import { COLOUR_SELECTION } from "~/app/_components/NodeElement";
+import Node from "~/app/model/Node";
 import Graph, {
   Command,
   Line,
@@ -28,7 +29,7 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [visitedNodes, setVisitedNodes] = useState<Node[]>([]);
-  const [arrowPoint, setArrowPoint] = useState<[number, number] | null>(null);
+  const [arrowPoint, setArrowPoint] = useState<[number, string] | null>(null);
   const [mapDetail, setMapDetail] = useState<Map<number, number>>(new Map());
 
   useEffect(() => {

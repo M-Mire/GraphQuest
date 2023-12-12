@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { getCoords } from "~/app/utils/getCoords";
+import Node from "~/app/model/Node";
 
 import NodeElement, {
   ACTIONS_NODE,
   ActionNode,
-  newNode,
-  Node,
 } from "~/app/_components/NodeElement";
 
 interface ContextMenuProps {

@@ -1,6 +1,7 @@
 import { useRef } from "react";
-import NodeElement, { Node } from "./NodeElement";
+import NodeElement from "./NodeElement";
 import Edge from "~/app/_components/Edge";
+import Node from "~/app/model/Node";
 
 interface CanvasProps {
   nodes: Node[];

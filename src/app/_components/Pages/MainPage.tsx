@@ -1,18 +1,28 @@
-import { useCallback } from "react";
+"use client";
+import { useCallback, useEffect } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
 import Sidebar from "~/app/_components/Sidebar";
 import Navbar from "~/app/_components/Navbar";
 import EditMode from "~/app/_components/EditMode";
-import { ACTIONS_NODE, ActionNode, Node } from "~/app/_components/NodeElement";
+import { ACTIONS_NODE, ActionNode } from "~/app/_components/NodeElement";
+import Node from "~/app/model/Node";
 import Animation, { ActionLine } from "~/app/_components/Animation";
 import Graph, { Command, Line } from "~/app/_GraphAlgorithm/Graph";
 import { useState, useReducer } from "react";
 import pageConfigurationType from "~/app/_pageConfigs/config";
+import createNewNode from "~/app/utils/createNewNode";
 
 const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
   switch (action.type) {
     case ACTIONS_NODE.ADD_NODE:
-      return [...nodes, action.payload] as Node[];
+      const newNode = action.payload as Node;
+      const nodeExists = nodes.some((node) => node.val === newNode.val);
+      if (!nodeExists) {
+        console.log(newNode);
+        return [...nodes, newNode] as Node[];
+      }
+      return nodes;
+
     case ACTIONS_NODE.ADD_CHILD_NODE:
       const { parentNode, childNode, weight } = action.payload as {
         parentNode: number;
@@ -152,16 +162,38 @@ interface PageProps {
 }
 
 const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
-  const [rootValue, setRootValue] = useState<number | null>(null);
+  const searchParams = useSearchParams();
   const [nodes, dispatch] = useReducer(nodeReducer, []);
+  const [lineNumbers, dispatchLineNumbers] = useReducer(lineReducer, []);
+
+  const urlNodes = searchParams.getAll("node");
   const [nodeCount, setNodeCount] = useState<number>(0);
   const [speed, setSpeed] = useState<number>(500);
+  const [rootValue, setRootValue] = useState<number | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlay, setPlay] = useState<boolean>(false);
-  const [lineNumbers, dispatchLineNumbers] = useReducer(lineReducer, []);
-  const searchParams = useSearchParams();
+
   const isEditMode = searchParams.get("edit") === "true";
 
+  // useEffect(() => {
+  //   if (nodes.length === 0 && urlNodes.length > 0) {
+  //     urlNodes.forEach((urlNode) => {
+  //       let deserializedObj = JSON.parse(decodeURIComponent(urlNode));
+  //       const newNode: Node = deserializedObj;
+  //       dispatch({
+  //         type: ACTIONS_NODE.ADD_NODE,
+  //         payload: newNode,
+  //       });
+  //     });
+
+  //     urlNodes.forEach((urlNode) => {
+  //       const node = JSON.parse(decodeURIComponent(urlNode));
+  //       // console.log("childNodes ", node.childNodes);
+  //     });
+
+  //     setNodeCount(urlNodes.length);
+  //   }
+  // }, []);
   return (
     <>
       <div className="flex h-screen overflow-hidden">

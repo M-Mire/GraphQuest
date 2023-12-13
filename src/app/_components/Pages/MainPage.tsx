@@ -152,7 +152,7 @@ const addNodesFromURL = (
   if (nodes.length === 0 && urlNodes.length > 0) {
     urlNodes.forEach((urlNode) => {
       const deserializedObj = JSON.parse(decodeURIComponent(urlNode)) as Node;
-      console.log(deserializedObj, "decode");
+      // console.log(deserializedObj, "decode");
       const newNode = deserializedObj;
       dispatch({
         type: ACTIONS_NODE.ADD_NODE,

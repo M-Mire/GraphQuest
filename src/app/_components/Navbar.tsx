@@ -10,6 +10,7 @@ import Link from "next/link";
 import ControlButtons from "./ControlButtons";
 import { ActionNode } from "./NodeElement";
 import { ActionLine } from "./Animation";
+import { useSearchParams } from "next/navigation";
 
 const navbarStyle = {
   backgroundColor: "transparent",
@@ -59,13 +60,22 @@ const Navbar: React.FC<NavbarProps> = ({
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const searchParams = useSearchParams();
+  const urlNodes = searchParams.getAll("node");
 
   return (
     <AppBar position="static" style={navbarStyle}>
       <Toolbar>
         <div style={containerStyle}>
           <Typography variant="h6" component="div" style={textWidthStyle}>
-            GraphQuest: {algorithmName}
+            GraphQuest: {algorithmName} {urlNodes.length}
+          </Typography>
+          <Typography
+            variant="h6"
+            component="div"
+            onClick={() => console.log(urlNodes)}
+          >
+            hi
           </Typography>
           <IconButton
             color="inherit"

@@ -1,18 +1,25 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
 import Sidebar from "~/app/_components/Sidebar";
 import Navbar from "~/app/_components/Navbar";
 import EditMode from "~/app/_components/EditMode";
-import { ACTIONS_NODE, ActionNode, Node } from "~/app/_components/NodeElement";
+import { ACTIONS_NODE, ActionNode } from "~/app/_components/NodeElement";
 import Animation, { ActionLine } from "~/app/_components/Animation";
 import Graph, { Command, Line } from "~/app/_GraphAlgorithm/Graph";
 import { useState, useReducer } from "react";
 import pageConfigurationType from "~/app/_pageConfigs/config";
+import Node from "~/app/model/Node";
 
 const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
   switch (action.type) {
     case ACTIONS_NODE.ADD_NODE:
-      return [...nodes, action.payload] as Node[];
+      const newNode = action.payload as Node;
+      const nodeExists = nodes.some((node) => node.val === newNode.val);
+      if (!nodeExists) {
+        // console.log(newNode);
+        return [...nodes, newNode] as Node[];
+      }
+      return nodes;
     case ACTIONS_NODE.ADD_CHILD_NODE:
       const { parentNode, childNode, weight } = action.payload as {
         parentNode: number;
@@ -20,29 +27,19 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
         weight: number;
       };
       return nodes.map((node) => {
-        if (node.val === parentNode) {
+        if (node.val === parentNode && !node.childNodes.includes(childNode)) {
+          console.log(node.val, parentNode, childNode, node.distances);
           return {
             ...node,
-            childNodes: node.childNodes.add(childNode),
-            distances: node.distances.set(childNode, weight),
+            childNodes: [...node.childNodes, childNode],
+            distances: [...node.distances, weight],
           };
         }
         return node;
       });
     case ACTIONS_NODE.DELETE_NODE:
       const deleteNode = action.payload as Node;
-      const filteredNode = nodes.filter((node) => node !== deleteNode);
-      return filteredNode.map((node) => {
-        if (node.childNodes.has(deleteNode.val)) {
-          const updatedChildNodes = new Set(node.childNodes);
-          updatedChildNodes.delete(deleteNode.val);
-          return {
-            ...node,
-            childNodes: updatedChildNodes,
-          };
-        }
-        return node;
-      });
+      return nodes.filter((node) => node !== deleteNode);
     case ACTIONS_NODE.NODE_ANIMATE:
       const { value, command } = action.payload as {
         value: number | number[];
@@ -106,7 +103,7 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
       };
       return nodes.map((n) => {
         if (n === node) {
-          n.distances.set(childVal, parsedDistance);
+          node.distances[node.distances.indexOf(childVal)] = parsedDistance;
           return n;
         }
         return n;
@@ -147,20 +144,44 @@ const lineReducer: React.Reducer<number[], ActionLine> = (
   }
 };
 
+const addNodesFromURL = (
+  nodes: Node[],
+  dispatch: React.Dispatch<ActionNode>,
+  urlNodes: string[],
+) => {
+  if (nodes.length === 0 && urlNodes.length > 0) {
+    urlNodes.forEach((urlNode) => {
+      const deserializedObj = JSON.parse(decodeURIComponent(urlNode)) as Node;
+      console.log(deserializedObj, "decode");
+      const newNode = deserializedObj;
+      dispatch({
+        type: ACTIONS_NODE.ADD_NODE,
+        payload: newNode,
+      });
+    });
+  }
+};
+
 interface PageProps {
   pageConfiguration: pageConfigurationType;
 }
 
 const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
+  const searchParams = useSearchParams();
+  const urlNodes = searchParams.getAll("node");
+  const [nodeCount, setNodeCount] = useState<number>(urlNodes.length);
+
   const [rootValue, setRootValue] = useState<number | null>(null);
   const [nodes, dispatch] = useReducer(nodeReducer, []);
-  const [nodeCount, setNodeCount] = useState<number>(0);
   const [speed, setSpeed] = useState<number>(500);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlay, setPlay] = useState<boolean>(false);
   const [lineNumbers, dispatchLineNumbers] = useReducer(lineReducer, []);
-  const searchParams = useSearchParams();
   const isEditMode = searchParams.get("edit") === "true";
+
+  useEffect(() => {
+    addNodesFromURL(nodes, dispatch, urlNodes);
+  }, []);
 
   return (
     <>

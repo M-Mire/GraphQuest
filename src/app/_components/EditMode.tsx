@@ -1,12 +1,11 @@
 import { useRef, useState } from "react";
 import { useCallback } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-
+import Node from "~/app/model/Node";
+import createNewNode from "~/app/utils/createNewNode";
 import NodeElement, {
   ACTIONS_NODE,
   ActionNode,
-  newNode,
-  Node,
 } from "~/app/_components/NodeElement";
 import Edge from "~/app/_components/Edge";
 import ContextMenu from "~/app/_components/ContextMenu";
@@ -48,6 +47,48 @@ const EditMode: React.FC<EditModeProps> = ({
     [searchParams],
   );
 
+  const updateNodeQueryString = useCallback(
+    (
+      name: string,
+      valueToRemove: string,
+      parentNode: number,
+      childNode: number,
+    ) => {
+      const params = new URLSearchParams(searchParams);
+      const values = params.getAll(name);
+
+      if (values.length) {
+        params.delete(name);
+        for (const value of values) {
+          if (value !== valueToRemove) {
+            params.append(name, value);
+          }
+        }
+      }
+      const updateNode = nodes.find((node) => node.val === parentNode);
+
+      // if found node
+      console.log("node found");
+      console.log(updateNode);
+
+      //change node
+      console.log("will change the node");
+      updateNode?.childNodes.push(childNode);
+      //encode
+      console.log("encode node");
+      const encodeNode = encodeURIComponent(JSON.stringify(updateNode));
+      console.log(encodeNode);
+      //decode
+      // console.log("decode the node");
+      // const decodeNode = JSON.parse(decodeURIComponent(encodeNode));
+      // console.log(decodeNode);
+
+      params.append(name, encodeNode);
+      return params.toString();
+    },
+    [searchParams],
+  );
+
   const handleClick = (e: React.MouseEvent) => {
     const { pageX: x, pageY: y, target } = e;
     const targetAsElem = target as HTMLElement;
@@ -77,6 +118,9 @@ const EditMode: React.FC<EditModeProps> = ({
             setInputWeight(true);
             setInputWeightNums([activeNode, clickedNode]);
           } else {
+            console.log(nodes);
+            console.log(activeNode, clickedNode);
+            console.log(nodes.find((node) => node.val === activeNode));
             dispatch({
               type: ACTIONS_NODE.ADD_CHILD_NODE,
               payload: {
@@ -85,6 +129,17 @@ const EditMode: React.FC<EditModeProps> = ({
                 weight: 0,
               },
             });
+            const parentNodeEncoded = encodeURIComponent(
+              JSON.stringify(nodes.find((node) => node.val === activeNode)),
+            );
+            router.push(
+              `/?${updateNodeQueryString(
+                "node",
+                parentNodeEncoded,
+                activeNode,
+                clickedNode,
+              )}`,
+            );
           }
         }
       }
@@ -100,17 +155,19 @@ const EditMode: React.FC<EditModeProps> = ({
         node_x: number;
         node_y: number;
       };
-      const addNode = newNode(node_x, node_y, nodeCount);
+      const addNode = createNewNode(node_x, node_y, nodeCount);
       const serializedObj = encodeURIComponent(JSON.stringify(addNode));
       // // console.log(serializedObj);
       // const deserializedObj = JSON.parse(decodeURIComponent(serializedObj));
       // console.log(deserializedObj);
       // console.log(Router.asPath);
-      // router.push(`/?${createNodeQueryString("node", serializedObj)}`);
+      router.push(`?${createNodeQueryString("node", serializedObj)}`);
+
       dispatch({
         type: ACTIONS_NODE.ADD_NODE,
         payload: addNode,
       });
+
       incrementNodeCount();
       return;
     }
@@ -137,59 +194,51 @@ const EditMode: React.FC<EditModeProps> = ({
         >
           {nodes?.map((node) => {
             return (
-              <>
-                <NodeElement
-                  key={node.id}
-                  node={node}
-                  activeNode={activeNode}
-                />
-              </>
+              <NodeElement key={node.id} node={node} activeNode={activeNode} />
             );
           })}
-          {nodes?.map((node) => {
-            return (
-              <>
-                {node.val === isCtxMenu && !isMoveNode ? (
-                  <ContextMenu
-                    key={node.id}
-                    node={node}
-                    dispatch={dispatch}
-                    setMoveNode={setMoveNode}
-                    setCtxMenu={setCtxMenu}
-                    isCtxMenu={isCtxMenu}
-                    nodes={nodes}
-                    elementRef={elementRef}
-                  />
-                ) : null}
-              </>
-            );
-          })}
-          {nodes
-            .filter((node) => node.childNodes.size > 0)
-            .map((node) => {
-              return Array.from(node.childNodes).map((child: number, id) => {
-                const childNode: Node = getChildNode(nodes, child);
+          {nodes?.map((node) =>
+            node.val === isCtxMenu && !isMoveNode ? (
+              <ContextMenu
+                key={node.id}
+                node={node}
+                dispatch={dispatch}
+                setMoveNode={setMoveNode}
+                setCtxMenu={setCtxMenu}
+                isCtxMenu={isCtxMenu}
+                nodes={nodes}
+                elementRef={elementRef}
+              />
+            ) : null,
+          )}
+          {nodes.map((parentNode) =>
+            parentNode.childNodes.map((childVal, id) => {
+              const childNode = nodes.find((node) => node.val === childVal);
+              if (childNode) {
                 return (
                   <Edge
                     key={id}
-                    x1={node.x}
-                    y1={node.y}
+                    x1={parentNode.x}
+                    y1={parentNode.y}
                     x2={childNode.x}
                     y2={childNode.y}
                     provideEdgeLength={provideEdgeLength}
-                    node={node}
+                    node={parentNode}
                     childNode={childNode}
                     dispatch={dispatch}
                   />
                 );
-              });
-            })}
+              }
+              return null;
+            }),
+          )}
           {isInputWeight ? (
             <InputWeight
               nums={inputWeightNums}
               dispatch={dispatch}
               setInputWeight={setInputWeight}
               setInputWeightNums={setInputWeightNums}
+              nodes={nodes}
             />
           ) : null}
         </svg>

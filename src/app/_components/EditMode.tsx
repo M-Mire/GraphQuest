@@ -1,11 +1,16 @@
 import { useRef, useState } from "react";
+import { useCallback } from "react";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import Node from "~/app/model/Node";
+import createNewNode from "~/app/utils/createNewNode";
 import NodeElement, {
   ACTIONS_NODE,
   ActionNode,
-  newNode,
-  Node,
 } from "~/app/_components/NodeElement";
 import Edge from "~/app/_components/Edge";
+import ContextMenu from "~/app/_components/ContextMenu";
+import InputWeight from "~/app/_components/InputWeight";
+import { getCoords } from "../utils/getCoords";
 
 interface EditModeProps {
   dispatch: React.Dispatch<ActionNode>;
@@ -24,11 +29,71 @@ const EditMode: React.FC<EditModeProps> = ({
 }) => {
   const elementRef = useRef<HTMLDivElement | null>(null);
   const [activeNode, setActiveNode] = useState<number>(-1);
+  const router = useRouter();
+  const searchParams = useSearchParams()!;
+  const [isCtxMenu, setCtxMenu] = useState<number>(-1);
+  const [isInputWeight, setInputWeight] = useState<boolean>(false);
+  const [inputWeightNums, setInputWeightNums] = useState<number[]>([]);
+
+  //move
+  const [isMoveNode, setMoveNode] = useState<boolean>(false);
+
+  const createNodeQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams);
+      params.append(name, value);
+      return params.toString();
+    },
+    [searchParams],
+  );
+
+  const updateNodeQueryString = useCallback(
+    (
+      name: string,
+      valueToRemove: string,
+      parentNode: number,
+      childNode: number,
+    ) => {
+      const params = new URLSearchParams(searchParams);
+      const values = params.getAll(name);
+
+      if (values.length) {
+        params.delete(name);
+        for (const value of values) {
+          if (value !== valueToRemove) {
+            params.append(name, value);
+          }
+        }
+      }
+      const updateNode = nodes.find((node) => node.val === parentNode);
+
+      // if found node
+      console.log("node found");
+      console.log(updateNode);
+
+      //change node
+      console.log("will change the node");
+      updateNode?.childNodes.push(childNode);
+      //encode
+      console.log("encode node");
+      const encodeNode = encodeURIComponent(JSON.stringify(updateNode));
+      console.log(encodeNode);
+      //decode
+      // console.log("decode the node");
+      // const decodeNode = JSON.parse(decodeURIComponent(encodeNode));
+      // console.log(decodeNode);
+
+      params.append(name, encodeNode);
+      return params.toString();
+    },
+    [searchParams],
+  );
 
   const handleClick = (e: React.MouseEvent) => {
     const { pageX: x, pageY: y, target } = e;
     const targetAsElem = target as HTMLElement;
     const nodeName = targetAsElem.tagName;
+
     if (nodeName !== "svg" && nodeName !== "circle" && nodeName !== "text") {
       return;
     }
@@ -38,28 +103,71 @@ const EditMode: React.FC<EditModeProps> = ({
         const clickedNode = nodes.find(
           (node) => node.val === parseInt(textContent),
         )!.val;
+        // Handles right click
+        if (e.button === 2) {
+          setCtxMenu(clickedNode);
+          if (activeNode === clickedNode) setActiveNode(-1);
+          return;
+        }
         if (activeNode === -1) {
           setActiveNode(clickedNode);
         } else if (activeNode === clickedNode) {
           setActiveNode(-1);
         } else if (activeNode !== null && clickedNode >= 0) {
-          dispatch({
-            type: ACTIONS_NODE.ADD_CHILD_NODE,
-            payload: { parentNode: activeNode, childNode: clickedNode },
-          });
+          if (provideEdgeLength) {
+            setInputWeight(true);
+            setInputWeightNums([activeNode, clickedNode]);
+          } else {
+            console.log(nodes);
+            console.log(activeNode, clickedNode);
+            console.log(nodes.find((node) => node.val === activeNode));
+            dispatch({
+              type: ACTIONS_NODE.ADD_CHILD_NODE,
+              payload: {
+                parentNode: activeNode,
+                childNode: clickedNode,
+                weight: 0,
+              },
+            });
+            const parentNodeEncoded = encodeURIComponent(
+              JSON.stringify(nodes.find((node) => node.val === activeNode)),
+            );
+            router.push(
+              `/?${updateNodeQueryString(
+                "node",
+                parentNodeEncoded,
+                activeNode,
+                clickedNode,
+              )}`,
+            );
+          }
         }
       }
       return;
     }
+    if (e.button === 2) {
+      setCtxMenu(-1);
+      return;
+    }
 
-    if (elementRef.current) {
-      const rect = elementRef.current.getBoundingClientRect();
-      const node_x = x - rect.left + window.scrollX;
-      const node_y = y - rect.top + window.scrollY;
+    if (!isMoveNode) {
+      const { node_x, node_y } = getCoords(x, y, elementRef) as {
+        node_x: number;
+        node_y: number;
+      };
+      const addNode = createNewNode(node_x, node_y, nodeCount);
+      const serializedObj = encodeURIComponent(JSON.stringify(addNode));
+      // // console.log(serializedObj);
+      // const deserializedObj = JSON.parse(decodeURIComponent(serializedObj));
+      // console.log(deserializedObj);
+      // console.log(Router.asPath);
+      router.push(`?${createNodeQueryString("node", serializedObj)}`);
+
       dispatch({
         type: ACTIONS_NODE.ADD_NODE,
-        payload: newNode(node_x, node_y, nodeCount),
+        payload: addNode,
       });
+
       incrementNodeCount();
       return;
     }
@@ -71,38 +179,68 @@ const EditMode: React.FC<EditModeProps> = ({
         ref={elementRef}
         className="absolute left-0 top-0 h-3/4 w-3/4 bg-gray-200"
         onMouseDown={(e) => handleClick(e)}
+        onContextMenu={(e) => handleContextMenu(e)}
         style={{ position: "relative" }}
       >
         <svg
           height="100%"
           width="100%"
-          style={{ position: "absolute", top: 0, left: 0 }}
+          style={{
+            display: "block",
+            margin: "auto",
+            position: "relative",
+            border: "1px solid black",
+          }}
         >
           {nodes?.map((node) => {
             return (
               <NodeElement key={node.id} node={node} activeNode={activeNode} />
             );
           })}
-          {nodes
-            .filter((node) => node.childNodes.size > 0)
-            .map((node) => {
-              return Array.from(node.childNodes).map((child: number, id) => {
-                const childCoords = getCoords(nodes, child);
+          {nodes?.map((node) =>
+            node.val === isCtxMenu && !isMoveNode ? (
+              <ContextMenu
+                key={node.id}
+                node={node}
+                dispatch={dispatch}
+                setMoveNode={setMoveNode}
+                setCtxMenu={setCtxMenu}
+                isCtxMenu={isCtxMenu}
+                nodes={nodes}
+                elementRef={elementRef}
+              />
+            ) : null,
+          )}
+          {nodes.map((parentNode) =>
+            parentNode.childNodes.map((childVal, id) => {
+              const childNode = nodes.find((node) => node.val === childVal);
+              if (childNode) {
                 return (
                   <Edge
                     key={id}
-                    x1={node.x}
-                    y1={node.y}
-                    x2={childCoords.x}
-                    y2={childCoords.y}
+                    x1={parentNode.x}
+                    y1={parentNode.y}
+                    x2={childNode.x}
+                    y2={childNode.y}
                     provideEdgeLength={provideEdgeLength}
-                    node={node}
-                    childNode={child}
+                    node={parentNode}
+                    childNode={childNode}
                     dispatch={dispatch}
                   />
                 );
-              });
-            })}
+              }
+              return null;
+            }),
+          )}
+          {isInputWeight ? (
+            <InputWeight
+              nums={inputWeightNums}
+              dispatch={dispatch}
+              setInputWeight={setInputWeight}
+              setInputWeightNums={setInputWeightNums}
+              nodes={nodes}
+            />
+          ) : null}
         </svg>
       </div>
       <div className="relative w-1/4"></div>
@@ -112,7 +250,11 @@ const EditMode: React.FC<EditModeProps> = ({
 
 export default EditMode;
 
-const getCoords = (nodes: Node[], target: number) => {
-  const node = nodes.find((node: Node) => node.val === target)!;
-  return { x: node.x, y: node.y };
+const getChildNode = (nodes: Node[], target: number) => {
+  const node: Node = nodes.find((node: Node) => node.val === target)!;
+  return node;
+};
+
+const handleContextMenu = (e: React.MouseEvent) => {
+  e.preventDefault();
 };

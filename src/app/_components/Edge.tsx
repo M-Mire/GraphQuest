@@ -1,4 +1,5 @@
-import { Node, ActionNode, ACTIONS_NODE } from "~/app/_components/NodeElement";
+import { ActionNode, ACTIONS_NODE } from "~/app/_components/NodeElement";
+import Node from "~/app/model/Node";
 import React, { useState, useEffect } from "react";
 
 interface EdgeProps {
@@ -8,7 +9,7 @@ interface EdgeProps {
   y2: number;
   provideEdgeLength?: boolean;
   node?: Node;
-  childNode?: number;
+  childNode?: Node;
   dispatch?: React.Dispatch<ActionNode>;
 }
 
@@ -23,30 +24,15 @@ const Edge: React.FC<EdgeProps> = ({
   dispatch,
 }) => {
   const [editable, setEditable] = useState(false);
-  const [distance, setDistance] = useState<string | undefined>(
-    node?.distances.get(childNode!)?.toString(),
+  const [localDistance, setLocalDistance] = useState<string | undefined>(
+    undefined,
   );
 
-  // Initialise!
   useEffect(() => {
-    if (provideEdgeLength && node) {
-      let distanceValue = node.distances.get(childNode!);
-      if (distanceValue === undefined) {
-        distanceValue = 0;
-        if (dispatch) {
-          dispatch({
-            type: ACTIONS_NODE.NODE_DISTANCE,
-            payload: {
-              node: node,
-              childNode: childNode!,
-              parsedDistance: 0,
-            },
-          });
-        }
-      }
-      setDistance(distanceValue.toString());
+    if (provideEdgeLength) {
+      setLocalDistance(node?.distances.indexOf(childNode!.val)?.toString());
     }
-  }, [provideEdgeLength, node, childNode, dispatch]);
+  }, [provideEdgeLength]);
 
   const handleTextClick = () => {
     if (provideEdgeLength) {
@@ -55,24 +41,26 @@ const Edge: React.FC<EdgeProps> = ({
   };
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDistance(event.target.value);
+    setLocalDistance(event.target.value);
   };
 
   const handleTextBlur = () => {
     setEditable(false);
 
     if (provideEdgeLength && node) {
-      const parsedDistance = parseInt(distance ?? "0");
-      if (!isNaN(parsedDistance) && dispatch) {
+      const parsedDistance = parseInt(localDistance ?? "1");
+      console.log("triggered before" + " " + parsedDistance);
+      if (!isNaN(parsedDistance) && dispatch !== undefined) {
+        console.log("triggered");
         dispatch({
           type: ACTIONS_NODE.NODE_DISTANCE,
           payload: {
             node: node,
-            childNode: childNode!,
+            childNode: childNode!.val,
             parsedDistance: parsedDistance,
           },
         });
-        setDistance(parsedDistance.toString());
+        setLocalDistance(parsedDistance.toString());
       }
     }
   };
@@ -82,6 +70,16 @@ const Edge: React.FC<EdgeProps> = ({
       e.preventDefault();
       handleTextBlur();
     }
+  };
+
+  const getNodeDistance = () => {
+    if (node && childNode?.val !== undefined) {
+      const indexOfChild = node.childNodes.indexOf(childNode.val);
+      if (indexOfChild !== -1 && node?.distances[indexOfChild] !== undefined) {
+        return node.distances[indexOfChild];
+      }
+    }
+    return "";
   };
 
   const circleRadius = 18;
@@ -120,29 +118,35 @@ const Edge: React.FC<EdgeProps> = ({
         x2={edgeEndX}
         y2={edgeEndY}
         markerEnd={"url(#markerArrow)"}
-        style={{ stroke: "black", strokeWidth: 2 }}
+        style={{
+          stroke:
+            node?.currentlyVisitedPair && childNode?.currentlyVisitedPair
+              ? "yellow"
+              : "black",
+          strokeWidth: 2,
+        }}
       />
-      {provideEdgeLength && distance !== undefined ? (
+      {provideEdgeLength && localDistance !== undefined ? (
         <foreignObject
           x={midX}
           y={midY}
           width="40"
           height="30"
           style={{
-            rotate: `${rotationAngle}deg)`, // this is going to break the rotation. Remove ")" to get it to work; however, it's super far from the line, so additional adjustments are needed
+            rotate: `${rotationAngle}deg)`,
             transformOrigin: "50% 50%",
           }}
         >
           {editable ? (
             <input
               type="text"
-              value={distance}
+              value={localDistance}
               onChange={handleTextChange}
               onBlur={handleTextBlur}
               onKeyDown={handleInputKeyPress}
             />
           ) : (
-            <span onClick={handleTextClick}>{distance}</span>
+            <span onClick={handleTextClick}>{getNodeDistance()}</span>
           )}
         </foreignObject>
       ) : null}

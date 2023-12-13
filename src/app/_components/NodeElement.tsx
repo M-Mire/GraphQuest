@@ -1,16 +1,12 @@
 import { useState } from "react";
 import { Command } from "../_GraphAlgorithm/Graph";
-
-export interface Node {
-  id: number;
-  val: number;
-  x: number;
-  y: number;
-  visited: boolean;
-  visitedChildrens: boolean;
-  childNodes: Set<number>;
-  distances: Map<number, number>;
-}
+import {
+  DEFAULT_RECTANGLE_SIZE,
+  DEFAULT_RADIUS_SMALL_CIRCLE,
+  DEFAULT_RADIUS_BIG_CIRCLE,
+} from "~/app/constants/Node/index";
+import { getCoords } from "~/app/utils/getCoords";
+import Node from "~/app/model/Node";
 
 interface NodeElementProps {
   node: Node;
@@ -19,36 +15,43 @@ interface NodeElementProps {
 
 const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
   const [isClicked, setClicked] = useState<boolean>(false);
-  const RECT = 70;
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (e.button === 2) {
+      return;
+    }
+    if (activeNode === -1 || activeNode === node.val) {
+      setClicked(!isClicked);
+    }
+  };
+
   return (
     <>
       <rect
         name={"" + node.val}
-        x={node.x - RECT / 2}
-        y={node.y - RECT / 2}
-        height={RECT}
-        width={RECT}
+        x={node.x - DEFAULT_RECTANGLE_SIZE / 2}
+        y={node.y - DEFAULT_RECTANGLE_SIZE / 2}
+        height={DEFAULT_RECTANGLE_SIZE}
+        width={DEFAULT_RECTANGLE_SIZE}
         fill="transparent"
       ></rect>
       <circle
         name={"" + node.val}
         cx={node.x}
         cy={node.y}
-        r="16"
+        r={DEFAULT_RADIUS_SMALL_CIRCLE}
         fill={COLOUR_SELECTION(isClicked, node.visited, node.visitedChildrens)}
       />
       <circle
         name={"" + node.val}
         cx={node.x}
         cy={node.y}
-        r="18"
+        r={DEFAULT_RADIUS_BIG_CIRCLE}
         stroke="black"
         strokeWidth="3"
         fill={COLOUR_SELECTION(isClicked, node.visited, node.visitedChildrens)}
-        onMouseDown={() => {
-          if (activeNode === -1 || activeNode === node.val) {
-            setClicked(!isClicked);
-          }
+        onMouseDown={(e) => {
+          handleClick(e);
         }}
       />
       <text
@@ -59,10 +62,8 @@ const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
         fill="black"
         textAnchor="middle"
         className="no-select"
-        onMouseDown={() => {
-          if (activeNode === -1 || activeNode === node.val) {
-            setClicked(!isClicked);
-          }
+        onMouseDown={(e) => {
+          handleClick(e);
         }}
       >
         {node.val}
@@ -73,25 +74,14 @@ const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
 
 export default NodeElement;
 
-export function newNode(x: number, y: number, count: number): Node {
-  return {
-    id: Date.now(),
-    val: count,
-    x: x,
-    y: y,
-    visited: false,
-    visitedChildrens: false,
-    childNodes: new Set(),
-    distances: new Map(),
-  };
-}
-
 export const ACTIONS_NODE = {
   ADD_NODE: "ADD_NODE",
   ADD_CHILD_NODE: "ADD_CHILD_NODE",
   NODE_ANIMATE: "NODE_ANIMATE",
   NODE_RESET: "NODE_RESET",
   NODE_DISTANCE: "NODE_DISTANCE",
+  DELETE_NODE: "DELETE_NODE",
+  UPDATE_COORDS: "UPDATE_COORDS",
 };
 export type ActionNode = {
   type: string;
@@ -99,15 +89,21 @@ export type ActionNode = {
     | {
         parentNode: number;
         childNode: number;
+        weight: number;
       }
     | {
-        value: number;
+        value: number | Map<number, number> | number[];
         command: Command;
       }
     | {
         node: Node;
         childNode: number;
         parsedDistance: number;
+      }
+    | {
+        val: number;
+        x: number;
+        y: number;
       }
     | number
     | Node;

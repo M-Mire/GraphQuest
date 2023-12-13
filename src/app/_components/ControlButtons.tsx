@@ -5,8 +5,8 @@ import PauseIcon from "@mui/icons-material/Pause";
 import FastForwardIcon from "@mui/icons-material/FastForward";
 import FastRewindIcon from "@mui/icons-material/FastRewind";
 import RotateLeftIcon from "@mui/icons-material/RotateLeft";
-import { Node, ACTIONS_NODE, ActionNode } from "~/app/_components/NodeElement";
-
+import { ACTIONS_NODE, ActionNode } from "~/app/_components/NodeElement";
+import { useSearchParams } from "next/navigation";
 import { ActionLine } from "./Animation";
 import { Line } from "~/app/_GraphAlgorithm/Graph";
 
@@ -37,9 +37,14 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
   isPlay,
   dispatchLineNumbers,
 }) => {
+  const searchParams = useSearchParams();
+  const isEditMode = searchParams.get("edit") === "true";
+
   const handlePlayClick = () => {
-    setRootValue(rootValue !== null && !isNaN(rootValue) ? rootValue : 0);
-    setPlay(true);
+    if (!isEditMode) {
+      setRootValue(rootValue !== null && !isNaN(rootValue) ? rootValue : 0);
+      setPlay(true);
+    }
   };
 
   const handlePauseClick = () => {

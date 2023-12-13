@@ -1,5 +1,6 @@
 import { useRef } from "react";
-import NodeElement, { Node } from "./NodeElement";
+import NodeElement from "./NodeElement";
+import Node from "~/app/model/Node";
 import Edge from "~/app/_components/Edge";
 
 interface CanvasProps {
@@ -26,25 +27,26 @@ const Canvas: React.FC<CanvasProps> = ({ nodes, provideEdgeLength }) => {
           {nodes?.map((node) => {
             return <NodeElement key={node.id} node={node} />;
           })}
-          {nodes
-            .filter((node) => node.childNodes.size > 0)
-            .map((node) => {
-              return Array.from(node.childNodes).map((child: number, id) => {
-                const childCoords = getCoords(nodes, child);
+          {nodes.map((parentNode) =>
+            parentNode.childNodes.map((childVal, id) => {
+              const childNode = nodes.find((node) => node.val === childVal);
+              if (childNode) {
                 return (
                   <Edge
                     key={id}
-                    x1={node.x}
-                    y1={node.y}
-                    x2={childCoords.x}
-                    y2={childCoords.y}
+                    x1={parentNode.x}
+                    y1={parentNode.y}
+                    x2={childNode.x}
+                    y2={childNode.y}
                     provideEdgeLength={provideEdgeLength}
-                    node={node}
-                    childNode={child}
+                    node={parentNode}
+                    childNode={childNode}
                   />
                 );
-              });
-            })}
+              }
+              return null;
+            }),
+          )}
         </svg>
       </div>
     </>
@@ -53,7 +55,7 @@ const Canvas: React.FC<CanvasProps> = ({ nodes, provideEdgeLength }) => {
 
 export default Canvas;
 
-const getCoords = (nodes: Node[], target: number) => {
-  const node = nodes.find((node: Node) => node.val === target)!;
-  return { x: node.x, y: node.y };
+const getChildNode = (nodes: Node[], target: number) => {
+  const node: Node = nodes.find((node: Node) => node.val === target)!;
+  return node;
 };

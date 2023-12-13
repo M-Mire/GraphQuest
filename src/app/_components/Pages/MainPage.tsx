@@ -161,7 +161,6 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
   const [lineNumbers, dispatchLineNumbers] = useReducer(lineReducer, []);
   const searchParams = useSearchParams();
   const isEditMode = searchParams.get("edit") === "true";
-
   return (
     <>
       <div className="flex h-screen overflow-hidden">

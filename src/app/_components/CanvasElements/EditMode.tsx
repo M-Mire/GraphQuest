@@ -66,29 +66,13 @@ const EditMode: React.FC<EditModeProps> = ({
         }
       }
       const updateNode = nodes.find((node) => node.val === parentNode);
-
-      // if found node
-      console.log("node found");
-      console.log(updateNode);
-
-      //change node
-      console.log("will change the node");
       updateNode?.childNodes.push(childNode);
-      //encode
-      console.log("encode node");
       const encodeNode = encodeURIComponent(JSON.stringify(updateNode));
-      console.log(encodeNode);
-      //decode
-      // console.log("decode the node");
-      // const decodeNode = JSON.parse(decodeURIComponent(encodeNode));
-      // console.log(decodeNode);
-
       params.append(name, encodeNode);
       return params.toString();
     },
     [searchParams],
   );
-
   const handleClick = (e: React.MouseEvent) => {
     const { pageX: x, pageY: y, target } = e;
     const targetAsElem = target as HTMLElement;
@@ -106,21 +90,15 @@ const EditMode: React.FC<EditModeProps> = ({
         // Handles right click
         if (e.button === 2) {
           setCtxMenu(clickedNode);
-          if (activeNode === clickedNode) setActiveNode(-1);
           return;
         }
-        if (activeNode === -1) {
-          setActiveNode(clickedNode);
-        } else if (activeNode === clickedNode) {
-          setActiveNode(-1);
-        } else if (activeNode !== null && clickedNode >= 0) {
+        if (activeNode === -1) setActiveNode(clickedNode);
+        else if (activeNode === clickedNode) setActiveNode(-1);
+        else if (activeNode !== -1 && clickedNode >= 0) {
           if (provideEdgeLength) {
             setInputWeight(true);
             setInputWeightNums([activeNode, clickedNode]);
           } else {
-            console.log(nodes);
-            console.log(activeNode, clickedNode);
-            console.log(nodes.find((node) => node.val === activeNode));
             dispatch({
               type: ACTIONS_NODE.ADD_CHILD_NODE,
               payload: {
@@ -232,7 +210,7 @@ const EditMode: React.FC<EditModeProps> = ({
               return null;
             }),
           )}
-          {isInputWeight ? (
+          {isInputWeight && !isMoveNode ? (
             <InputWeight
               nums={inputWeightNums}
               dispatch={dispatch}

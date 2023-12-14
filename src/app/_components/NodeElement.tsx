@@ -6,17 +6,7 @@ import {
   DEFAULT_RADIUS_BIG_CIRCLE,
 } from "~/app/constants/Node/index";
 import { getCoords } from "~/app/utils/getCoords";
-export interface Node {
-  id: number;
-  val: number;
-  x: number;
-  y: number;
-  visited: boolean;
-  visitedChildrens: boolean;
-  childNodes: Set<number>;
-  distances: Map<number, number>;
-  currentlyVisitedPair: boolean;
-}
+import Node from "~/app/model/Node";
 
 interface NodeElementProps {
   node: Node;
@@ -83,20 +73,6 @@ const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
 };
 
 export default NodeElement;
-
-export function newNode(x: number, y: number, count: number): Node {
-  return {
-    id: Date.now(),
-    val: count,
-    x: x,
-    y: y,
-    visited: false,
-    visitedChildrens: false,
-    childNodes: new Set(),
-    distances: new Map(),
-    currentlyVisitedPair: false,
-  };
-}
 
 export const ACTIONS_NODE = {
   ADD_NODE: "ADD_NODE",

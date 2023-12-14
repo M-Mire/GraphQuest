@@ -1,12 +1,11 @@
 import { useRef, useState } from "react";
 import { useCallback } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-
+import Node from "~/app/model/Node";
+import createNewNode from "~/app/utils/createNewNode";
 import NodeElement, {
   ACTIONS_NODE,
   ActionNode,
-  newNode,
-  Node,
 } from "~/app/_components/NodeElement";
 import Edge from "~/app/_components/Edge";
 import ContextMenu from "~/app/_components/ContextMenu";
@@ -100,7 +99,7 @@ const EditMode: React.FC<EditModeProps> = ({
         node_x: number;
         node_y: number;
       };
-      const addNode = newNode(node_x, node_y, nodeCount);
+      const addNode = createNewNode(node_x, node_y, nodeCount);
       const serializedObj = encodeURIComponent(JSON.stringify(addNode));
       // // console.log(serializedObj);
       // const deserializedObj = JSON.parse(decodeURIComponent(serializedObj));

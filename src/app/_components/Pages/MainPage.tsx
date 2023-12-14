@@ -1,13 +1,14 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
 import Sidebar from "~/app/_components/Sidebar";
 import Navbar from "~/app/_components/Navbar";
 import EditMode from "~/app/_components/EditMode";
-import { ACTIONS_NODE, ActionNode, Node } from "~/app/_components/NodeElement";
+import { ACTIONS_NODE, ActionNode } from "~/app/_components/NodeElement";
 import Animation, { ActionLine } from "~/app/_components/Animation";
 import Graph, { Command, Line } from "~/app/_GraphAlgorithm/Graph";
 import { useState, useReducer } from "react";
 import pageConfigurationType from "~/app/_pageConfigs/config";
+import Node from "~/app/model/Node";
 
 const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
   switch (action.type) {

@@ -1,4 +1,5 @@
-import { Node, ActionNode, ACTIONS_NODE } from "~/app/_components/NodeElement";
+import { ActionNode, ACTIONS_NODE } from "~/app/_components/NodeElement";
+import Node from "~/app/model/Node";
 import React, { useState, useEffect } from "react";
 
 interface EdgeProps {

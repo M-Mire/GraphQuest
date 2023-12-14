@@ -1,11 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { COLOUR_SELECTION } from "~/app/_components/NodeElement";
-import Node from "~/app/model/Node";
-import Graph, {
-  Command,
-  Line,
-  TrackerArray,
-} from "~/app/_GraphAlgorithm/Graph";
+import type Node from "~/app/model/Node";
+import { Command, Line, TrackerArray } from "~/app/_GraphAlgorithm/Graph";
 
 interface TraverseAnimationProps {
   tracker: TrackerArray;

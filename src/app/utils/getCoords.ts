@@ -1,4 +1,3 @@
-import { Padding } from "@mui/icons-material";
 import { DEFAULT_RADIUS_BIG_CIRCLE } from "../constants/Node";
 import { handleOutOfBoundsCoords } from "./handleOutOfBoundsCoords";
 const PADDING = 3; // padding if out of bounds

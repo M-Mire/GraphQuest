@@ -5,9 +5,12 @@ import PauseIcon from "@mui/icons-material/Pause";
 import FastForwardIcon from "@mui/icons-material/FastForward";
 import FastRewindIcon from "@mui/icons-material/FastRewind";
 import RotateLeftIcon from "@mui/icons-material/RotateLeft";
-import { ACTIONS_NODE, ActionNode } from "~/app/_components/NodeElement";
+import {
+  ACTIONS_NODE,
+  ActionNode,
+} from "~/app/_components/GraphUI/NodeElement";
 import { useSearchParams } from "next/navigation";
-import { ActionLine } from "./Animation";
+import { ActionLine } from "../CanvasElements/Animation";
 import { Line } from "~/app/_GraphAlgorithm/Graph";
 
 export interface ControlButtonsProps {

@@ -1,14 +1,19 @@
-import { useCallback, useEffect } from "react";
-import { useSearchParams, usePathname } from "next/navigation";
-import Sidebar from "~/app/_components/Sidebar";
-import Navbar from "~/app/_components/Navbar";
-import EditMode from "~/app/_components/EditMode";
-import { ACTIONS_NODE, ActionNode } from "~/app/_components/NodeElement";
-import Animation, { ActionLine } from "~/app/_components/Animation";
-import Graph, { Command, Line } from "~/app/_GraphAlgorithm/Graph";
+import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import Sidebar from "~/app/_components/SharedUI/Sidebar";
+import Navbar from "~/app/_components/SharedUI/Navbar";
+import EditMode from "~/app/_components/CanvasElements/EditMode";
+import {
+  ACTIONS_NODE,
+  ActionNode,
+} from "~/app/_components/GraphUI/NodeElement";
+import Animation, {
+  type ActionLine,
+} from "~/app/_components/CanvasElements/Animation";
+import { Command, Line } from "~/app/_GraphAlgorithm/Graph";
 import { useState, useReducer } from "react";
-import pageConfigurationType from "~/app/_pageConfigs/config";
-import Node from "~/app/model/Node";
+import type pageConfigurationType from "~/app/_pageConfigs/config";
+import type Node from "~/app/model/Node";
 
 const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
   switch (action.type) {
@@ -16,7 +21,6 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
       const newNode = action.payload as Node;
       const nodeExists = nodes.some((node) => node.val === newNode.val);
       if (!nodeExists) {
-        // console.log(newNode);
         return [...nodes, newNode] as Node[];
       }
       return nodes;

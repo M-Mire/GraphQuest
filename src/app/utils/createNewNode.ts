@@ -1,4 +1,4 @@
-import Node from "~/app/model/Node";
+import type Node from "~/app/model/Node";
 import { v4 as uuidv4 } from "uuid";
 
 export default function newNode(x: number, y: number, val: number): Node {

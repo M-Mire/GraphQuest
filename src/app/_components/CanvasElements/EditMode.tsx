@@ -6,11 +6,11 @@ import createNewNode from "~/app/utils/createNewNode";
 import NodeElement, {
   ACTIONS_NODE,
   ActionNode,
-} from "~/app/_components/NodeElement";
-import Edge from "~/app/_components/Edge";
-import ContextMenu from "~/app/_components/ContextMenu";
-import InputWeight from "~/app/_components/InputWeight";
-import { getCoords } from "../utils/getCoords";
+} from "~/app/_components/GraphUI/NodeElement";
+import Edge from "~/app/_components/GraphUI/Edge";
+import ContextMenu from "~/app/_components/SharedUI/ContextMenu";
+import InputWeight from "~/app/_components/GraphUI/InputWeight";
+import { getCoords } from "../../utils/getCoords";
 
 interface EditModeProps {
   dispatch: React.Dispatch<ActionNode>;

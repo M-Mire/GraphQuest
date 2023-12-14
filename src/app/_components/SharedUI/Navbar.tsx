@@ -8,8 +8,8 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Link from "next/link";
 import ControlButtons from "./ControlButtons";
-import { ActionNode } from "./NodeElement";
-import { ActionLine } from "./Animation";
+import { ActionNode } from "../GraphUI/NodeElement";
+import { ActionLine } from "../CanvasElements/Animation";
 import { useSearchParams } from "next/navigation";
 
 const navbarStyle = {

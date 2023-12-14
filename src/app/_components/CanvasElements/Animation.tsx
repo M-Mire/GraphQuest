@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Canvas from "~/app/_components/Canvas";
-import TraverseCode from "~/app/_components/TraverseCode";
-import TraverseAnimationBFS from "~/app/_components/traverseAnimation/TraverseAnimationBFS";
-import TraverseAnimationDijkstra from "~/app/_components/traverseAnimation/TraverseAnimationDijkstra";
-import { ACTIONS_NODE, ActionNode } from "./NodeElement";
+import Canvas from "~/app/_components/CanvasElements/Canvas";
+import TraverseCode from "~/app/_components/TraverseAnimation/AnimationCode";
+import TraverseAnimationBFS from "~/app/_components/TraverseAnimation/AnimationBFS";
+import TraverseAnimationDijkstra from "~/app/_components/TraverseAnimation/AnimationDijkstra";
+import { ACTIONS_NODE, ActionNode } from "../GraphUI/NodeElement";
 import Node from "~/app/model/Node";
 import Graph, {
   Command,
@@ -13,10 +13,9 @@ import Graph, {
   TrackerElementType,
   InstructionType,
   Order,
-  MultipleInstructions,
   SingleInstruction,
 } from "~/app/_GraphAlgorithm/Graph";
-import PseudoCode from "~/app/_components/PseudoCode";
+import PseudoCode from "~/app/_components/SharedUI/PseudoCode";
 
 interface AnimationProps {
   nodes: Node[];

@@ -1,7 +1,7 @@
 import { useRef } from "react";
-import NodeElement from "./NodeElement";
+import NodeElement from "../GraphUI/NodeElement";
 import Node from "~/app/model/Node";
-import Edge from "~/app/_components/Edge";
+import Edge from "~/app/_components/GraphUI/Edge";
 
 interface CanvasProps {
   nodes: Node[];

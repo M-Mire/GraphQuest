@@ -1,8 +1,11 @@
 import { useState, useCallback } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import isStringNumber from "~/app/utils/isStringNumber";
-import { ActionNode, ACTIONS_NODE } from "~/app/_components/NodeElement";
-import Node from "../model/Node";
+import {
+  ActionNode,
+  ACTIONS_NODE,
+} from "~/app/_components/GraphUI/NodeElement";
+import Node from "../../model/Node";
 
 const InputWeightWidth = 250;
 const InputWeightHeight = 150;

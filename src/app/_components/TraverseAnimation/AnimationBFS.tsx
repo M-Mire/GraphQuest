@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { COLOUR_SELECTION } from "~/app/_components/NodeElement";
-import Node from "~/app/model/Node";
+import { COLOUR_SELECTION } from "~/app/_components/GraphUI/NodeElement";
+import type Node from "~/app/model/Node";
 interface TraverseAnimationProps {
   nodes: Node[];
 }

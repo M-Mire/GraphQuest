@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Command } from "../_GraphAlgorithm/Graph";
+import { Command } from "../../_GraphAlgorithm/Graph";
 import {
   DEFAULT_RECTANGLE_SIZE,
   DEFAULT_RADIUS_SMALL_CIRCLE,

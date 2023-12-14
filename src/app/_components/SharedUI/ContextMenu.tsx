@@ -4,7 +4,7 @@ import Node from "~/app/model/Node";
 import NodeElement, {
   ACTIONS_NODE,
   ActionNode,
-} from "~/app/_components/NodeElement";
+} from "~/app/_components/GraphUI/NodeElement";
 
 interface ContextMenuProps {
   node: Node;

@@ -144,20 +144,45 @@ const lineReducer: React.Reducer<number[], ActionLine> = (
   }
 };
 
+const addNodesFromURL = (
+  nodes: Node[],
+  dispatch: React.Dispatch<ActionNode>,
+  urlNodes: string[],
+) => {
+  if (nodes.length === 0 && urlNodes.length > 0) {
+    urlNodes.forEach((urlNode) => {
+      const deserializedObj = JSON.parse(decodeURIComponent(urlNode)) as Node;
+      console.log(deserializedObj, "decode");
+      const newNode = deserializedObj;
+      dispatch({
+        type: ACTIONS_NODE.ADD_NODE,
+        payload: newNode,
+      });
+    });
+  }
+};
+
 interface PageProps {
   pageConfiguration: pageConfigurationType;
 }
 
 const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
+  const searchParams = useSearchParams();
+  const urlNodes = searchParams.getAll("node");
+  const [nodeCount, setNodeCount] = useState<number>(urlNodes.length);
+
   const [rootValue, setRootValue] = useState<number | null>(null);
   const [nodes, dispatch] = useReducer(nodeReducer, []);
-  const [nodeCount, setNodeCount] = useState<number>(0);
   const [speed, setSpeed] = useState<number>(500);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlay, setPlay] = useState<boolean>(false);
   const [lineNumbers, dispatchLineNumbers] = useReducer(lineReducer, []);
-  const searchParams = useSearchParams();
   const isEditMode = searchParams.get("edit") === "true";
+
+  useEffect(() => {
+    addNodesFromURL(nodes, dispatch, urlNodes);
+  }, []);
+
   return (
     <>
       <div className="flex h-screen overflow-hidden">

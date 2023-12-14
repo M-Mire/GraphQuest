@@ -27,7 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setRootValue, rootValue }) => {
   const createQueryString = useCallback(
     (name: string, value: string) => {
       const params = new URLSearchParams(searchParams);
-      params.set(name, value);
+      params.append(name, value);
       return params.toString();
     },
     [searchParams],
@@ -36,13 +36,8 @@ const Sidebar: React.FC<SidebarProps> = ({ setRootValue, rootValue }) => {
   const deleteQueryString = useCallback(
     (name: string) => {
       const params = new URLSearchParams(searchParams);
-      const paramsObject: Record<string, string> = {};
-      params.forEach((value, key) => {
-        paramsObject[key] = value;
-      });
-      delete paramsObject[name];
-      const newParams = new URLSearchParams(paramsObject);
-      return newParams.toString();
+      params.delete(name);
+      return params.toString();
     },
     [searchParams],
   );

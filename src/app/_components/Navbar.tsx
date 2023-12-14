@@ -10,6 +10,7 @@ import Link from "next/link";
 import ControlButtons from "./ControlButtons";
 import { ActionNode } from "./NodeElement";
 import { ActionLine } from "./Animation";
+import { useSearchParams } from "next/navigation";
 
 const navbarStyle = {
   backgroundColor: "transparent",

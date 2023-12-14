@@ -47,6 +47,48 @@ const EditMode: React.FC<EditModeProps> = ({
     [searchParams],
   );
 
+  const updateNodeQueryString = useCallback(
+    (
+      name: string,
+      valueToRemove: string,
+      parentNode: number,
+      childNode: number,
+    ) => {
+      const params = new URLSearchParams(searchParams);
+      const values = params.getAll(name);
+
+      if (values.length) {
+        params.delete(name);
+        for (const value of values) {
+          if (value !== valueToRemove) {
+            params.append(name, value);
+          }
+        }
+      }
+      const updateNode = nodes.find((node) => node.val === parentNode);
+
+      // if found node
+      console.log("node found");
+      console.log(updateNode);
+
+      //change node
+      console.log("will change the node");
+      updateNode?.childNodes.push(childNode);
+      //encode
+      console.log("encode node");
+      const encodeNode = encodeURIComponent(JSON.stringify(updateNode));
+      console.log(encodeNode);
+      //decode
+      // console.log("decode the node");
+      // const decodeNode = JSON.parse(decodeURIComponent(encodeNode));
+      // console.log(decodeNode);
+
+      params.append(name, encodeNode);
+      return params.toString();
+    },
+    [searchParams],
+  );
+
   const handleClick = (e: React.MouseEvent) => {
     const { pageX: x, pageY: y, target } = e;
     const targetAsElem = target as HTMLElement;
@@ -76,6 +118,9 @@ const EditMode: React.FC<EditModeProps> = ({
             setInputWeight(true);
             setInputWeightNums([activeNode, clickedNode]);
           } else {
+            console.log(nodes);
+            console.log(activeNode, clickedNode);
+            console.log(nodes.find((node) => node.val === activeNode));
             dispatch({
               type: ACTIONS_NODE.ADD_CHILD_NODE,
               payload: {
@@ -84,6 +129,17 @@ const EditMode: React.FC<EditModeProps> = ({
                 weight: 0,
               },
             });
+            const parentNodeEncoded = encodeURIComponent(
+              JSON.stringify(nodes.find((node) => node.val === activeNode)),
+            );
+            router.push(
+              `/?${updateNodeQueryString(
+                "node",
+                parentNodeEncoded,
+                activeNode,
+                clickedNode,
+              )}`,
+            );
           }
         }
       }
@@ -105,11 +161,13 @@ const EditMode: React.FC<EditModeProps> = ({
       // const deserializedObj = JSON.parse(decodeURIComponent(serializedObj));
       // console.log(deserializedObj);
       // console.log(Router.asPath);
-      // router.push(`/?${createNodeQueryString("node", serializedObj)}`);
+      router.push(`?${createNodeQueryString("node", serializedObj)}`);
+
       dispatch({
         type: ACTIONS_NODE.ADD_NODE,
         payload: addNode,
       });
+
       incrementNodeCount();
       return;
     }

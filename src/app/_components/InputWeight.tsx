@@ -25,52 +25,52 @@ const InputWeight: React.FC<InputWeightProps> = ({
   const [parent, child] = nums;
   const [hoveredText, setHoveredText] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
-  // const router = useRouter();
-  // const searchParams = useSearchParams()!;
+  const router = useRouter();
+  const searchParams = useSearchParams()!;
 
-  // const updateNodeQueryString = useCallback(
-  //   (
-  //     name: string,
-  //     valueToRemove: string,
-  //     parentNode: number,
-  //     childNode: number,
-  //     weight: number,
-  //   ) => {
-  //     const params = new URLSearchParams(searchParams);
-  //     const values = params.getAll(name);
+  const updateNodeQueryString = useCallback(
+    (
+      name: string,
+      valueToRemove: string,
+      parentNode: number,
+      childNode: number,
+      weight: number,
+    ) => {
+      const params = new URLSearchParams(searchParams);
+      const values = params.getAll(name);
 
-  //     if (values.length) {
-  //       params.delete(name);
-  //       for (const value of values) {
-  //         if (value !== valueToRemove) {
-  //           params.append(name, value);
-  //         }
-  //       }
-  //     }
-  //     const updateNode = nodes.find((node) => node.val === parentNode);
+      if (values.length) {
+        params.delete(name);
+        for (const value of values) {
+          if (value !== valueToRemove) {
+            params.append(name, value);
+          }
+        }
+      }
+      const updateNode = nodes.find((node) => node.val === parentNode);
 
-  //     // if found node
-  //     console.log("node found");
-  //     console.log(updateNode);
+      // if found node
+      console.log("node found");
+      console.log(updateNode);
 
-  //     //change node
-  //     console.log("will change the node");
-  //     updateNode?.childNodes.push(childNode);
-  //     updateNode?.distances.push(weight);
-  //     //encode
-  //     console.log("encode node");
-  //     const encodeNode = encodeURIComponent(JSON.stringify(updateNode));
-  //     console.log(encodeNode);
-  //     //decode
-  //     // console.log("decode the node");
-  //     // const decodeNode = JSON.parse(decodeURIComponent(encodeNode));
-  //     // console.log(decodeNode);
+      //change node
+      console.log("will change the node");
+      updateNode?.childNodes.push(childNode);
+      updateNode?.distances.push(weight);
+      //encode
+      console.log("encode node");
+      const encodeNode = encodeURIComponent(JSON.stringify(updateNode));
+      console.log(encodeNode);
+      //decode
+      // console.log("decode the node");
+      // const decodeNode = JSON.parse(decodeURIComponent(encodeNode));
+      // console.log(decodeNode);
 
-  //     params.append(name, encodeNode);
-  //     return params.toString();
-  //   },
-  //   [searchParams],
-  // );
+      params.append(name, encodeNode);
+      return params.toString();
+    },
+    [searchParams],
+  );
 
   const dispatchAndClear = () => {
     const weight = parseInt(inputValue);
@@ -82,18 +82,18 @@ const InputWeight: React.FC<InputWeightProps> = ({
         weight: weight,
       },
     });
-    // const parentNodeEncoded = encodeURIComponent(
-    //   JSON.stringify(nodes.find((node) => node.val === parent)),
-    // );
-    // router.push(
-    //   `?${updateNodeQueryString(
-    //     "node",
-    //     parentNodeEncoded,
-    //     parent!,
-    //     child!,
-    //     weight,
-    //   )}`,
-    // );
+    const parentNodeEncoded = encodeURIComponent(
+      JSON.stringify(nodes.find((node) => node.val === parent)),
+    );
+    router.push(
+      `?${updateNodeQueryString(
+        "node",
+        parentNodeEncoded,
+        parent!,
+        child!,
+        weight,
+      )}`,
+    );
     setInputValue("");
     setInputWeight(false);
     setInputWeightNums([]);

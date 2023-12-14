@@ -107,7 +107,7 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
       };
       return nodes.map((n) => {
         if (n === node) {
-          node.distances[node.distances.indexOf(childVal)] = parsedDistance;
+          node.distances[node.childNodes.indexOf(childVal)] = parsedDistance;
           return n;
         }
         return n;

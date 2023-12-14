@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import isStringNumber from "~/app/utils/isStringNumber";
 import {
   ActionNode,
@@ -51,24 +51,9 @@ const InputWeight: React.FC<InputWeightProps> = ({
         }
       }
       const updateNode = nodes.find((node) => node.val === parentNode);
-
-      // if found node
-      console.log("node found");
-      console.log(updateNode);
-
-      //change node
-      console.log("will change the node");
       updateNode?.childNodes.push(childNode);
       updateNode?.distances.push(weight);
-      //encode
-      console.log("encode node");
       const encodeNode = encodeURIComponent(JSON.stringify(updateNode));
-      console.log(encodeNode);
-      //decode
-      // console.log("decode the node");
-      // const decodeNode = JSON.parse(decodeURIComponent(encodeNode));
-      // console.log(decodeNode);
-
       params.append(name, encodeNode);
       return params.toString();
     },
@@ -111,6 +96,7 @@ const InputWeight: React.FC<InputWeightProps> = ({
   };
 
   const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Backspace") return;
     if (event.key === "Enter" && inputValue !== "") {
       dispatchAndClear();
       event.currentTarget.blur();

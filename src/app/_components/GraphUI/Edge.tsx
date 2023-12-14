@@ -4,6 +4,7 @@ import {
 } from "~/app/_components/GraphUI/NodeElement";
 import Node from "~/app/model/Node";
 import React, { useState, useEffect } from "react";
+import isStringNumber from "~/app/utils/isStringNumber";
 
 interface EdgeProps {
   x1: number;
@@ -26,16 +27,45 @@ const Edge: React.FC<EdgeProps> = ({
   childNode,
   dispatch,
 }) => {
-  const [editable, setEditable] = useState(false);
-  const [localDistance, setLocalDistance] = useState<string | undefined>(
-    undefined,
-  );
-
-  useEffect(() => {
-    if (provideEdgeLength) {
-      setLocalDistance(node?.distances.indexOf(childNode!.val)?.toString());
+  const getNodeDistance = () => {
+    if (node && childNode?.val !== undefined) {
+      const indexOfChild = node.childNodes.indexOf(childNode.val);
+      if (indexOfChild !== -1 && node?.distances[indexOfChild] !== undefined) {
+        return "" + node.distances[indexOfChild];
+      }
     }
-  }, [provideEdgeLength]);
+    return "";
+  };
+
+  const [editable, setEditable] = useState(false);
+  const [inputValue, setInputValue] = useState<string>(getNodeDistance());
+
+  const dispatchAndClear = () => {
+    if (dispatch === undefined) return;
+    const weight = parseInt(inputValue);
+    dispatch({
+      type: ACTIONS_NODE.NODE_DISTANCE,
+      payload: {
+        node: node!,
+        childNode: childNode!.val,
+        parsedDistance: weight,
+      },
+    });
+    console.log(node, "CHILD NODE = ", childNode);
+    setEditable(false);
+    // const parentNodeEncoded = encodeURIComponent(
+    //   JSON.stringify(nodes.find((node) => node.val === parent)),
+    // );
+    // router.push(
+    //   `?${updateNodeQueryString(
+    //     "node",
+    //     parentNodeEncoded,
+    //     parent!,
+    //     child!,
+    //     weight,
+    //   )}`,
+    // );
+  };
 
   const handleTextClick = () => {
     if (provideEdgeLength) {
@@ -44,45 +74,36 @@ const Edge: React.FC<EdgeProps> = ({
   };
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalDistance(event.target.value);
+    setInputValue(event.target.value);
   };
 
-  const handleTextBlur = () => {
-    setEditable(false);
+  // const handleTextBlur = () => {
+  //   setEditable(false);
 
-    if (provideEdgeLength && node) {
-      const parsedDistance = parseInt(localDistance ?? "1");
-      console.log("triggered before" + " " + parsedDistance);
-      if (!isNaN(parsedDistance) && dispatch !== undefined) {
-        console.log("triggered");
-        dispatch({
-          type: ACTIONS_NODE.NODE_DISTANCE,
-          payload: {
-            node: node,
-            childNode: childNode!.val,
-            parsedDistance: parsedDistance,
-          },
-        });
-        setLocalDistance(parsedDistance.toString());
-      }
-    }
-  };
+  //   if (provideEdgeLength && node) {
+  //     const parsedDistance = parseInt(inputValue ?? "1");
+  //     console.log("triggered before" + " " + parsedDistance);
+  //     if (!isNaN(parsedDistance) && dispatch !== undefined) {
+  //       console.log("triggered");
+  //       dispatch({
+  //         type: ACTIONS_NODE.NODE_DISTANCE,
+  //         payload: {
+  //           node: node,
+  //           childNode: childNode!.val,
+  //           parsedDistance: parsedDistance,
+  //         },
+  //       });
+  //       setInputValue(parsedDistance.toString());
+  //     }
+  //   }
+  // };
 
-  const handleInputKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleTextBlur();
-    }
-  };
-
-  const getNodeDistance = () => {
-    if (node && childNode?.val !== undefined) {
-      const indexOfChild = node.childNodes.indexOf(childNode.val);
-      if (indexOfChild !== -1 && node?.distances[indexOfChild] !== undefined) {
-        return node.distances[indexOfChild];
-      }
-    }
-    return "";
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Backspace") return;
+    if (e.key === "Enter" && inputValue !== "") {
+      dispatchAndClear();
+      e.currentTarget.blur();
+    } else if (!isStringNumber(e.key)) e.preventDefault();
   };
 
   const circleRadius = 18;
@@ -129,7 +150,7 @@ const Edge: React.FC<EdgeProps> = ({
           strokeWidth: 2,
         }}
       />
-      {provideEdgeLength && localDistance !== undefined ? (
+      {provideEdgeLength ? (
         <foreignObject
           x={midX}
           y={midY}
@@ -143,13 +164,13 @@ const Edge: React.FC<EdgeProps> = ({
           {editable ? (
             <input
               type="text"
-              value={localDistance}
+              value={inputValue}
               onChange={handleTextChange}
-              onBlur={handleTextBlur}
-              onKeyDown={handleInputKeyPress}
+              // onBlur={handleTextBlur}
+              onKeyDown={handleInputKeyDown}
             />
           ) : (
-            <span onClick={handleTextClick}>{getNodeDistance()}</span>
+            <span onClick={handleTextClick}>{inputValue}</span>
           )}
         </foreignObject>
       ) : null}

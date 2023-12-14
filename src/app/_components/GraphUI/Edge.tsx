@@ -3,8 +3,9 @@ import {
   ACTIONS_NODE,
 } from "~/app/_components/GraphUI/NodeElement";
 import Node from "~/app/model/Node";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import isStringNumber from "~/app/utils/isStringNumber";
+import { useSearchParams, useRouter } from "next/navigation";
 
 interface EdgeProps {
   x1: number;
@@ -12,8 +13,8 @@ interface EdgeProps {
   x2: number;
   y2: number;
   provideEdgeLength?: boolean;
-  node?: Node;
-  childNode?: Node;
+  node: Node;
+  childNode: Node;
   dispatch?: React.Dispatch<ActionNode>;
 }
 
@@ -39,6 +40,36 @@ const Edge: React.FC<EdgeProps> = ({
 
   const [editable, setEditable] = useState(false);
   const [inputValue, setInputValue] = useState<string>(getNodeDistance());
+  const searchParams = useSearchParams()!;
+  const isEditMode = searchParams.get("edit");
+  const router = useRouter();
+  const updateNodeWeightQueryString = useCallback(
+    (
+      name: string,
+      valueToRemove: string,
+      childNode: number,
+      weight: number,
+    ) => {
+      const params = new URLSearchParams(searchParams);
+      const values = params.getAll(name);
+
+      if (values.length) {
+        params.delete(name);
+        for (const value of values) {
+          if (value !== valueToRemove) {
+            params.append(name, value);
+          }
+        }
+      }
+      const updateNode = JSON.parse(JSON.stringify(node)) as Node;
+      const indexOfChild = updateNode.childNodes.indexOf(childNode);
+      updateNode.distances[indexOfChild] = weight;
+      const encodeNode = encodeURIComponent(JSON.stringify(updateNode));
+      params.append(name, encodeNode);
+      return params.toString();
+    },
+    [searchParams],
+  );
 
   const dispatchAndClear = () => {
     if (dispatch === undefined) return;
@@ -46,25 +77,22 @@ const Edge: React.FC<EdgeProps> = ({
     dispatch({
       type: ACTIONS_NODE.NODE_DISTANCE,
       payload: {
-        node: node!,
-        childNode: childNode!.val,
+        node: node,
+        childNode: childNode.val,
         parsedDistance: weight,
       },
     });
-    console.log(node, "CHILD NODE = ", childNode);
     setEditable(false);
-    // const parentNodeEncoded = encodeURIComponent(
-    //   JSON.stringify(nodes.find((node) => node.val === parent)),
-    // );
-    // router.push(
-    //   `?${updateNodeQueryString(
-    //     "node",
-    //     parentNodeEncoded,
-    //     parent!,
-    //     child!,
-    //     weight,
-    //   )}`,
-    // );
+    const parentNodeEncoded = encodeURIComponent(JSON.stringify(node));
+
+    router.push(
+      `?${updateNodeWeightQueryString(
+        "node",
+        parentNodeEncoded,
+        childNode.val,
+        weight,
+      )}`,
+    );
   };
 
   const handleTextClick = () => {
@@ -76,27 +104,6 @@ const Edge: React.FC<EdgeProps> = ({
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
-
-  // const handleTextBlur = () => {
-  //   setEditable(false);
-
-  //   if (provideEdgeLength && node) {
-  //     const parsedDistance = parseInt(inputValue ?? "1");
-  //     console.log("triggered before" + " " + parsedDistance);
-  //     if (!isNaN(parsedDistance) && dispatch !== undefined) {
-  //       console.log("triggered");
-  //       dispatch({
-  //         type: ACTIONS_NODE.NODE_DISTANCE,
-  //         payload: {
-  //           node: node,
-  //           childNode: childNode!.val,
-  //           parsedDistance: parsedDistance,
-  //         },
-  //       });
-  //       setInputValue(parsedDistance.toString());
-  //     }
-  //   }
-  // };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Backspace") return;
@@ -161,7 +168,7 @@ const Edge: React.FC<EdgeProps> = ({
             transformOrigin: "50% 50%",
           }}
         >
-          {editable ? (
+          {editable && isEditMode ? (
             <input
               type="text"
               value={inputValue}

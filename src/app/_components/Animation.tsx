@@ -96,7 +96,7 @@ const Animation: React.FC<AnimationProps> = ({
       const g =
         provideEdgeLength === undefined ? new Graph() : new GraphDistance();
       nodes
-        .filter((node) => node.childNodes && node.childNodes.size > 0)
+        .filter((node) => node.childNodes && node.childNodes.length > 0)
         .map((node) => {
           return Array.from(node.childNodes).map((child: number) => {
             if (provideEdgeLength === undefined) {
@@ -105,7 +105,14 @@ const Animation: React.FC<AnimationProps> = ({
               }
             } else {
               if (g instanceof GraphDistance) {
-                g.addEdgeDistance(node.val, child, node.distances.get(child));
+                console.log(node);
+                console.log(node.distances);
+                console.log();
+                g.addEdgeDistance(
+                  node.val,
+                  child,
+                  node.distances[node.childNodes.indexOf(child)],
+                );
               }
             }
           });

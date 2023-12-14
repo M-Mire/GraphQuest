@@ -136,59 +136,51 @@ const EditMode: React.FC<EditModeProps> = ({
         >
           {nodes?.map((node) => {
             return (
-              <>
-                <NodeElement
-                  key={node.id}
-                  node={node}
-                  activeNode={activeNode}
-                />
-              </>
+              <NodeElement key={node.id} node={node} activeNode={activeNode} />
             );
           })}
-          {nodes?.map((node) => {
-            return (
-              <>
-                {node.val === isCtxMenu && !isMoveNode ? (
-                  <ContextMenu
-                    key={node.id}
-                    node={node}
-                    dispatch={dispatch}
-                    setMoveNode={setMoveNode}
-                    setCtxMenu={setCtxMenu}
-                    isCtxMenu={isCtxMenu}
-                    nodes={nodes}
-                    elementRef={elementRef}
-                  />
-                ) : null}
-              </>
-            );
-          })}
-          {nodes
-            .filter((node) => node.childNodes.size > 0)
-            .map((node) => {
-              return Array.from(node.childNodes).map((child: number, id) => {
-                const childNode: Node = getChildNode(nodes, child);
+          {nodes?.map((node) =>
+            node.val === isCtxMenu && !isMoveNode ? (
+              <ContextMenu
+                key={node.id}
+                node={node}
+                dispatch={dispatch}
+                setMoveNode={setMoveNode}
+                setCtxMenu={setCtxMenu}
+                isCtxMenu={isCtxMenu}
+                nodes={nodes}
+                elementRef={elementRef}
+              />
+            ) : null,
+          )}
+          {nodes.map((parentNode) =>
+            parentNode.childNodes.map((childVal, id) => {
+              const childNode = nodes.find((node) => node.val === childVal);
+              if (childNode) {
                 return (
                   <Edge
                     key={id}
-                    x1={node.x}
-                    y1={node.y}
+                    x1={parentNode.x}
+                    y1={parentNode.y}
                     x2={childNode.x}
                     y2={childNode.y}
                     provideEdgeLength={provideEdgeLength}
-                    node={node}
+                    node={parentNode}
                     childNode={childNode}
                     dispatch={dispatch}
                   />
                 );
-              });
-            })}
+              }
+              return null;
+            }),
+          )}
           {isInputWeight ? (
             <InputWeight
               nums={inputWeightNums}
               dispatch={dispatch}
               setInputWeight={setInputWeight}
               setInputWeightNums={setInputWeightNums}
+              nodes={nodes}
             />
           ) : null}
         </svg>

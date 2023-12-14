@@ -5,7 +5,7 @@ export default interface Node {
   y: number;
   visited: boolean;
   visitedChildrens: boolean;
-  childNodes: Set<number>;
-  distances: Map<number, number>;
+  childNodes: number[];
+  distances: number[];
   currentlyVisitedPair: boolean;
 }

@@ -30,7 +30,7 @@ const Edge: React.FC<EdgeProps> = ({
 
   useEffect(() => {
     if (provideEdgeLength) {
-      setLocalDistance(node?.distances.get(childNode!.val)?.toString());
+      setLocalDistance(node?.distances.indexOf(childNode!.val)?.toString());
     }
   }, [provideEdgeLength]);
 
@@ -70,6 +70,16 @@ const Edge: React.FC<EdgeProps> = ({
       e.preventDefault();
       handleTextBlur();
     }
+  };
+
+  const getNodeDistance = () => {
+    if (node && childNode?.val !== undefined) {
+      const indexOfChild = node.childNodes.indexOf(childNode.val);
+      if (indexOfChild !== -1 && node?.distances[indexOfChild] !== undefined) {
+        return node.distances[indexOfChild];
+      }
+    }
+    return "";
   };
 
   const circleRadius = 18;
@@ -136,9 +146,7 @@ const Edge: React.FC<EdgeProps> = ({
               onKeyDown={handleInputKeyPress}
             />
           ) : (
-            <span onClick={handleTextClick}>
-              {node?.distances.get(childNode!.val)?.toString()}
-            </span>
+            <span onClick={handleTextClick}>{getNodeDistance()}</span>
           )}
         </foreignObject>
       ) : null}

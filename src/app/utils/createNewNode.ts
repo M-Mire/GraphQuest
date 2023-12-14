@@ -9,8 +9,8 @@ export default function newNode(x: number, y: number, val: number): Node {
     y: y,
     visited: false,
     visitedChildrens: false,
-    childNodes: new Set(),
-    distances: new Map(),
+    childNodes: [],
+    distances: [],
     currentlyVisitedPair: false,
   };
 }

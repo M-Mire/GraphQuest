@@ -13,7 +13,13 @@ import Node from "~/app/model/Node";
 const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
   switch (action.type) {
     case ACTIONS_NODE.ADD_NODE:
-      return [...nodes, action.payload] as Node[];
+      const newNode = action.payload as Node;
+      const nodeExists = nodes.some((node) => node.val === newNode.val);
+      if (!nodeExists) {
+        // console.log(newNode);
+        return [...nodes, newNode] as Node[];
+      }
+      return nodes;
     case ACTIONS_NODE.ADD_CHILD_NODE:
       const { parentNode, childNode, weight } = action.payload as {
         parentNode: number;
@@ -21,29 +27,19 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
         weight: number;
       };
       return nodes.map((node) => {
-        if (node.val === parentNode) {
+        if (node.val === parentNode && !node.childNodes.includes(childNode)) {
+          console.log(node.val, parentNode, childNode, node.distances);
           return {
             ...node,
-            childNodes: node.childNodes.add(childNode),
-            distances: node.distances.set(childNode, weight),
+            childNodes: [...node.childNodes, childNode],
+            distances: [...node.distances, weight],
           };
         }
         return node;
       });
     case ACTIONS_NODE.DELETE_NODE:
       const deleteNode = action.payload as Node;
-      const filteredNode = nodes.filter((node) => node !== deleteNode);
-      return filteredNode.map((node) => {
-        if (node.childNodes.has(deleteNode.val)) {
-          const updatedChildNodes = new Set(node.childNodes);
-          updatedChildNodes.delete(deleteNode.val);
-          return {
-            ...node,
-            childNodes: updatedChildNodes,
-          };
-        }
-        return node;
-      });
+      return nodes.filter((node) => node !== deleteNode);
     case ACTIONS_NODE.NODE_ANIMATE:
       const { value, command } = action.payload as {
         value: number | number[];
@@ -107,7 +103,7 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
       };
       return nodes.map((n) => {
         if (n === node) {
-          n.distances.set(childVal, parsedDistance);
+          node.distances[node.distances.indexOf(childVal)] = parsedDistance;
           return n;
         }
         return n;

@@ -11,6 +11,8 @@ import Edge from "~/app/_components/GraphUI/Edge";
 import ContextMenu from "~/app/_components/SharedUI/ContextMenu";
 import InputWeight from "~/app/_components/GraphUI/InputWeight";
 import { getCoords } from "../../utils/getCoords";
+import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
+import updateNodeEncoded from "~/app/utils/EncodeNode/updateNodeEncoded";
 
 interface EditModeProps {
   dispatch: React.Dispatch<ActionNode>;
@@ -34,6 +36,7 @@ const EditMode: React.FC<EditModeProps> = ({
   const [isCtxMenu, setCtxMenu] = useState<number>(-1);
   const [isInputWeight, setInputWeight] = useState<boolean>(false);
   const [inputWeightNums, setInputWeightNums] = useState<number[]>([]);
+  const updateNodeQueryString = useUpdateNodeQueryString(router);
 
   //move
   const [isMoveNode, setMoveNode] = useState<boolean>(false);
@@ -47,32 +50,6 @@ const EditMode: React.FC<EditModeProps> = ({
     [searchParams],
   );
 
-  const updateNodeQueryString = useCallback(
-    (
-      name: string,
-      valueToRemove: string,
-      parentNode: number,
-      childNode: number,
-    ) => {
-      const params = new URLSearchParams(searchParams);
-      const values = params.getAll(name);
-
-      if (values.length) {
-        params.delete(name);
-        for (const value of values) {
-          if (value !== valueToRemove) {
-            params.append(name, value);
-          }
-        }
-      }
-      const updateNode = nodes.find((node) => node.val === parentNode);
-      updateNode?.childNodes.push(childNode);
-      const encodeNode = encodeURIComponent(JSON.stringify(updateNode));
-      params.append(name, encodeNode);
-      return params.toString();
-    },
-    [searchParams],
-  );
   const handleClick = (e: React.MouseEvent) => {
     const { pageX: x, pageY: y, target } = e;
     const targetAsElem = target as HTMLElement;
@@ -107,16 +84,11 @@ const EditMode: React.FC<EditModeProps> = ({
                 weight: 0,
               },
             });
-            const parentNodeEncoded = encodeURIComponent(
-              JSON.stringify(nodes.find((node) => node.val === activeNode)),
-            );
-            router.push(
-              `/?${updateNodeQueryString(
-                "node",
-                parentNodeEncoded,
-                activeNode,
-                clickedNode,
-              )}`,
+            const currentNode = nodes.find((node) => node.val === activeNode)!;
+            updateNodeQueryString(
+              searchParams.toString(),
+              currentNode,
+              updateNodeEncoded(currentNode, clickedNode, 0),
             );
           }
         }

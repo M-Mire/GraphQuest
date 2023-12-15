@@ -32,7 +32,7 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
       };
       return nodes.map((node) => {
         if (node.val === parentNode && !node.childNodes.includes(childNode)) {
-          console.log(node.val, parentNode, childNode, node.distances);
+          // console.log(node.val, parentNode, childNode, node.distances);
           return {
             ...node,
             childNodes: [...node.childNodes, childNode],
@@ -156,7 +156,7 @@ const addNodesFromURL = (
   if (nodes.length === 0 && urlNodes.length > 0) {
     urlNodes.forEach((urlNode) => {
       const deserializedObj = JSON.parse(decodeURIComponent(urlNode)) as Node;
-      console.log(deserializedObj, "decode");
+      // console.log(deserializedObj, "decode");
       const newNode = deserializedObj;
       dispatch({
         type: ACTIONS_NODE.ADD_NODE,
@@ -184,8 +184,19 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
   const isEditMode = searchParams.get("edit") === "true";
 
   useEffect(() => {
-    addNodesFromURL(nodes, dispatch, urlNodes);
+    if (nodes.length === 0) addNodesFromURL(nodes, dispatch, urlNodes);
   }, []);
+
+  // useEffect(() => {
+  //   if (isEditMode) {
+  //     dispatch({
+  //       type: ACTIONS_NODE.NODE_RESET,
+  //       payload: NaN,
+  //     });
+  //     setPlay(false);
+  //   } else {
+  //   }
+  // }, [isEditMode]);
 
   return (
     <>

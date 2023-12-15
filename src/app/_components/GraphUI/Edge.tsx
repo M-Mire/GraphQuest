@@ -6,6 +6,8 @@ import Node from "~/app/model/Node";
 import React, { useState, useEffect, useCallback } from "react";
 import isStringNumber from "~/app/utils/isStringNumber";
 import { useSearchParams, useRouter } from "next/navigation";
+import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
+import updateNodeWeightEncoded from "~/app/utils/EncodeNode/updateNodeWeightEncoded";
 
 interface EdgeProps {
   x1: number;
@@ -43,33 +45,7 @@ const Edge: React.FC<EdgeProps> = ({
   const searchParams = useSearchParams()!;
   const isEditMode = searchParams.get("edit");
   const router = useRouter();
-  const updateNodeWeightQueryString = useCallback(
-    (
-      name: string,
-      valueToRemove: string,
-      childNode: number,
-      weight: number,
-    ) => {
-      const params = new URLSearchParams(searchParams);
-      const values = params.getAll(name);
-
-      if (values.length) {
-        params.delete(name);
-        for (const value of values) {
-          if (value !== valueToRemove) {
-            params.append(name, value);
-          }
-        }
-      }
-      const updateNode = JSON.parse(JSON.stringify(node)) as Node;
-      const indexOfChild = updateNode.childNodes.indexOf(childNode);
-      updateNode.distances[indexOfChild] = weight;
-      const encodeNode = encodeURIComponent(JSON.stringify(updateNode));
-      params.append(name, encodeNode);
-      return params.toString();
-    },
-    [searchParams],
-  );
+  const updateNodeQueryString = useUpdateNodeQueryString(router);
 
   const dispatchAndClear = () => {
     if (dispatch === undefined) return;
@@ -83,15 +59,10 @@ const Edge: React.FC<EdgeProps> = ({
       },
     });
     setEditable(false);
-    const parentNodeEncoded = encodeURIComponent(JSON.stringify(node));
-
-    router.push(
-      `?${updateNodeWeightQueryString(
-        "node",
-        parentNodeEncoded,
-        childNode.val,
-        weight,
-      )}`,
+    updateNodeQueryString(
+      searchParams.toString(),
+      node,
+      updateNodeWeightEncoded(node, childNode.val, weight),
     );
   };
 

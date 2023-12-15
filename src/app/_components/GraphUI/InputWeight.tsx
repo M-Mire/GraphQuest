@@ -6,6 +6,8 @@ import {
   ACTIONS_NODE,
 } from "~/app/_components/GraphUI/NodeElement";
 import Node from "../../model/Node";
+import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
+import updateNodeEncoded from "~/app/utils/EncodeNode/updateNodeEncoded";
 
 const InputWeightWidth = 250;
 const InputWeightHeight = 150;
@@ -29,36 +31,8 @@ const InputWeight: React.FC<InputWeightProps> = ({
   const [hoveredText, setHoveredText] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
   const router = useRouter();
-  const searchParams = useSearchParams()!;
-
-  const updateNodeQueryString = useCallback(
-    (
-      name: string,
-      valueToRemove: string,
-      parentNode: number,
-      childNode: number,
-      weight: number,
-    ) => {
-      const params = new URLSearchParams(searchParams);
-      const values = params.getAll(name);
-
-      if (values.length) {
-        params.delete(name);
-        for (const value of values) {
-          if (value !== valueToRemove) {
-            params.append(name, value);
-          }
-        }
-      }
-      const updateNode = nodes.find((node) => node.val === parentNode);
-      updateNode?.childNodes.push(childNode);
-      updateNode?.distances.push(weight);
-      const encodeNode = encodeURIComponent(JSON.stringify(updateNode));
-      params.append(name, encodeNode);
-      return params.toString();
-    },
-    [searchParams],
-  );
+  const updateNodeQueryString = useUpdateNodeQueryString(router);
+  const searchParams = useSearchParams();
 
   const dispatchAndClear = () => {
     const weight = parseInt(inputValue);
@@ -70,18 +44,15 @@ const InputWeight: React.FC<InputWeightProps> = ({
         weight: weight,
       },
     });
-    const parentNodeEncoded = encodeURIComponent(
-      JSON.stringify(nodes.find((node) => node.val === parent)),
+    const parentNode = nodes.find((node) => node.val === parent)!;
+
+    console.log("boom");
+    updateNodeQueryString(
+      searchParams.toString(),
+      parentNode,
+      updateNodeEncoded(parentNode, child!, weight),
     );
-    router.push(
-      `?${updateNodeQueryString(
-        "node",
-        parentNodeEncoded,
-        parent!,
-        child!,
-        weight,
-      )}`,
-    );
+
     setInputValue("");
     setInputWeight(false);
     setInputWeightNums([]);

@@ -45,8 +45,6 @@ const InputWeight: React.FC<InputWeightProps> = ({
       },
     });
     const parentNode = nodes.find((node) => node.val === parent)!;
-
-    console.log("boom");
     updateNodeQueryString(
       searchParams.toString(),
       parentNode,

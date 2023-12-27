@@ -1,11 +1,14 @@
 import React, { useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { getCoords } from "~/app/utils/getCoords";
 import Node from "~/app/model/Node";
 import NodeElement, {
   ACTIONS_NODE,
   ActionNode,
 } from "~/app/_components/GraphUI/NodeElement";
-
+import useDeleteNodeQueryString from "~/app/hooks/useDeleteNodeQueryString";
+import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
+import updateNodeCoordEncoded from "~/app/utils/EncodeNode/updateNodeCoordEncoded";
 interface ContextMenuProps {
   node: Node;
   dispatch: React.Dispatch<ActionNode>;
@@ -26,8 +29,14 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 }) => {
   const { x, y } = node;
   const [hoveredText, setHoveredText] = useState<string | null>(null);
-
+  const router = useRouter();
+  const deleteNodeQueryString = useDeleteNodeQueryString(router);
+  const updateNodeQueryString = useUpdateNodeQueryString(router);
+  const searchParams = useSearchParams();
+  const [xCoord, setX] = useState<number>(x);
+  const [yCoord, setY] = useState<number>(y);
   const handleDelete = () => {
+    deleteNodeQueryString(searchParams.toString(), node);
     dispatch({
       type: ACTIONS_NODE.DELETE_NODE,
       payload: node,
@@ -47,6 +56,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
         node_x: number;
         node_y: number;
       };
+
       dispatch({
         type: ACTIONS_NODE.UPDATE_COORDS,
         payload: {
@@ -55,6 +65,11 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
           y: node_y,
         },
       });
+      updateNodeQueryString(
+        searchParams.toString(),
+        node,
+        updateNodeCoordEncoded(node, node_x, node_y),
+      );
     };
 
     window.addEventListener("mousemove", handleMouseMove);

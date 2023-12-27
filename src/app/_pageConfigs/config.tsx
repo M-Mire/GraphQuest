@@ -27,7 +27,7 @@ export const pageConfigurationBFS: pageConfigurationType = {
   visited.add(root)
   
   while queue is not empty:
-      vertex = queue.dequeue()   // Dequeue the first element from the queue
+      vertex = queue.dequeue()   // Dequeue the first element
       
       for neighbour in graph.get(vertex) or an empty list:
           if neighbour is not in visited:

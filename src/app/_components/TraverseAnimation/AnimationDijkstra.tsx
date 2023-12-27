@@ -81,7 +81,7 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
   return (
     <div
       ref={containerRef}
-      className="absolute bottom-0 left-0 h-1/4 w-3/4 bg-atomOneDark"
+      className="mt-2 h-1/3 rounded-2xl bg-green-500 md:h-1/3 md:w-[65%] lg:h-1/3 lg:w-[70%]"
       style={{ overflowX: "auto" }}
     >
       <svg width={totalWidth} className="relative h-full">

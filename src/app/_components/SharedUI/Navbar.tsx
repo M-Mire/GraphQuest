@@ -1,31 +1,10 @@
-import { useState } from "react";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
+import { useCallback } from "react";
 import Link from "next/link";
 import ControlButtons from "./ControlButtons";
 import { ActionNode } from "../GraphUI/NodeElement";
 import { ActionLine } from "../CanvasElements/Animation";
-import { useSearchParams } from "next/navigation";
-
-const navbarStyle = {
-  backgroundColor: "transparent",
-  color: "black",
-};
-
-const containerStyle = {
-  display: "flex",
-  alignItems: "center",
-};
-
-const textWidthStyle = {
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-};
+import { useSearchParams, usePathname } from "next/navigation";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
 
 export interface NavbarProps {
   rootValue: number | null;
@@ -38,6 +17,9 @@ export interface NavbarProps {
   isPlay: boolean;
   dispatchLineNumbers: React.Dispatch<ActionLine>;
   algorithmName: string;
+  handleSVGClick: () => void;
+  showMenu: boolean;
+  toggleMenu: () => void;
 }
 const Navbar: React.FC<NavbarProps> = ({
   rootValue,
@@ -50,51 +32,57 @@ const Navbar: React.FC<NavbarProps> = ({
   isPlay,
   dispatchLineNumbers,
   algorithmName,
+  handleSVGClick,
+  showMenu,
+  toggleMenu,
 }) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const pathname = usePathname();
+  const searchParams = useSearchParams()!;
+  const isEditTest = searchParams.get("edit");
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams);
+      params.append(name, value);
+      return params.toString();
+    },
+    [searchParams],
+  );
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const deleteQueryString = useCallback(
+    (name: string) => {
+      const params = new URLSearchParams(searchParams);
+      params.delete(name);
+      return params.toString();
+    },
+    [searchParams],
+  );
 
   return (
-    <AppBar position="static" style={navbarStyle}>
-      <Toolbar>
-        <div style={containerStyle}>
-          <Typography variant="h6" component="div" style={textWidthStyle}>
-            GraphQuest: {algorithmName}
-          </Typography>
-          <IconButton
-            color="inherit"
-            onClick={handleClick}
-            aria-controls="simple-menu"
-            aria-haspopup="true"
-          >
-            <ExpandMoreIcon />
-          </IconButton>
-          <Menu
-            id="simple-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={handleClose}>
-              <Link href="/">Breadth-first Search</Link>
-            </MenuItem>
-            <MenuItem onClick={handleClose}>
-              <Link href="/dfs">Depth-first Search</Link>
-            </MenuItem>
-            <MenuItem onClick={handleClose}>
-              <Link href="/dijkstra">Dijkstra&apos;s algorithm</Link>
-            </MenuItem>
-          </Menu>
+    <nav className="flex h-16 items-center justify-between border-b-2 border-gray-600 bg-black px-4 py-4">
+      <div className="flex items-center">
+        <div className="text-sm font-bold text-white">
+          <AccountTreeIcon fontSize="medium" />
         </div>
-        <div className="flex-1"></div>
+        <div className="ml-2 flex items-center text-sm font-bold text-white">
+          GraphQuest: {algorithmName}
+        </div>
+        <div className="ml-1 flex items-center text-sm font-bold text-gray-200">
+          <button
+            className="rounded px-2 py-1 text-sm transition duration-300 ease-in-out hover:bg-gray-200"
+            onClick={handleSVGClick}
+          >
+            <svg
+              aria-hidden="true"
+              height="16"
+              stroke="currentColor"
+              strokeWidth="1"
+              viewBox="0 0 16 24"
+            >
+              <path d="M13 8.517L8 3 3 8.517M3 15.48l5 5.517 5-5.517"></path>
+            </svg>
+          </button>
+        </div>
         <ControlButtons
           rootValue={rootValue}
           setRootValue={setRootValue}
@@ -106,8 +94,47 @@ const Navbar: React.FC<NavbarProps> = ({
           isPlay={isPlay}
           dispatchLineNumbers={dispatchLineNumbers}
         />
-      </Toolbar>
-    </AppBar>
+      </div>
+      <label
+        htmlFor="menu-toggle"
+        className="block cursor-pointer text-white md:hidden"
+        onClick={toggleMenu}
+      >
+        {/* Rendering of "=" or 'X' icon */}
+        {showMenu ? (
+          <span onClick={toggleMenu}>&times;</span> // 'X' icon when menu is open
+        ) : (
+          <span>&#9776;</span> // Burger icon
+        )}
+      </label>
+      <input
+        type="checkbox"
+        id="menu-toggle"
+        className="hidden"
+        defaultChecked={showMenu}
+      />
+      <ul
+        className={`flex w-full md:flex md:w-auto md:items-center ${
+          showMenu ? "block" : "hidden"
+        }`}
+        id="menu"
+      >
+        {/* Nav items */}
+        <li>
+          <Link
+            href={
+              isEditTest === "true"
+                ? pathname + "?" + deleteQueryString("edit")
+                : pathname + "?" + createQueryString("edit", "true")
+            }
+          >
+            <button className="rounded bg-white px-4 py-1 text-sm text-black transition duration-300 ease-in-out hover:bg-gray-400">
+              {isEditTest ? "View Graph" : "Edit"}
+            </button>
+          </Link>
+        </li>
+      </ul>
+    </nav>
   );
 };
 

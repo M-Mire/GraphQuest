@@ -3,6 +3,7 @@ import { useSearchParams } from "next/navigation";
 import Sidebar from "~/app/_components/SharedUI/Sidebar";
 import Navbar from "~/app/_components/SharedUI/Navbar";
 import EditMode from "~/app/_components/CanvasElements/EditMode";
+import MultiSwitcher from "./SharedUI/MultiSwitcher";
 import {
   ACTIONS_NODE,
   ActionNode,
@@ -156,7 +157,6 @@ const addNodesFromURL = (
   if (nodes.length === 0 && urlNodes.length > 0) {
     urlNodes.forEach((urlNode) => {
       const deserializedObj = JSON.parse(decodeURIComponent(urlNode)) as Node;
-      // console.log(deserializedObj, "decode");
       const newNode = deserializedObj;
       dispatch({
         type: ACTIONS_NODE.ADD_NODE,
@@ -177,76 +177,82 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
 
   const [rootValue, setRootValue] = useState<number | null>(null);
   const [nodes, dispatch] = useReducer(nodeReducer, []);
-  const [speed, setSpeed] = useState<number>(500);
+  const [speed, setSpeed] = useState<number>(5);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlay, setPlay] = useState<boolean>(false);
   const [lineNumbers, dispatchLineNumbers] = useReducer(lineReducer, []);
   const isEditMode = searchParams.get("edit") === "true";
 
+  const [showMenu, setShowMenu] = useState(false);
+  const [isMultiSwitcherActive, setMultiSwitcher] = useState(false);
+
   useEffect(() => {
     if (nodes.length === 0) addNodesFromURL(nodes, dispatch, urlNodes);
   }, []);
 
-  // useEffect(() => {
-  //   if (isEditMode) {
-  //     dispatch({
-  //       type: ACTIONS_NODE.NODE_RESET,
-  //       payload: NaN,
-  //     });
-  //     setPlay(false);
-  //   } else {
-  //   }
-  // }, [isEditMode]);
+  const toggleMenu = () => {
+    setShowMenu(!showMenu);
+  };
+
+  const handleSVGClick = () => {
+    setMultiSwitcher(!isMultiSwitcherActive);
+  };
 
   return (
     <>
-      <div className="flex h-screen overflow-hidden">
-        <Sidebar setRootValue={setRootValue} rootValue={rootValue} />
-        <div className="flex flex-1 flex-col">
-          <div className="h-[4rem] w-full">
-            <Navbar
-              rootValue={rootValue}
-              setRootValue={setRootValue}
-              setSpeed={setSpeed}
-              speed={speed}
+      <div className="relative flex h-screen flex-col bg-black">
+        <Navbar
+          rootValue={rootValue}
+          setRootValue={setRootValue}
+          setSpeed={setSpeed}
+          speed={speed}
+          dispatch={dispatch}
+          setCurrentIndex={setCurrentIndex}
+          setPlay={setPlay}
+          isPlay={isPlay}
+          dispatchLineNumbers={dispatchLineNumbers}
+          algorithmName={pageConfiguration.algorithmName}
+          handleSVGClick={handleSVGClick}
+          showMenu={showMenu}
+          toggleMenu={toggleMenu}
+        />
+        <div className="relative h-full bg-black">
+          {showMenu ? <ShowMenuItems /> : null}
+
+          {isMultiSwitcherActive && (
+            <>
+              <MultiSwitcher />
+            </>
+          )}
+
+          {isEditMode ? (
+            <EditMode
               dispatch={dispatch}
-              setCurrentIndex={setCurrentIndex}
-              setPlay={setPlay}
-              isPlay={isPlay}
-              dispatchLineNumbers={dispatchLineNumbers}
-              algorithmName={pageConfiguration.algorithmName}
+              nodes={nodes}
+              nodeCount={nodeCount}
+              incrementNodeCount={() => {
+                setNodeCount(nodeCount + 1);
+              }}
+              provideEdgeLength={pageConfiguration.provideEdgeLength}
             />
-          </div>
-          <div className="flex-1 bg-gray-200">
-            {!isEditMode ? (
-              <Animation
-                nodes={nodes}
-                rootValue={rootValue}
-                dispatch={dispatch}
-                speed={speed}
-                currentIndex={currentIndex}
-                setCurrentIndex={setCurrentIndex}
-                isPlay={isPlay}
-                lineNumbers={lineNumbers}
-                dispatchLineNumbers={dispatchLineNumbers}
-                runAlgorithm={pageConfiguration.runAlgorithm}
-                code={pageConfiguration.code}
-                algorithmName={pageConfiguration.algorithmName}
-                provideEdgeLength={pageConfiguration.provideEdgeLength}
-                addEdge={pageConfiguration.addEdge}
-              />
-            ) : (
-              <EditMode
-                dispatch={dispatch}
-                nodes={nodes}
-                nodeCount={nodeCount}
-                incrementNodeCount={() => {
-                  setNodeCount(nodeCount + 1);
-                }}
-                provideEdgeLength={pageConfiguration.provideEdgeLength}
-              />
-            )}
-          </div>
+          ) : (
+            <Animation
+              nodes={nodes}
+              rootValue={rootValue}
+              dispatch={dispatch}
+              speed={speed}
+              currentIndex={currentIndex}
+              setCurrentIndex={setCurrentIndex}
+              isPlay={isPlay}
+              lineNumbers={lineNumbers}
+              dispatchLineNumbers={dispatchLineNumbers}
+              runAlgorithm={pageConfiguration.runAlgorithm}
+              code={pageConfiguration.code}
+              algorithmName={pageConfiguration.algorithmName}
+              provideEdgeLength={pageConfiguration.provideEdgeLength}
+              addEdge={pageConfiguration.addEdge}
+            />
+          )}
         </div>
       </div>
     </>
@@ -254,3 +260,13 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
 };
 
 export default MainPage;
+
+const ShowMenuItems = () => {
+  return (
+    <div className="absolute inset-0 z-20 bg-red-500 px-4 text-white lg:hidden">
+      <div className=" border-b border-white py-3">
+        <p>Menu Content Here</p>
+      </div>
+    </div>
+  );
+};

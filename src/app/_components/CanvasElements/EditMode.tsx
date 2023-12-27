@@ -123,25 +123,16 @@ const EditMode: React.FC<EditModeProps> = ({
     }
   };
   return (
-    <>
+    <div className="absolute h-full w-full p-4">
       <div
         id="editMode"
         ref={elementRef}
-        className="absolute left-0 top-0 h-3/4 w-3/4 bg-gray-200"
+        className="gridded mx-auto my-14 h-2/3 overflow-auto rounded-2xl bg-slate-600 md:relative md:left-0 md:top-0 md:w-[65%] lg:w-[70%]"
         onMouseDown={(e) => handleClick(e)}
         onContextMenu={(e) => handleContextMenu(e)}
         style={{ position: "relative" }}
       >
-        <svg
-          height="100%"
-          width="100%"
-          style={{
-            display: "block",
-            margin: "auto",
-            position: "relative",
-            border: "1px solid black",
-          }}
-        >
+        <svg className="h-full w-full">
           {nodes?.map((node) => {
             return (
               <NodeElement key={node.id} node={node} activeNode={activeNode} />
@@ -193,8 +184,7 @@ const EditMode: React.FC<EditModeProps> = ({
           ) : null}
         </svg>
       </div>
-      <div className="relative w-1/4"></div>
-    </>
+    </div>
   );
 };
 

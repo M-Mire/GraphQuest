@@ -1,10 +1,12 @@
-import React from "react";
+import { useState } from "react";
 import IconButton from "@mui/material/IconButton";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import PauseIcon from "@mui/icons-material/Pause";
-import FastForwardIcon from "@mui/icons-material/FastForward";
+import PauseCircleIcon from "@mui/icons-material/PauseCircle";
+import ReplayIcon from "@mui/icons-material/Replay";
 import FastRewindIcon from "@mui/icons-material/FastRewind";
-import RotateLeftIcon from "@mui/icons-material/RotateLeft";
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import TextField from "@mui/material/TextField";
+import FastForwardIcon from "@mui/icons-material/FastForward";
+
 import {
   ACTIONS_NODE,
   ActionNode,
@@ -12,6 +14,19 @@ import {
 import { useSearchParams } from "next/navigation";
 import { ActionLine } from "../CanvasElements/Animation";
 import { Line } from "~/app/_GraphAlgorithm/Graph";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import isStringNumber from "~/app/utils/isStringNumber";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#e3f2fd",
+      light: "#42a5f5",
+      dark: "#1565c0",
+      contrastText: "#fff",
+    },
+  },
+});
 
 export interface ControlButtonsProps {
   rootValue: number | null;
@@ -40,12 +55,13 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
   isPlay,
   dispatchLineNumbers,
 }) => {
+  const [inputValue, setInputValue] = useState<string>("");
   const searchParams = useSearchParams();
   const isEditMode = searchParams.get("edit") === "true";
 
   const handlePlayClick = () => {
     if (!isEditMode) {
-      setRootValue(rootValue !== null && !isNaN(rootValue) ? rootValue : 0);
+      setRootValue(inputValue === "" ? 0 : parseInt(inputValue));
       setPlay(true);
     }
   };
@@ -81,46 +97,120 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
       setSpeed(speed + 250);
     }
   };
-  return (
-    <div className="mt-2 flex h-12 w-full items-end justify-center">
-      <div className="rounded-b-lg rounded-t-lg bg-white p-1 shadow-md">
-        <div className="flex justify-between">
-          <div
-            className={`control-button-bg rounded-full bg-green-500 ${paddingStyle} ${buttonMargin}`}
-          >
-            <IconButton color="primary" onClick={handlePlayClick}>
-              <PlayArrowIcon fontSize={iconSize} style={{ fill: "#FFF" }} />
-            </IconButton>
-          </div>
-          <div
-            className={`control-button-bg rounded-full bg-yellow-500 ${paddingStyle} ${buttonMargin}`}
-          >
-            <IconButton color="primary" onClick={handlePauseClick}>
-              <PauseIcon fontSize={iconSize} style={{ fill: "#FFF" }} />
-            </IconButton>
-          </div>
-          <div
-            className={`control-button-bg rounded-full bg-red-500 ${paddingStyle} ${buttonMargin}`}
-          >
-            <IconButton color="primary" onClick={handleRewindClick}>
-              <FastRewindIcon fontSize={iconSize} style={{ fill: "#FFF" }} />
-            </IconButton>
-          </div>
-          <div
-            className={`control-button-bg rounded-full bg-blue-500 ${paddingStyle} ${buttonMargin}`}
-          >
-            <IconButton color="primary" onClick={handleFastForwardClick}>
-              <FastForwardIcon fontSize={iconSize} style={{ fill: "#FFF" }} />
-            </IconButton>
-          </div>
 
-          <div
-            className={`control-button-bg rounded-full bg-purple-500 ${paddingStyle} ${buttonMargin}`}
-          >
-            <IconButton color="primary" onClick={handleResetClick}>
-              <RotateLeftIcon fontSize={iconSize} style={{ fill: "#FFF" }} />
+  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Backspace") return;
+    if (event.key === "Enter" && inputValue !== "") {
+      event.currentTarget.blur();
+    } else if (!isStringNumber(event.key)) {
+      event.preventDefault();
+    }
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+  };
+
+  return (
+    <div className="relative ml-5 flex items-center text-sm font-bold text-gray-200">
+      <TextField
+        placeholder="Enter root number "
+        variant="outlined"
+        size="small"
+        fullWidth
+        InputProps={{
+          startAdornment: (
+            <>
+              {!isPlay ? (
+                <IconButton
+                  color="primary"
+                  size="small"
+                  onClick={handlePlayClick}
+                >
+                  <PlayCircleIcon
+                    fontSize="medium"
+                    style={{
+                      fill: "#306844",
+                      position: "absolute",
+                      fontSize: "1.7rem",
+                    }}
+                  />
+                </IconButton>
+              ) : (
+                <IconButton
+                  color="primary"
+                  size="small"
+                  onClick={handlePauseClick}
+                >
+                  <PauseCircleIcon
+                    fontSize="medium"
+                    style={{
+                      fill: "red",
+                      position: "absolute",
+                      fontSize: "1.7rem",
+                    }}
+                  />
+                </IconButton>
+              )}
+            </>
+          ),
+          style: {
+            background: "black",
+            outlineStyle: "solid",
+            outlineWidth: "2px",
+            outlineColor: "white",
+            borderRadius: "20px 20px 20px 20px",
+            width: "12rem",
+            height: "30px",
+          },
+          inputProps: { min: 0, style: { color: "white", padding: "10px" } },
+        }}
+        InputLabelProps={{ style: { color: "white" }, shrink: true }}
+        onKeyDown={handleInputKeyDown}
+        onChange={handleInputChange}
+        value={inputValue}
+      />
+      <div
+        className="ml-3 mr-2 flex items-center rounded-full
+ border-2 border-white p-[0.2rem]"
+      >
+        <div
+          className="ml-2 flex items-center rounded-full
+ border-2 border-white"
+        >
+          <ThemeProvider theme={theme}>
+            <IconButton
+              color="primary"
+              size="small"
+              onClick={handleRewindClick}
+            >
+              <FastRewindIcon style={{ fontSize: "1rem" }} />
             </IconButton>
-          </div>
+          </ThemeProvider>
+        </div>
+        <div
+          className="ml-2 flex items-center rounded-full
+ border-2 border-white"
+        >
+          <ThemeProvider theme={theme}>
+            <IconButton
+              color="primary"
+              size="small"
+              onClick={handleFastForwardClick}
+            >
+              <FastForwardIcon style={{ fontSize: "1rem" }} />
+            </IconButton>
+          </ThemeProvider>
+        </div>
+        <div
+          className="ml-2 mr-2 flex items-center rounded-full
+ border-2 border-white"
+        >
+          <ThemeProvider theme={theme}>
+            <IconButton color="primary" size="small" onClick={handleResetClick}>
+              <ReplayIcon style={{ fontSize: "1rem" }} />
+            </IconButton>
+          </ThemeProvider>
         </div>
       </div>
     </div>

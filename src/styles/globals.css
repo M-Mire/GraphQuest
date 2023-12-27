@@ -2,6 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
+body{
+  margin:0
+}
+
 svg {
     user-select: none;
   }
+
+@media (max-width: 767px) {
+#menu {
+  display: none; 
+}
+
+#menu-toggle:checked ~ nav #menu {
+  display: flex; 
+}
+}
+
+/* Hide menu on larger screens */
+@media (min-width: 768px) {
+#menu {
+  display: flex !important;
+}
+}
+.gridded {
+  background-image: repeating-linear-gradient(0deg,transparent,transparent 24px,#CCF 24px,#CCF 25px),
+  repeating-linear-gradient(-90deg,transparent,transparent 24px,#CCF 24px,#CCF 25px);
+background-size: 25px 25px;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #393939;
+  border-radius: 5px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

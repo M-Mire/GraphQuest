@@ -151,7 +151,7 @@ const Animation: React.FC<AnimationProps> = ({
 
   return (
     <>
-      <div className="relative h-full w-full">
+      <div className="absolute h-full w-full p-4">
         <Canvas nodes={nodes} provideEdgeLength={provideEdgeLength} />
         {algorithmName === "Breadth-First Search" ? (
           <TraverseAnimationBFS nodes={nodes} />
@@ -163,13 +163,12 @@ const Animation: React.FC<AnimationProps> = ({
           />
         ) : null}
 
-        <div className="over absolute right-0 top-0 h-full w-1/4">
+        <div className="mx-auto w-2/3 md:absolute md:right-0 md:top-4 md:mr-3 md:h-[calc(100%_-_1.5rem)] md:w-[33%] lg:mr-4 lg:w-[28%]">
           <TraverseCode
             lineNumbers={lineNumbers}
             code={code}
             algorithmName={algorithmName}
           />
-          <PseudoCode />
         </div>
       </div>
     </>

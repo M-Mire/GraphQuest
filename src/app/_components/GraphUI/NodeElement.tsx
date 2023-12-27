@@ -33,7 +33,7 @@ const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
         y={node.y - DEFAULT_RECTANGLE_SIZE / 2}
         height={DEFAULT_RECTANGLE_SIZE}
         width={DEFAULT_RECTANGLE_SIZE}
-        fill="transparent"
+        fill="none"
       ></rect>
       <circle
         name={"" + node.val}
@@ -121,7 +121,7 @@ export const COLOUR_SELECTION = (
     ? visitedChildrens
       ? "grey"
       : "purple"
-    : "none";
+    : "white";
 };
 
 export function updateVisitedChildrens(node: Node, newValue: boolean) {

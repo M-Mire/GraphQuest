@@ -1,7 +1,14 @@
 import Graph, { GraphDistance } from "~/app/_GraphAlgorithm/Graph";
 
+export enum pageEnum {
+  BFS = "BFS",
+  DFS = "DFS",
+  DIJKSTRA = "DIJKSTRA",
+}
+
 interface pageConfigurationType {
   algorithmName: string;
+  urlName: string;
   provideEdgeLength: boolean;
   runAlgorithm: (g: Graph | GraphDistance, rootValue: number) => void;
   addEdge: (
@@ -14,6 +21,7 @@ interface pageConfigurationType {
 }
 export const pageConfigurationBFS: pageConfigurationType = {
   algorithmName: "Breadth-First Search",
+  urlName: "/",
   provideEdgeLength: false,
   runAlgorithm: (g: Graph, rootValue: number) => {
     g.BFS(rootValue);
@@ -37,6 +45,7 @@ export const pageConfigurationBFS: pageConfigurationType = {
 
 export const pageConfigurationDFS: pageConfigurationType = {
   algorithmName: "Depth-First Search",
+  urlName: "/dfs",
   provideEdgeLength: false,
   runAlgorithm: (g: Graph, rootValue: number) => {
     g.DFS(rootValue);
@@ -65,6 +74,7 @@ export const pageConfigurationDFS: pageConfigurationType = {
 
 export const pageConfigurationDijkstra: pageConfigurationType = {
   algorithmName: "Dijkstra Algorithm",
+  urlName: "/dijkstra",
   provideEdgeLength: true,
   runAlgorithm: (g: Graph | GraphDistance, rootValue: number) => {
     if (g instanceof GraphDistance) g.DIJKSTRA(rootValue);
@@ -105,5 +115,12 @@ export const pageConfigurationDijkstra: pageConfigurationType = {
               if altDistance < (distance[neighbor] or Infinity):
                   distance[neighbor] = altDistance`,
 };
+
+export const pageConfigurationMap: Map<pageEnum, pageConfigurationType> =
+  new Map<pageEnum, pageConfigurationType>([
+    [pageEnum.BFS, pageConfigurationBFS],
+    [pageEnum.DFS, pageConfigurationDFS],
+    [pageEnum.DIJKSTRA, pageConfigurationDijkstra],
+  ]);
 
 export default pageConfigurationType;

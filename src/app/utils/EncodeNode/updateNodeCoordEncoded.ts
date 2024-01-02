@@ -7,7 +7,6 @@ const updateNodeCoordEncoded = (node: Node, x: number, y: number) => {
   updateNode.y = y;
   updateNode.visited = false;
   updateNode.currentlyVisitedPair = false;
-  console.log(updateNode);
   return encodeURIComponent(JSON.stringify(updateNode));
 };
 

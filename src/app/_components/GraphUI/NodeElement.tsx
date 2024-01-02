@@ -4,6 +4,10 @@ import {
   DEFAULT_RECTANGLE_SIZE,
   DEFAULT_RADIUS_SMALL_CIRCLE,
   DEFAULT_RADIUS_BIG_CIRCLE,
+  DEFAULT_NODE_PROCESSED_COLOUR,
+  DEFAULT_NODE_VISITED_COLOUR,
+  DEFAULT_NODE_CLICKED_COLOUR,
+  DEFAULT_NODE_COLOUR,
 } from "~/app/constants/Node/index";
 import { getCoords } from "~/app/utils/getCoords";
 import Node from "~/app/model/Node";
@@ -116,12 +120,12 @@ export const COLOUR_SELECTION = (
   visitedChildrens: boolean,
 ) => {
   return isClicked
-    ? "blue"
+    ? DEFAULT_NODE_CLICKED_COLOUR
     : visited
     ? visitedChildrens
-      ? "grey"
-      : "purple"
-    : "white";
+      ? DEFAULT_NODE_VISITED_COLOUR
+      : DEFAULT_NODE_PROCESSED_COLOUR
+    : DEFAULT_NODE_COLOUR;
 };
 
 export function updateVisitedChildrens(node: Node, newValue: boolean) {

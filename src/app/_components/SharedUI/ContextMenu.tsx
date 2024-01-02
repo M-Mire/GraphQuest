@@ -65,20 +65,30 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
           y: node_y,
         },
       });
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+
+    const handleMouseUp = (event: MouseEvent) => {
+      const rect = elementRef.current!.getBoundingClientRect();
+
+      const { node_x, node_y } = getCoords(
+        event.clientX,
+        event.clientY,
+        elementRef,
+      ) as {
+        node_x: number;
+        node_y: number;
+      };
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+      setMoveNode(false);
+      setCtxMenu(-1);
       updateNodeQueryString(
         searchParams.toString(),
         node,
         updateNodeCoordEncoded(node, node_x, node_y),
       );
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-
-    const handleMouseUp = () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-      setMoveNode(false);
-      setCtxMenu(-1);
     };
 
     window.addEventListener("mouseup", handleMouseUp);

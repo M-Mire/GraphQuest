@@ -19,6 +19,7 @@ const TraverseAnimation: React.FC<TraverseAnimationProps> = ({ nodes }) => {
   const [visitedNodes, setVisitedNodes] = useState<Node[]>([]);
   const [arrowPoint, setArrowPoint] = useState<[number, string] | null>(null);
   const [visitStack, setVisitStack] = useState<Node[]>([]);
+  const [containerHeight, setContainerHeight] = useState<number>(400);
 
   useEffect(() => {
     if (containerRef.current && arrowPoint !== null) {
@@ -90,16 +91,36 @@ const TraverseAnimation: React.FC<TraverseAnimationProps> = ({ nodes }) => {
     }
   }, [nodes]);
 
+  useEffect(() => {
+    const updateContainerHeight = () => {
+      if (containerRef.current) {
+        const height = containerRef.current.clientHeight;
+        setContainerHeight(height);
+      }
+    };
+    updateContainerHeight();
+    window.addEventListener("resize", updateContainerHeight);
+    return () => {
+      window.removeEventListener("resize", updateContainerHeight);
+    };
+  }, []);
+
+  const midpointY = containerHeight / 2 - rectHeight / 2;
+
   return (
     <div
       ref={containerRef}
-      className="mt-2 h-1/3 rounded-2xl bg-green-500 md:h-1/3 md:w-[65%] lg:h-1/3 lg:w-[70%]"
+      className="mt-2 h-1/3 rounded-2xl bg-slate-500 md:h-1/3 md:w-[65%] lg:h-1/3 lg:w-[70%]"
       style={{ overflowX: "auto" }}
     >
-      <svg width={totalWidth} className="relative h-full">
+      <svg
+        width={totalWidth}
+        height={containerHeight}
+        className="relative h-full"
+      >
         {visitedNodes.map((node, i) => {
           const x = i * (rectWidth + rectMargin) + padding;
-          const y = rectHeight / 2;
+          const y = midpointY;
           return (
             <g key={`g-${node.id}`}>
               <rect

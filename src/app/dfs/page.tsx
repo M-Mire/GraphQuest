@@ -49,8 +49,9 @@ const Animation = () => {
   return (
     <div className="absolute h-full w-full p-4">
       <div className="h-2/3 overflow-auto rounded-2xl bg-slate-600 sm:mb-2 md:relative md:left-0 md:top-0 md:w-[65%] lg:w-[70%]">
-        <svg className="h-[900px]">
+        <svg className="h-full w-full">
           {/*The nodes are slapped inside here/*/}
+          <Nodes val={10} x={50} y={56} />
         </svg>
       </div>
       <div className="mt-2 h-1/3 rounded-2xl bg-green-500 md:h-1/3 md:w-[65%] lg:h-1/3 lg:w-[70%]"></div>
@@ -110,6 +111,19 @@ const Nav: React.FC<NavProps> = ({ handleSVGClick, showMenu, toggleMenu }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams()!;
   const isEditTest = searchParams.get("edit");
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -136,7 +150,7 @@ const Nav: React.FC<NavProps> = ({ handleSVGClick, showMenu, toggleMenu }) => {
           <AccountTreeIcon fontSize="medium" />
         </div>
         <div className="ml-2 flex items-center text-sm font-bold text-white">
-          GraphQuest: DFS Width
+          GraphQuest: DFS {windowWidth} {dimensionsConverter(windowWidth)}
         </div>
         <div className="ml-1 flex items-center text-sm font-bold text-gray-200">
           <button

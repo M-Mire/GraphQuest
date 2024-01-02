@@ -221,7 +221,11 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
 
           {isMultiSwitcherActive && (
             <>
-              <MultiSwitcher />
+              <MultiSwitcher
+                pageConfiguration={pageConfiguration}
+                isEditMode={isEditMode}
+                setMultiSwitcher={setMultiSwitcher}
+              />
             </>
           )}
 

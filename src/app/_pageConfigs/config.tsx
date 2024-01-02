@@ -117,7 +117,7 @@ export const pageConfigurationDijkstra: pageConfigurationType = {
 };
 
 export const pageConfigurationMap: Map<pageEnum, pageConfigurationType> =
-  new Map([
+  new Map<pageEnum, pageConfigurationType>([
     [pageEnum.BFS, pageConfigurationBFS],
     [pageEnum.DFS, pageConfigurationDFS],
     [pageEnum.DIJKSTRA, pageConfigurationDijkstra],

@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import pageConfigurationType, {
   pageConfigurationMap,
+  pageEnum,
 } from "~/app/_pageConfigs/config";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import EditIcon from "@mui/icons-material/Edit";
@@ -18,7 +19,7 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
   isEditMode,
   setMultiSwitcher,
 }) => {
-  const [hoveredDiv, setHoveredDiv] = useState<string | null>(null);
+  const [hoveredDiv, setHoveredDiv] = useState<pageEnum | null>(null);
   const [query, setQuery] = useState<string>("");
   const mapArray = Array.from(pageConfigurationMap);
 
@@ -42,7 +43,7 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
     };
   }, [setMultiSwitcher]);
 
-  const handleMouseEnter = (id: string | null) => {
+  const handleMouseEnter = (id: pageEnum | null) => {
     if (id !== null) {
       setHoveredDiv(id);
     }
@@ -107,7 +108,7 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
           })
         ) : (
           <p className="p-4 text-sm text-slate-400">
-            Your search for "{query}" algorithm was unsuccessful
+            Your search for &quot;{query}&ldquo; algorithm was unsuccessful
           </p>
         )}
       </div>

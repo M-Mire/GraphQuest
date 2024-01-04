@@ -87,6 +87,7 @@ export const ACTIONS_NODE = {
   DELETE_NODE: "DELETE_NODE",
   UPDATE_COORDS: "UPDATE_COORDS",
   CHANGE_NODE_WEIGHT: "CHANGE_NODE_WEIGHT",
+  DELETE_ALL: "DELETE_ALL",
 };
 export type ActionNode = {
   type: string;

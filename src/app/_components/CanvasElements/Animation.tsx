@@ -15,7 +15,7 @@ import Graph, {
   Order,
   SingleInstruction,
 } from "~/app/_GraphAlgorithm/Graph";
-import PseudoCode from "~/app/_components/SharedUI/PseudoCode";
+import { pageEnum } from "~/app/_pageConfigs/config";
 
 interface AnimationProps {
   nodes: Node[];

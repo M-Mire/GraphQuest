@@ -121,7 +121,7 @@ const EditMode: React.FC<EditModeProps> = ({
         payload: addNode,
       });
       incrementNodeCount();
-      if (nodes.length === 10 || nodes.length === 15) {
+      if (nodes.length === 10) {
         setAlert(Alerts.Amber);
       }
       return;

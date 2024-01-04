@@ -7,6 +7,7 @@ export enum pageEnum {
 }
 
 interface pageConfigurationType {
+  id: pageEnum;
   algorithmName: string;
   urlName: string;
   provideEdgeLength: boolean;
@@ -20,6 +21,7 @@ interface pageConfigurationType {
   code: string;
 }
 export const pageConfigurationBFS: pageConfigurationType = {
+  id: pageEnum.BFS,
   algorithmName: "Breadth-First Search",
   urlName: "/",
   provideEdgeLength: false,
@@ -44,6 +46,7 @@ export const pageConfigurationBFS: pageConfigurationType = {
 };
 
 export const pageConfigurationDFS: pageConfigurationType = {
+  id: pageEnum.DFS,
   algorithmName: "Depth-First Search",
   urlName: "/dfs",
   provideEdgeLength: false,
@@ -73,6 +76,7 @@ export const pageConfigurationDFS: pageConfigurationType = {
 };
 
 export const pageConfigurationDijkstra: pageConfigurationType = {
+  id: pageEnum.DIJKSTRA,
   algorithmName: "Dijkstra Algorithm",
   urlName: "/dijkstra",
   provideEdgeLength: true,

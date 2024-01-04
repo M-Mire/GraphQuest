@@ -97,6 +97,8 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
       return nodes.map((node) => {
         return { ...node, visited: false, visitedChildrens: false };
       });
+    case ACTIONS_NODE.DELETE_ALL:
+      return [] as Node[];
     case ACTIONS_NODE.NODE_DISTANCE:
       const {
         node,
@@ -200,6 +202,14 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
     setMultiSwitcher(!isMultiSwitcherActive);
   };
 
+  const clearNodes = () => {
+    dispatch({
+      type: ACTIONS_NODE.DELETE_ALL,
+      payload: -1,
+    });
+    setNodeCount(0);
+  };
+
   return (
     <>
       <div className="relative flex h-screen flex-col bg-black">
@@ -227,6 +237,7 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
                 pageConfiguration={pageConfiguration}
                 isEditMode={isEditMode}
                 setMultiSwitcher={setMultiSwitcher}
+                clearNodes={clearNodes}
               />
             </>
           )}

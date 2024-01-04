@@ -8,16 +8,23 @@ import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
 import DoneIcon from "@mui/icons-material/Done";
 import Link from "next/link";
+import {
+  ActionNode,
+  ACTIONS_NODE,
+} from "~/app/_components/GraphUI/NodeElement";
 
 interface MultiSwitcherProps {
   pageConfiguration: pageConfigurationType;
   isEditMode: boolean;
   setMultiSwitcher: React.Dispatch<React.SetStateAction<boolean>>;
+
+  clearNodes: () => void;
 }
 const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
   pageConfiguration,
   isEditMode,
   setMultiSwitcher,
+  clearNodes,
 }) => {
   const [hoveredDiv, setHoveredDiv] = useState<pageEnum | null>(null);
   const [query, setQuery] = useState<string>("");
@@ -126,7 +133,16 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
               </div>
 
               <div className="px-4">
-                <Link href={k[1].urlName + "?edit=true"}>
+                <Link
+                  href={k[1].urlName + "?edit=true"}
+                  onClick={() => {
+                    if (
+                      pageConfiguration.algorithmName === k[1].algorithmName
+                    ) {
+                      clearNodes();
+                    }
+                  }}
+                >
                   <div
                     className={`mt-2 flex w-full items-center justify-between rounded p-1 text-white hover:bg-slate-500 ${
                       pageConfiguration.algorithmName === k[1].algorithmName &&

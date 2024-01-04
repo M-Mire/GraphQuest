@@ -15,6 +15,7 @@ import { Command, Line } from "~/app/_GraphAlgorithm/Graph";
 import { useState, useReducer } from "react";
 import type pageConfigurationType from "~/app/_pageConfigs/config";
 import type Node from "~/app/model/Node";
+import Alert, { Alerts } from "~/app/_components/SharedUI/Alert";
 
 const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
   switch (action.type) {
@@ -177,7 +178,7 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
 
   const [rootValue, setRootValue] = useState<number | null>(null);
   const [nodes, dispatch] = useReducer(nodeReducer, []);
-  const [speed, setSpeed] = useState<number>(5);
+  const [speed, setSpeed] = useState<number>(500);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlay, setPlay] = useState<boolean>(false);
   const [lineNumbers, dispatchLineNumbers] = useReducer(lineReducer, []);
@@ -185,6 +186,7 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
 
   const [showMenu, setShowMenu] = useState(false);
   const [isMultiSwitcherActive, setMultiSwitcher] = useState(false);
+  const [alert, setAlert] = useState<Alerts | null>(null);
 
   useEffect(() => {
     if (nodes.length === 0) addNodesFromURL(nodes, dispatch, urlNodes);
@@ -228,7 +230,7 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
               />
             </>
           )}
-
+          {isEditMode && <Alert alert={alert} setAlert={setAlert} />}
           {isEditMode ? (
             <EditMode
               dispatch={dispatch}
@@ -238,6 +240,7 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
                 setNodeCount(nodeCount + 1);
               }}
               provideEdgeLength={pageConfiguration.provideEdgeLength}
+              setAlert={setAlert}
             />
           ) : (
             <Animation

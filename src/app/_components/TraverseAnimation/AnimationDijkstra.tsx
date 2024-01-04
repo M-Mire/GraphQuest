@@ -41,7 +41,7 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
         number | number[] | Map<number, number>,
       ];
       if ((command as Command) && command === Command.UpdateMap) {
-        console.log(mapDetail);
+        // console.log(mapDetail);
         setMapDetail(val as Map<number, number>);
       }
     }
@@ -81,7 +81,7 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
   return (
     <div
       ref={containerRef}
-      className="mt-2 h-1/3 rounded-2xl bg-green-500 md:h-1/3 md:w-[65%] lg:h-1/3 lg:w-[70%]"
+      className="mt-2 h-1/3 rounded-2xl bg-slate-500 md:h-1/3 md:w-[65%] lg:h-1/3 lg:w-[70%]"
       style={{ overflowX: "auto" }}
     >
       <svg width={totalWidth} className="relative h-full">
@@ -89,42 +89,40 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
           const x = i * (rectWidth + rectMargin) + padding;
           const y = rectHeight / 2;
           return (
-            <>
-              <g key={`g-${node.val}`}>
-                <rect
-                  key={`rect-${node.val}`}
-                  x={x}
-                  y={y}
-                  width={rectWidth}
-                  height={rectHeight}
-                  fill="none"
-                  stroke="white"
-                  strokeWidth={3}
-                />
-                <text
-                  key={`text-${node.val}`}
-                  x={x + rectWidth / 2}
-                  y={y + rectHeight / 2}
-                  textAnchor="middle"
-                  alignmentBaseline="middle"
-                  fill="white"
-                >
-                  {mapDetail.get(node.val)}
-                </text>
-              </g>
+            <g key={`group-${node.val}-${i}`}>
+              <rect
+                x={x}
+                y={y + 5}
+                width={rectWidth}
+                height={rectHeight}
+                fill="none"
+                stroke="white"
+                strokeWidth={3}
+              />
+              <text
+                x={x + rectWidth / 2}
+                y={y + 5 + rectHeight / 2}
+                textAnchor="middle"
+                alignmentBaseline="middle"
+                fill="white"
+                key={`text-${node.val}-${i}`}
+              >
+                {mapDetail.get(node.val)}
+              </text>
               {arrowPoint !== null ? (
                 <text
-                  key={`arrow-text-${i}`}
                   x={x + rectWidth / 2}
                   y={y - arrowSize / 2}
                   textAnchor="middle"
                   alignmentBaseline="middle"
-                  fill="red"
+                  fontSize={32}
+                  fill="#FF7676"
+                  key={`arrow-text-${i}`}
                 >
                   {node.val}
                 </text>
               ) : null}
-            </>
+            </g>
           );
         })}
       </svg>

@@ -104,9 +104,6 @@ const Animation: React.FC<AnimationProps> = ({
               }
             } else {
               if (g instanceof GraphDistance) {
-                console.log(node);
-                console.log(node.distances);
-                console.log();
                 g.addEdgeDistance(
                   node.val,
                   child,

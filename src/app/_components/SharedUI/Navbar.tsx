@@ -94,6 +94,14 @@ const Navbar: React.FC<NavbarProps> = ({
           isPlay={isPlay}
           dispatchLineNumbers={dispatchLineNumbers}
         />
+        {/* <button
+          className="text-white"
+          onClick={() => {
+            alert("blah");
+          }}
+        >
+          Default Alert
+        </button> */}
       </div>
       <label
         htmlFor="menu-toggle"

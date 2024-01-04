@@ -13,6 +13,7 @@ import InputWeight from "~/app/_components/GraphUI/InputWeight";
 import { getCoords } from "../../utils/getCoords";
 import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
 import updateNodeEncoded from "~/app/utils/EncodeNode/updateNodeEncoded";
+import Alert, { Alerts } from "~/app/_components/SharedUI/Alert";
 
 interface EditModeProps {
   dispatch: React.Dispatch<ActionNode>;
@@ -20,6 +21,7 @@ interface EditModeProps {
   nodeCount: number;
   incrementNodeCount: () => void;
   provideEdgeLength?: boolean;
+  setAlert: React.Dispatch<React.SetStateAction<Alerts | null>>;
 }
 
 const EditMode: React.FC<EditModeProps> = ({
@@ -28,6 +30,7 @@ const EditMode: React.FC<EditModeProps> = ({
   nodeCount,
   incrementNodeCount,
   provideEdgeLength,
+  setAlert,
 }) => {
   const elementRef = useRef<HTMLDivElement | null>(null);
   const [activeNode, setActiveNode] = useState<number>(-1);
@@ -100,7 +103,7 @@ const EditMode: React.FC<EditModeProps> = ({
       return;
     }
 
-    if (!isMoveNode) {
+    if (!isMoveNode && nodes.length < 20) {
       const { node_x, node_y } = getCoords(x, y, elementRef) as {
         node_x: number;
         node_y: number;
@@ -117,9 +120,13 @@ const EditMode: React.FC<EditModeProps> = ({
         type: ACTIONS_NODE.ADD_NODE,
         payload: addNode,
       });
-
       incrementNodeCount();
+      if (nodes.length === 10 || nodes.length === 15) {
+        setAlert(Alerts.Amber);
+      }
       return;
+    } else {
+      setAlert(Alerts.Warning);
     }
   };
   return (

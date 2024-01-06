@@ -3,6 +3,7 @@ import Canvas from "~/app/_components/CanvasElements/Canvas";
 import TraverseCode from "~/app/_components/TraverseAnimation/AnimationCode";
 import TraverseAnimationBFS from "~/app/_components/TraverseAnimation/AnimationBFS";
 import TraverseAnimationDijkstra from "~/app/_components/TraverseAnimation/AnimationDijkstra";
+import TraverseAnimationDFS from "../TraverseAnimation/AnimationDFS";
 import { ACTIONS_NODE, ActionNode } from "../GraphUI/NodeElement";
 import Node from "~/app/model/Node";
 import Graph, {
@@ -15,6 +16,7 @@ import Graph, {
   Order,
   SingleInstruction,
 } from "~/app/_GraphAlgorithm/Graph";
+import PseudoCode from "~/app/_components/SharedUI/PseudoCode";
 import { pageEnum } from "~/app/_pageConfigs/config";
 
 interface AnimationProps {
@@ -37,6 +39,7 @@ interface AnimationProps {
     distance?: number,
   ) => void;
   provideEdgeLength?: boolean;
+  pageID: pageEnum;
 }
 
 function isCommand(type: InstructionType): type is Command {
@@ -71,6 +74,7 @@ const Animation: React.FC<AnimationProps> = ({
   algorithmName,
   provideEdgeLength,
   addEdge,
+  pageID,
 }) => {
   const [tracker, setTracker] = useState<TrackerArray>([]);
   const handleSingleCall = (
@@ -104,6 +108,9 @@ const Animation: React.FC<AnimationProps> = ({
               }
             } else {
               if (g instanceof GraphDistance) {
+                // console.log(node);
+                // console.log(node.distances);
+                // console.log();
                 g.addEdgeDistance(
                   node.val,
                   child,
@@ -150,10 +157,16 @@ const Animation: React.FC<AnimationProps> = ({
     <>
       <div className="absolute h-full w-full p-4">
         <Canvas nodes={nodes} provideEdgeLength={provideEdgeLength} />
-        {algorithmName === "Breadth-First Search" ? (
+        {pageID === pageEnum.BFS ? (
           <TraverseAnimationBFS nodes={nodes} />
-        ) : algorithmName === "Dijkstra Algorithm" ? (
+        ) : pageID === pageEnum.DIJKSTRA ? (
           <TraverseAnimationDijkstra
+            nodes={nodes}
+            currentIndex={currentIndex}
+            tracker={tracker}
+          />
+        ) : pageID === pageEnum.DFS ? (
+          <TraverseAnimationDFS
             nodes={nodes}
             currentIndex={currentIndex}
             tracker={tracker}

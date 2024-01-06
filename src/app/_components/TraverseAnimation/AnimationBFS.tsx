@@ -5,7 +5,7 @@ interface TraverseAnimationProps {
   nodes: Node[];
 }
 
-const TraverseAnimation: React.FC<TraverseAnimationProps> = ({ nodes }) => {
+const TraverseAnimationBFS: React.FC<TraverseAnimationProps> = ({ nodes }) => {
   const rectHeight = 80;
   const rectWidth = 70;
   const rectMargin = 20;
@@ -164,4 +164,4 @@ const TraverseAnimation: React.FC<TraverseAnimationProps> = ({ nodes }) => {
   );
 };
 
-export default TraverseAnimation;
+export default TraverseAnimationBFS;

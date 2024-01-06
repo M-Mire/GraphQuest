@@ -1,11 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
 import { COLOUR_SELECTION } from "~/app/_components/GraphUI/NodeElement";
 import type Node from "~/app/model/Node";
+import { Command, Line, TrackerArray } from "~/app/_GraphAlgorithm/Graph";
+import newNode from "~/app/utils/createNewNode";
+import { Height } from "@mui/icons-material";
+
 interface TraverseAnimationProps {
+  tracker: TrackerArray;
+  currentIndex: number;
   nodes: Node[];
 }
 
-const TraverseAnimation: React.FC<TraverseAnimationProps> = ({ nodes }) => {
+const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
+  nodes,
+  currentIndex,
+  tracker,
+}) => {
   const rectHeight = 80;
   const rectWidth = 70;
   const rectMargin = 20;
@@ -13,12 +23,12 @@ const TraverseAnimation: React.FC<TraverseAnimationProps> = ({ nodes }) => {
   const padding = 20;
 
   const totalWidth =
-    nodes.length * rectWidth + (nodes.length - 1) * rectMargin + 2 * padding;
+    (rectWidth + rectMargin + padding) * (nodes.length + 1) + padding;
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [visitedNodes, setVisitedNodes] = useState<Node[]>([]);
+  const [poppedStack, setPoppedStack] = useState<Node | null>();
   const [arrowPoint, setArrowPoint] = useState<[number, string] | null>(null);
-  const [visitStack, setVisitStack] = useState<Node[]>([]);
   const [containerHeight, setContainerHeight] = useState<number>(400);
 
   useEffect(() => {
@@ -28,68 +38,38 @@ const TraverseAnimation: React.FC<TraverseAnimationProps> = ({ nodes }) => {
     }
   }, [arrowPoint, rectWidth, rectMargin, padding]);
 
-  //most annoying part oh my days
   useEffect(() => {
-    const updatedVisitedNodes = nodes.reduce(
-      (accumulator, node) => {
-        const existingVisitedNode = accumulator.find(
-          (visitedNode) => visitedNode.id === node.id,
-        );
-        if (node.visited) {
-          if (existingVisitedNode) {
-            const updatedNode = {
-              ...existingVisitedNode,
-              visitedChildrens:
-                node.visitedChildrens || existingVisitedNode.visitedChildrens,
-            };
-            const updatedIndex = accumulator.indexOf(existingVisitedNode);
-            accumulator.splice(updatedIndex, 1, updatedNode);
-            if (node.visitedChildrens || existingVisitedNode.visitedChildrens) {
-              if (visitStack.length === 0) {
-                setVisitStack([updatedNode]);
-              } else {
-                if (!visitStack.some((vs) => vs.id === updatedNode.id)) {
-                  setVisitStack([...visitStack, updatedNode]);
-                }
-              }
-            }
-          } else {
-            accumulator.push(node);
-          }
+    if (
+      currentIndex >= 0 &&
+      currentIndex < tracker.length &&
+      tracker[currentIndex]
+    ) {
+      const [command, val] = tracker[currentIndex] as [
+        Command | Line,
+        number | number[] | Map<number, number>,
+      ];
+      if (command as Command) {
+        const getNode = nodes.find((node) => node.val === val)!;
+        if (command === Command.Visited) {
+          // If Command.Visited add to the stack
+          getNode.visited = true;
+          setVisitedNodes([...visitedNodes, getNode]);
+        } else if (command === Command.PoppedStack) {
+          //If Command.PoppedStack add to the popped stack
+
+          // Remove the popped value from visited
+          const filteredVisited = visitedNodes.filter(
+            (node) => node.val !== val,
+          );
+          setVisitedNodes(filteredVisited);
+
+          //Add to Popped Stack
+          getNode.visitedChildrens = true;
+          setPoppedStack(getNode);
         }
-        return accumulator;
-      },
-      [...visitedNodes],
-    );
-
-    const isNodeEmpty = nodes.filter((node) => node.visited).length > 0;
-    if (isNodeEmpty) {
-      setVisitedNodes(updatedVisitedNodes);
-    } else {
-      setVisitedNodes([]);
-    }
-
-    //Arrow
-    if (visitedNodes.length === 0) {
-      const firstVisitedNode = nodes.find((node) => node.visited);
-      if (firstVisitedNode) {
-        setArrowPoint([0, firstVisitedNode.id]);
-      }
-    } else {
-      const nextVisitedNode = updatedVisitedNodes.find(
-        (visitedNode) => !visitedNode.visitedChildrens,
-      );
-      if (
-        nextVisitedNode &&
-        arrowPoint !== null &&
-        nextVisitedNode.id !== arrowPoint[1]
-      ) {
-        const getPrevArrowPoint = arrowPoint[0];
-        const getCurrId = nextVisitedNode.id;
-        setArrowPoint([getPrevArrowPoint + 1, getCurrId]);
       }
     }
-  }, [nodes]);
+  }, [currentIndex, tracker]);
 
   useEffect(() => {
     const updateContainerHeight = () => {
@@ -118,8 +98,87 @@ const TraverseAnimation: React.FC<TraverseAnimationProps> = ({ nodes }) => {
         height={containerHeight}
         className="relative h-full"
       >
+        {poppedStack ? (
+          <g>
+            <rect
+              key={`rect-${poppedStack.id}`}
+              x={padding}
+              y={midpointY}
+              width={rectWidth}
+              height={rectHeight}
+              fill={COLOUR_SELECTION(
+                false,
+                poppedStack.visited,
+                poppedStack.visitedChildrens,
+              )}
+              stroke="white"
+              strokeWidth={3}
+            />
+            <text
+              key={`text-${poppedStack.id}`}
+              x={padding + rectWidth / 2}
+              y={midpointY + rectHeight / 2}
+              textAnchor="middle"
+              alignmentBaseline="middle"
+              fill="white"
+            >
+              {poppedStack.val}
+            </text>
+          </g>
+        ) : (
+          <g>
+            <rect
+              key={`rect-None`}
+              x={padding}
+              y={midpointY}
+              width={rectWidth}
+              height={rectHeight}
+              fill="white"
+              stroke="white"
+              strokeWidth={3}
+            />
+            <text
+              key={`text-None`}
+              x={padding + rectWidth / 2}
+              y={midpointY + rectHeight / 2}
+              textAnchor="middle"
+              alignmentBaseline="middle"
+              fill="black"
+            >
+              None
+            </text>
+          </g>
+        )}
+        <line
+          x1={padding / 2 + rectWidth + rectMargin}
+          y1={0}
+          x2={padding / 2 + rectWidth + rectMargin}
+          y2={containerHeight * 5}
+          strokeWidth={4}
+          stroke="black"
+        />
+        <text
+          x={padding + rectWidth / 2}
+          y={32}
+          textAnchor="middle"
+          alignmentBaseline="middle"
+          fill="black"
+          fontSize={20}
+        >
+          Popped
+        </text>
+        <text
+          x={rectWidth + rectMargin + padding * 3}
+          y={32}
+          textAnchor="middle"
+          alignmentBaseline="middle"
+          fill="black"
+          fontSize={20}
+        >
+          Stack
+        </text>
         {visitedNodes.map((node, i) => {
-          const x = i * (rectWidth + rectMargin) + padding;
+          const x = (i + 1) * (rectWidth + rectMargin) + padding;
           const y = midpointY;
           return (
             <g key={`g-${node.id}`}>
@@ -143,11 +202,11 @@ const TraverseAnimation: React.FC<TraverseAnimationProps> = ({ nodes }) => {
                 y={y + rectHeight / 2}
                 textAnchor="middle"
                 alignmentBaseline="middle"
-                fill="white"
+                fill="black"
               >
                 {node.val}
               </text>
-              {arrowPoint !== null && i === arrowPoint[0] ? (
+              {/* {arrowPoint !== null && i === arrowPoint[0] ? (
                 <polygon
                   key={`arrow-${node.id}`}
                   points={`${x + rectWidth / 2},${y - arrowSize} ${
@@ -155,13 +214,59 @@ const TraverseAnimation: React.FC<TraverseAnimationProps> = ({ nodes }) => {
                   },${y} ${x + rectWidth / 2 + arrowSize / 2},${y}`}
                   fill="red"
                 />
-              ) : null}
+              ) : null} */}
             </g>
           );
         })}
+        {!!visitedNodes.length && (
+          <>
+            <svg
+              fill="#000000"
+              height="40px"
+              width="200px"
+              version="1.1"
+              id="Layer_1"
+              x={
+                visitedNodes.length * (rectWidth + rectMargin) +
+                padding -
+                padding / 3
+              }
+              y={midpointY + rectHeight / 4}
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 330 330"
+            >
+              <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+              <g
+                id="SVGRepo_tracerCarrier"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></g>
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  id="XMLID_308_"
+                  d="M315,150H105V90c0-6.067-3.655-11.537-9.26-13.858c-5.606-2.322-12.058-1.038-16.347,3.252l-75,75 c-5.858,5.858-5.858,15.355,0,21.213l75,75c2.87,2.87,6.705,4.394,10.61,4.394c1.932,0,3.881-0.374,5.737-1.142 c5.605-2.322,9.26-7.791,9.26-13.858v-60h210c8.284,0,15-6.716,15-15C330,156.716,323.284,150,315,150z M75,203.787L36.213,165 L75,126.213V203.787z"
+                ></path>
+              </g>
+            </svg>
+            <text
+              x={
+                visitedNodes.length * (rectWidth + rectMargin) +
+                padding +
+                rectWidth * 2
+              }
+              y={midpointY + rectHeight / 2}
+              textAnchor="middle"
+              alignmentBaseline="middle"
+              fill="black"
+              fontSize={20}
+            >
+              top
+            </text>
+          </>
+        )}
       </svg>
     </div>
   );
 };
 
-export default TraverseAnimation;
+export default TraverseAnimationDFS;

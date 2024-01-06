@@ -60,7 +60,7 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
             }
             return node;
           });
-        case Command.PoppedQueue:
+        case Command.Popped:
           return nodes.map((node) => {
             if (node.val === value) {
               return { ...node, visitedChildrens: true };
@@ -161,6 +161,8 @@ const addNodesFromURL = (
     urlNodes.forEach((urlNode) => {
       const deserializedObj = JSON.parse(decodeURIComponent(urlNode)) as Node;
       const newNode = deserializedObj;
+      newNode.visited = false;
+      newNode.visitedChildrens = false;
       dispatch({
         type: ACTIONS_NODE.ADD_NODE,
         payload: newNode,
@@ -269,6 +271,7 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
               algorithmName={pageConfiguration.algorithmName}
               provideEdgeLength={pageConfiguration.provideEdgeLength}
               addEdge={pageConfiguration.addEdge}
+              pageID={pageConfiguration.id}
             />
           )}
         </div>

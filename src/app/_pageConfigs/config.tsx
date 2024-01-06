@@ -6,7 +6,7 @@ export enum pageEnum {
   DIJKSTRA = "DIJKSTRA",
 }
 
-interface pageConfigurationType {
+export interface pageConfigurationType {
   id: pageEnum;
   algorithmName: string;
   urlName: string;
@@ -32,17 +32,21 @@ export const pageConfigurationBFS: pageConfigurationType = {
     g.addEdge(from, to);
   },
   code: `BFS(root: number):
-  visited = Set()
-  queue = [root]
-  visited.add(root)
-  
-  while queue is not empty:
-      vertex = queue.dequeue()   // Dequeue the first element
-      
-      for neighbour in graph.get(vertex) or an empty list:
-          if neighbour is not in visited:
-              visited.add(neighbour)
-              queue.enqueue(neighbour)`,
+  const queue = [root];
+  const visited = new Set();
+
+  while (queue.length) {
+    const vertex = queue.shift();
+
+    if (!visited.has(vertex)) {
+      visited.add(vertex);
+
+      for (const neighbor of graph[vertex]) {
+        queue.push(neighbor);
+      }
+    }
+  }
+}`,
 };
 
 export const pageConfigurationDFS: pageConfigurationType = {
@@ -57,18 +61,18 @@ export const pageConfigurationDFS: pageConfigurationType = {
     g.addEdge(from, to);
   },
   code: `DFS(root: number) {
+    const stack = [root];
     const visited = new Set();
-    const queue = [root];
+    const result = [];
 
-    while (queue.length > 0) {
-      const vertex = queue.pop()!;
+    while (stack.length) {
+      const vertex = stack.pop();
+
       if (!visited.has(vertex)) {
-        visited.add(vertex);
-        const neighbours = (this.graph.get(vertex) ?? []).sort().reverse();
-        for (const neighbour of neighbours) {
-          if (!visited.has(neighbour)) {
-            queue.push(neighbour);
-          }
+      visited.add(vertex);
+
+      for (const neighbor of graph[vertex]) {
+        stack.push(neighbor);
         }
       }
     }

@@ -1,11 +1,12 @@
 export enum Command {
   EnteredQueue = "EnteredQueue",
-  PoppedQueue = "PoppedQueue",
+  Popped = "Popped",
   Visited = "Visited",
   VisitPairs = "VisitPairs",
   UnvisitPairs = "UnvisitPairs",
   UpdateMap = "UpdateMap",
   Unvisit = "Unvisit",
+  PoppedStack = "PoppedStack",
 }
 
 export enum Line {
@@ -115,7 +116,7 @@ export default class Graph {
       this.addInstruction([
         Order.Entry,
         [
-          [Command.PoppedQueue, vertex],
+          [Command.Popped, vertex],
           [Line.FinishedLine, 6],
         ],
       ]);
@@ -124,26 +125,32 @@ export default class Graph {
   }
 
   DFS(root: number) {
-    const visited = new Set();
     const stack = [root];
     this.TRACKER.push([Command.Visited, root]);
+    const visited = new Set<number>();
 
-    while (stack.length > 0) {
+    const result: number[] = [];
+
+    while (stack.length) {
       const vertex = stack.pop()!;
-      this.TRACKER.push([Command.EnteredQueue, vertex]);
-      if (!visited.has(vertex)) {
+      this.TRACKER.push([Command.PoppedStack, vertex]);
+      if (vertex !== undefined && !visited.has(vertex)) {
         visited.add(vertex);
-        this.TRACKER.push([Command.Visited, vertex]);
-        const neighbours = (this.graph.get(vertex) ?? []).sort().reverse();
-        for (const neighbour of neighbours) {
-          if (!visited.has(neighbour)) {
-            this.TRACKER.push([Command.Visited, neighbour]);
-            stack.push(neighbour);
+        result.push(vertex);
+
+        const neighbors = this.graph.get(vertex);
+        if (neighbors) {
+          for (let i = neighbors.length - 1; i >= 0; i--) {
+            const neighbor = neighbors[i]!;
+            stack.push(neighbor);
+            this.TRACKER.push([Command.Visited, neighbor]);
           }
         }
-        this.TRACKER.push([Command.PoppedQueue, vertex]);
       }
+      this.TRACKER.push([Command.Popped, vertex]);
     }
+
+    return result;
   }
 }
 
@@ -254,16 +261,10 @@ export class GraphDistance extends Graph {
         this.TRACKER.push([Command.UnvisitPairs, [minDistanceNode, neighbor]]);
         this.TRACKER.push([Line.FinishedLine, 22]);
       }
-      this.TRACKER.push([Command.PoppedQueue, minDistanceNode]);
+      this.TRACKER.push([Command.Popped, minDistanceNode]);
 
       this.TRACKER.push([Line.FinishedLine, 9]);
     }
-    // clean up popping Queue if last node visited doesn't have child
-    [...this.ALLNODES.keys()]
-      .filter((node) => !visited.has(node))
-      .forEach((n, _) => {
-        this.TRACKER.push([Command.PoppedQueue, n]);
-      });
     this.TRACKER.push([Line.FinishedLine, 1]);
   }
 }

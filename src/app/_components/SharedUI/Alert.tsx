@@ -31,10 +31,6 @@ const CustomAlert: React.FC<AlertProps> = ({ alert, setAlert }) => {
     }
   }, [opacity]);
 
-  const showAmberAlert = () => {
-    setAlert(Alerts.Amber);
-  };
-
   const handleWarningClose = () => {
     setAlert(null);
   };

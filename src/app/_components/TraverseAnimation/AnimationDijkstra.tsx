@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import type Node from "~/app/model/Node";
-import { Command, Line, TrackerArray } from "~/app/_GraphAlgorithm/Graph";
+import { Command } from "~/app/_GraphAlgorithm/Graph";
+import type { Line, TrackerArray } from "~/app/_GraphAlgorithm/Graph";
 
 interface TraverseAnimationProps {
   tracker: TrackerArray;
@@ -109,19 +110,17 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
               >
                 {mapDetail.get(node.val)}
               </text>
-              {arrowPoint !== null ? (
-                <text
-                  x={x + rectWidth / 2}
-                  y={y - arrowSize / 2}
-                  textAnchor="middle"
-                  alignmentBaseline="middle"
-                  fontSize={32}
-                  fill="#FF7676"
-                  key={`arrow-text-${i}`}
-                >
-                  {node.val}
-                </text>
-              ) : null}
+              <text
+                x={x + rectWidth / 2}
+                y={y - arrowSize / 2}
+                textAnchor="middle"
+                alignmentBaseline="middle"
+                fontSize={32}
+                fill="#FF7676"
+                key={`arrow-text-${i}`}
+              >
+                {node.val}
+              </text>
             </g>
           );
         })}

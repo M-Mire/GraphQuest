@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getCoords } from "~/app/utils/getCoords";
-import Node from "~/app/model/Node";
-import NodeElement, {
-  ACTIONS_NODE,
-  ActionNode,
-} from "~/app/_components/GraphUI/NodeElement";
+import type Node from "~/app/model/Node";
+import { ACTIONS_NODE } from "~/app/_components/GraphUI/NodeElement";
+import type { ActionNode } from "~/app/_components/GraphUI/NodeElement";
 import useDeleteNodeQueryString from "~/app/hooks/useDeleteNodeQueryString";
 import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
 import updateNodeCoordEncoded from "~/app/utils/EncodeNode/updateNodeCoordEncoded";
@@ -33,8 +31,6 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   const deleteNodeQueryString = useDeleteNodeQueryString(router);
   const updateNodeQueryString = useUpdateNodeQueryString(router);
   const searchParams = useSearchParams();
-  const [xCoord, setX] = useState<number>(x);
-  const [yCoord, setY] = useState<number>(y);
   const handleDelete = () => {
     deleteNodeQueryString(searchParams.toString(), node);
     dispatch({
@@ -46,8 +42,6 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   const handleMove = () => {
     setMoveNode(true);
     const handleMouseMove = (event: MouseEvent) => {
-      const rect = elementRef.current!.getBoundingClientRect();
-
       const { node_x, node_y } = getCoords(
         event.clientX,
         event.clientY,
@@ -70,8 +64,6 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
     window.addEventListener("mousemove", handleMouseMove);
 
     const handleMouseUp = (event: MouseEvent) => {
-      const rect = elementRef.current!.getBoundingClientRect();
-
       const { node_x, node_y } = getCoords(
         event.clientX,
         event.clientY,

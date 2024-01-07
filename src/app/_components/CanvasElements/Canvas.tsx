@@ -1,6 +1,6 @@
 import { useState } from "react";
 import NodeElement from "../GraphUI/NodeElement";
-import Node from "~/app/model/Node";
+import type Node from "~/app/model/Node";
 import Edge from "~/app/_components/GraphUI/Edge";
 
 interface CanvasProps {
@@ -50,10 +50,6 @@ export default Canvas;
 
 const InformationBoard = () => {
   const [isOpen, setIsOpen] = useState(true);
-
-  const toggleBoard = () => {
-    setIsOpen(!isOpen);
-  };
 
   const RECT_HEIGHT = 150;
   const RECT_WIDTH = 150;
@@ -129,12 +125,12 @@ const InformationBoard = () => {
           </text>
         </>
       )}
-      <ToggleInformationBoard
+      {/* <ToggleInformationBoard
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         x={RECT_WIDTH}
         y={RECT_HEIGHT}
-      />
+      /> */}
     </>
   );
 };

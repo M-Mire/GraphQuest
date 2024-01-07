@@ -263,8 +263,15 @@ export class GraphDistance extends Graph {
       }
       this.TRACKER.push([Command.Popped, minDistanceNode]);
 
+      // clean up popping Queue if last node visited doesn't have child
+
       this.TRACKER.push([Line.FinishedLine, 9]);
     }
     this.TRACKER.push([Line.FinishedLine, 1]);
+    [...this.ALLNODES.keys()]
+      .filter((node) => !visited.has(node))
+      .forEach((n, _) => {
+        this.TRACKER.push([Command.Popped, n]);
+      });
   }
 }

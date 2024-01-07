@@ -1,11 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import isStringNumber from "~/app/utils/isStringNumber";
-import {
-  ActionNode,
-  ACTIONS_NODE,
-} from "~/app/_components/GraphUI/NodeElement";
-import Node from "../../model/Node";
+import { ACTIONS_NODE } from "~/app/_components/GraphUI/NodeElement";
+import type { ActionNode } from "~/app/_components/GraphUI/NodeElement";
+import type Node from "../../model/Node";
 import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
 import updateNodeEncoded from "~/app/utils/EncodeNode/updateNodeEncoded";
 

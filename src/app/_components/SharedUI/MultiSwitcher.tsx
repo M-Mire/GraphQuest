@@ -1,33 +1,33 @@
 import { useState, useMemo, useEffect } from "react";
-import pageConfigurationType, {
-  pageConfigurationMap,
-  pageEnum,
-} from "~/app/_pageConfigs/config";
+import type pageConfigurationType from "~/app/_pageConfigs/config";
+import { pageConfigurationMap } from "~/app/_pageConfigs/config";
+import type { pageEnum } from "~/app/_pageConfigs/config";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
 import DoneIcon from "@mui/icons-material/Done";
 import Link from "next/link";
-import {
-  ActionNode,
-  ACTIONS_NODE,
-} from "~/app/_components/GraphUI/NodeElement";
+import { useSearchParams, usePathname } from "next/navigation";
 
 interface MultiSwitcherProps {
   pageConfiguration: pageConfigurationType;
   isEditMode: boolean;
   setMultiSwitcher: React.Dispatch<React.SetStateAction<boolean>>;
-
   clearNodes: () => void;
+  createQueryString: (name: string, value: string) => string;
+  deleteQueryString: (name: string) => string;
 }
 const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
   pageConfiguration,
   isEditMode,
   setMultiSwitcher,
   clearNodes,
+  createQueryString,
+  deleteQueryString,
 }) => {
   const [hoveredDiv, setHoveredDiv] = useState<pageEnum | null>(null);
   const [query, setQuery] = useState<string>("");
+  const pathname = usePathname();
   const mapArray = Array.from(pageConfigurationMap);
 
   const filteredAlgorithms = useMemo(() => {
@@ -92,7 +92,7 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
         </div>
 
         {!!filteredAlgorithms.length ? (
-          filteredAlgorithms.map((k, i) => {
+          filteredAlgorithms.map((k) => {
             return (
               <div key={k[0]} className="px-4">
                 <div
@@ -121,7 +121,9 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
       </div>
 
       {hoveredDiv !== null &&
-        mapArray.map((k, i) => {
+        mapArray.map((k) => {
+          const isViewCurrentOptions =
+            pageConfiguration.algorithmName === k[1].algorithmName; // if user viewing the options for currentPage
           return (
             <div
               key={k[0]}
@@ -133,51 +135,44 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
               </div>
 
               <div className="px-4">
-                <Link
-                  href={k[1].urlName + "?edit=true"}
-                  onClick={() => {
-                    if (
-                      pageConfiguration.algorithmName === k[1].algorithmName
-                    ) {
-                      clearNodes();
-                    }
-                  }}
-                >
-                  <div
-                    className={`mt-2 flex w-full items-center justify-between rounded p-1 text-white hover:bg-slate-500 ${
-                      pageConfiguration.algorithmName === k[1].algorithmName &&
-                      isEditMode
-                        ? "bg-gray-700"
-                        : ""
-                    }`}
-                  >
-                    <p>
-                      <EditIcon /> Edit {k[0]}
-                    </p>
-                    {isEditMode &&
-                      pageConfiguration.algorithmName ===
-                        k[1].algorithmName && <DoneIcon />}
-                  </div>
-                </Link>
+                {isViewCurrentOptions && isEditMode ? (
+                  <EditButton
+                    pageConfiguration={pageConfiguration}
+                    k={k}
+                    isEditMode={isEditMode}
+                  />
+                ) : (
+                  <Link href={k[1].urlName + "?edit=true"}>
+                    <EditButton
+                      pageConfiguration={pageConfiguration}
+                      k={k}
+                      isEditMode={isEditMode}
+                    />
+                  </Link>
+                )}
               </div>
               <div className="px-4 py-2">
-                <Link href={k[1].urlName}>
-                  <div
-                    className={`mt-2 flex w-full items-center justify-between rounded p-1 text-white hover:bg-slate-500 ${
-                      pageConfiguration.algorithmName === k[1].algorithmName &&
-                      !isEditMode
-                        ? "bg-gray-700"
-                        : ""
-                    }`}
+                {isViewCurrentOptions && !isEditMode ? (
+                  <ViewButton
+                    pageConfiguration={pageConfiguration}
+                    k={k}
+                    isEditMode={isEditMode}
+                  />
+                ) : (
+                  <Link
+                    href={
+                      isViewCurrentOptions
+                        ? pathname + "?" + deleteQueryString("edit")
+                        : k[1].urlName
+                    }
                   >
-                    <p>
-                      <RemoveRedEyeIcon /> View {k[0]}
-                    </p>
-                    {!isEditMode &&
-                      pageConfiguration.algorithmName ===
-                        k[1].algorithmName && <DoneIcon />}
-                  </div>
-                </Link>
+                    <ViewButton
+                      pageConfiguration={pageConfiguration}
+                      k={k}
+                      isEditMode={isEditMode}
+                    />
+                  </Link>
+                )}
               </div>
             </div>
           );
@@ -187,3 +182,54 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
 };
 
 export default MultiSwitcher;
+
+interface ButtonProps {
+  pageConfiguration: pageConfigurationType;
+  k: [pageEnum, pageConfigurationType];
+  isEditMode: boolean;
+}
+
+const EditButton: React.FC<ButtonProps> = ({
+  pageConfiguration,
+  k,
+  isEditMode,
+}) => {
+  return (
+    <div
+      className={`mt-2 flex w-full items-center justify-between rounded p-1 text-white hover:bg-slate-500 ${
+        pageConfiguration.algorithmName === k[1].algorithmName && isEditMode
+          ? "bg-gray-700"
+          : ""
+      }`}
+    >
+      <p>
+        <EditIcon /> Edit {k[0]}
+      </p>
+      {isEditMode && pageConfiguration.algorithmName === k[1].algorithmName && (
+        <DoneIcon />
+      )}
+    </div>
+  );
+};
+
+const ViewButton: React.FC<ButtonProps> = ({
+  pageConfiguration,
+  k,
+  isEditMode,
+}) => {
+  return (
+    <div
+      className={`mt-2 flex w-full items-center justify-between rounded p-1 text-white hover:bg-slate-500 ${
+        pageConfiguration.algorithmName === k[1].algorithmName && !isEditMode
+          ? "bg-gray-700"
+          : ""
+      }`}
+    >
+      <p>
+        <RemoveRedEyeIcon /> View {k[0]}
+      </p>
+      {!isEditMode &&
+        pageConfiguration.algorithmName === k[1].algorithmName && <DoneIcon />}
+    </div>
+  );
+};

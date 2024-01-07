@@ -1,4 +1,4 @@
-import Node from "../../model/Node";
+import type Node from "../../model/Node";
 import copyNode from "../copyNode";
 
 const updateNodeCoordEncoded = (node: Node, x: number, y: number) => {

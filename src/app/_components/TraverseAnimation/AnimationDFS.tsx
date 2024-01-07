@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { COLOUR_SELECTION } from "~/app/_components/GraphUI/NodeElement";
 import type Node from "~/app/model/Node";
-import { Command, Line, TrackerArray } from "~/app/_GraphAlgorithm/Graph";
-import newNode from "~/app/utils/createNewNode";
-import { Height } from "@mui/icons-material";
+import { Command } from "~/app/_GraphAlgorithm/Graph";
+import type { Line, TrackerArray } from "~/app/_GraphAlgorithm/Graph";
 
 interface TraverseAnimationProps {
   tracker: TrackerArray;
@@ -19,24 +18,16 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
   const rectHeight = 80;
   const rectWidth = 70;
   const rectMargin = 20;
-  const arrowSize = 20;
   const padding = 20;
 
   const totalWidth =
-    (rectWidth + rectMargin + padding) * (nodes.length + 1) + padding;
+    (rectWidth + rectMargin + padding) * (nodes.length + 1) + 4 * padding;
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [visitedNodes, setVisitedNodes] = useState<Node[]>([]);
   const [poppedStack, setPoppedStack] = useState<Node | null>();
-  const [arrowPoint, setArrowPoint] = useState<[number, string] | null>(null);
-  const [containerHeight, setContainerHeight] = useState<number>(400);
 
-  useEffect(() => {
-    if (containerRef.current && arrowPoint !== null) {
-      containerRef.current.scrollLeft =
-        (arrowPoint[0] - 1) * (rectWidth + rectMargin) - padding;
-    }
-  }, [arrowPoint, rectWidth, rectMargin, padding]);
+  const [containerHeight, setContainerHeight] = useState<number>(400);
 
   useEffect(() => {
     if (
@@ -206,15 +197,6 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
               >
                 {node.val}
               </text>
-              {/* {arrowPoint !== null && i === arrowPoint[0] ? (
-                <polygon
-                  key={`arrow-${node.id}`}
-                  points={`${x + rectWidth / 2},${y - arrowSize} ${
-                    x + rectWidth / 2 - arrowSize / 2
-                  },${y} ${x + rectWidth / 2 + arrowSize / 2},${y}`}
-                  fill="red"
-                />
-              ) : null} */}
             </g>
           );
         })}

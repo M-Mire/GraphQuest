@@ -4,19 +4,21 @@ import TraverseCode from "~/app/_components/TraverseAnimation/AnimationCode";
 import TraverseAnimationBFS from "~/app/_components/TraverseAnimation/AnimationBFS";
 import TraverseAnimationDijkstra from "~/app/_components/TraverseAnimation/AnimationDijkstra";
 import TraverseAnimationDFS from "../TraverseAnimation/AnimationDFS";
-import { ACTIONS_NODE, ActionNode } from "../GraphUI/NodeElement";
-import Node from "~/app/model/Node";
+import { ACTIONS_NODE } from "../GraphUI/NodeElement";
+import type { ActionNode } from "../GraphUI/NodeElement";
+import type Node from "~/app/model/Node";
 import Graph, {
   Command,
   GraphDistance,
   Line,
+  Order,
+} from "~/app/_GraphAlgorithm/Graph";
+import type {
   TrackerArray,
   TrackerElementType,
   InstructionType,
-  Order,
   SingleInstruction,
 } from "~/app/_GraphAlgorithm/Graph";
-import PseudoCode from "~/app/_components/SharedUI/PseudoCode";
 import { pageEnum } from "~/app/_pageConfigs/config";
 
 interface AnimationProps {
@@ -73,7 +75,6 @@ const Animation: React.FC<AnimationProps> = ({
   code,
   algorithmName,
   provideEdgeLength,
-  addEdge,
   pageID,
 }) => {
   const [tracker, setTracker] = useState<TrackerArray>([]);

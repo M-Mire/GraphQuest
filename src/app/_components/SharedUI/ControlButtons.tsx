@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import IconButton from "@mui/material/IconButton";
 import PauseCircleIcon from "@mui/icons-material/PauseCircle";
 import ReplayIcon from "@mui/icons-material/Replay";
@@ -11,7 +11,7 @@ import {
   ACTIONS_NODE,
   ActionNode,
 } from "~/app/_components/GraphUI/NodeElement";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { ActionLine } from "../CanvasElements/Animation";
 import { Line } from "~/app/_GraphAlgorithm/Graph";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -40,12 +40,7 @@ export interface ControlButtonsProps {
   dispatchLineNumbers: React.Dispatch<ActionLine>;
 }
 
-const iconSize = "small";
-const paddingStyle = "p-1";
-const buttonMargin = "m-1";
-
 const ControlButtons: React.FC<ControlButtonsProps> = ({
-  rootValue,
   setRootValue,
   setSpeed,
   speed,
@@ -57,7 +52,19 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
   const isEditMode = searchParams.get("edit") === "true";
+
+  const deleteQueryString = useCallback(
+    (name: string) => {
+      const params = new URLSearchParams(searchParams);
+      params.delete(name);
+      return params.toString();
+    },
+    [searchParams],
+  );
 
   const handlePlayClick = () => {
     if (!isEditMode) {

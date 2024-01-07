@@ -1,4 +1,5 @@
-import Graph, { GraphDistance } from "~/app/_GraphAlgorithm/Graph";
+import type Graph from "~/app/_GraphAlgorithm/Graph";
+import { GraphDistance } from "~/app/_GraphAlgorithm/Graph";
 
 export enum pageEnum {
   BFS = "BFS",

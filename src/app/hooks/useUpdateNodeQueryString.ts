@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import Node from "../model/Node";
+import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import type Node from "../model/Node";
 
 const useUpdateNodeQueryString = (router: AppRouterInstance) => {
   const updateNodeQueryString = useCallback(

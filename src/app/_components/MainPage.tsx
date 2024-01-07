@@ -1,13 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
-import Sidebar from "~/app/_components/SharedUI/Sidebar";
 import Navbar from "~/app/_components/SharedUI/Navbar";
 import EditMode from "~/app/_components/CanvasElements/EditMode";
 import MultiSwitcher from "./SharedUI/MultiSwitcher";
-import {
-  ACTIONS_NODE,
-  ActionNode,
-} from "~/app/_components/GraphUI/NodeElement";
+import { ACTIONS_NODE } from "~/app/_components/GraphUI/NodeElement";
+import type { ActionNode } from "~/app/_components/GraphUI/NodeElement";
 import Animation, {
   type ActionLine,
 } from "~/app/_components/CanvasElements/Animation";
@@ -15,7 +12,8 @@ import { Command, Line } from "~/app/_GraphAlgorithm/Graph";
 import { useState, useReducer } from "react";
 import type pageConfigurationType from "~/app/_pageConfigs/config";
 import type Node from "~/app/model/Node";
-import Alert, { Alerts } from "~/app/_components/SharedUI/Alert";
+import Alert from "~/app/_components/SharedUI/Alert";
+import type { Alerts } from "~/app/_components/SharedUI/Alert";
 
 const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
   switch (action.type) {
@@ -196,6 +194,39 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
     if (nodes.length === 0) addNodesFromURL(nodes, dispatch, urlNodes);
   }, []);
 
+  useEffect(() => {
+    if (isEditMode) {
+      dispatch({
+        type: ACTIONS_NODE.NODE_RESET,
+        payload: NaN,
+      });
+      setCurrentIndex(0);
+      setPlay(false);
+      dispatchLineNumbers({
+        type: Line.LineReset,
+        payload: 0,
+      });
+    }
+  }, [isEditMode]);
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams);
+      params.append(name, value);
+      return params.toString();
+    },
+    [searchParams],
+  );
+
+  const deleteQueryString = useCallback(
+    (name: string) => {
+      const params = new URLSearchParams(searchParams);
+      params.delete(name);
+      return params.toString();
+    },
+    [searchParams],
+  );
+
   const toggleMenu = () => {
     setShowMenu(!showMenu);
   };
@@ -210,6 +241,12 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
       payload: -1,
     });
     setNodeCount(0);
+    setCurrentIndex(0);
+    setPlay(false);
+    dispatchLineNumbers({
+      type: Line.LineReset,
+      payload: 0,
+    });
   };
 
   return (
@@ -240,6 +277,8 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
                 isEditMode={isEditMode}
                 setMultiSwitcher={setMultiSwitcher}
                 clearNodes={clearNodes}
+                createQueryString={createQueryString}
+                deleteQueryString={deleteQueryString}
               />
             </>
           )}

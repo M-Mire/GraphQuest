@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Command } from "../../_GraphAlgorithm/Graph";
+import type { Command } from "../../_GraphAlgorithm/Graph";
 import {
   DEFAULT_RECTANGLE_SIZE,
   DEFAULT_RADIUS_SMALL_CIRCLE,
@@ -9,8 +9,7 @@ import {
   DEFAULT_NODE_CLICKED_COLOUR,
   DEFAULT_NODE_COLOUR,
 } from "~/app/constants/Node/index";
-import { getCoords } from "~/app/utils/getCoords";
-import Node from "~/app/model/Node";
+import type Node from "~/app/model/Node";
 
 interface NodeElementProps {
   node: Node;

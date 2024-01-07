@@ -1,19 +1,19 @@
 import { useRef, useState } from "react";
 import { useCallback } from "react";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import Node from "~/app/model/Node";
+import { useSearchParams, useRouter } from "next/navigation";
+import type Node from "~/app/model/Node";
 import createNewNode from "~/app/utils/createNewNode";
 import NodeElement, {
   ACTIONS_NODE,
-  ActionNode,
 } from "~/app/_components/GraphUI/NodeElement";
+import type { ActionNode } from "~/app/_components/GraphUI/NodeElement";
 import Edge from "~/app/_components/GraphUI/Edge";
 import ContextMenu from "~/app/_components/SharedUI/ContextMenu";
 import InputWeight from "~/app/_components/GraphUI/InputWeight";
 import { getCoords } from "../../utils/getCoords";
 import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
 import updateNodeEncoded from "~/app/utils/EncodeNode/updateNodeEncoded";
-import Alert, { Alerts } from "~/app/_components/SharedUI/Alert";
+import { Alerts } from "~/app/_components/SharedUI/Alert";
 
 interface EditModeProps {
   dispatch: React.Dispatch<ActionNode>;
@@ -196,11 +196,6 @@ const EditMode: React.FC<EditModeProps> = ({
 };
 
 export default EditMode;
-
-const getChildNode = (nodes: Node[], target: number) => {
-  const node: Node = nodes.find((node: Node) => node.val === target)!;
-  return node;
-};
 
 const handleContextMenu = (e: React.MouseEvent) => {
   e.preventDefault();

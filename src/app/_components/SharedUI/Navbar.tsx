@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import Link from "next/link";
 import ControlButtons from "./ControlButtons";
-import { ActionNode } from "../GraphUI/NodeElement";
-import { ActionLine } from "../CanvasElements/Animation";
+import type { ActionNode } from "../GraphUI/NodeElement";
+import type { ActionLine } from "../CanvasElements/Animation";
 import { useSearchParams, usePathname } from "next/navigation";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 
@@ -94,14 +94,6 @@ const Navbar: React.FC<NavbarProps> = ({
           isPlay={isPlay}
           dispatchLineNumbers={dispatchLineNumbers}
         />
-        {/* <button
-          className="text-white"
-          onClick={() => {
-            alert("blah");
-          }}
-        >
-          Default Alert
-        </button> */}
       </div>
       <label
         htmlFor="menu-toggle"

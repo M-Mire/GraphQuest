@@ -14,6 +14,7 @@ import type pageConfigurationType from "~/app/_pageConfigs/config";
 import type Node from "~/app/model/Node";
 import Alert from "~/app/_components/SharedUI/Alert";
 import type { Alerts } from "~/app/_components/SharedUI/Alert";
+import { DEFAULT_RADIUS_BIG_CIRCLE } from "~/app/constants/Node/index";
 
 const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
   switch (action.type) {
@@ -169,6 +170,27 @@ const addNodesFromURL = (
   }
 };
 
+const getMinCanvas = (nodes: Node[], urlNodes: string[]) => {
+  if (nodes.length === 0 && urlNodes.length > 0) {
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    urlNodes.forEach((urlNode) => {
+      const deserializedObj = JSON.parse(decodeURIComponent(urlNode)) as Node;
+      const newNode = deserializedObj;
+      maxX = Math.max(maxX, newNode.x);
+      maxY = Math.max(maxY, newNode.y);
+    });
+    return {
+      minWidth: Math.ceil(maxX),
+      minHeight: Math.ceil(maxY),
+    } as { minHeight: number; minWidth: number };
+  }
+  return { minWidth: -1, minHeight: -1 } as {
+    minHeight: number;
+    minWidth: number;
+  };
+};
+
 interface PageProps {
   pageConfiguration: pageConfigurationType;
 }
@@ -189,10 +211,33 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [isMultiSwitcherActive, setMultiSwitcher] = useState(false);
   const [alert, setAlert] = useState<Alerts | null>(null);
+  const [minCanvas, setMinCanvas] = useState<{
+    minHeight: number;
+    minWidth: number;
+  }>({
+    minWidth: -1,
+    minHeight: -1,
+  });
 
   useEffect(() => {
-    if (nodes.length === 0) addNodesFromURL(nodes, dispatch, urlNodes);
+    if (nodes.length === 0) {
+      addNodesFromURL(nodes, dispatch, urlNodes);
+      setMinCanvas(getMinCanvas(nodes, urlNodes));
+    }
   }, []);
+
+  useEffect(() => {
+    const maxX =
+      Math.ceil(Math.max(...nodes.map((node) => node.x))) +
+      DEFAULT_RADIUS_BIG_CIRCLE;
+    const maxY =
+      Math.ceil(Math.max(...nodes.map((node) => node.y))) +
+      DEFAULT_RADIUS_BIG_CIRCLE;
+    setMinCanvas({
+      minWidth: Math.max(minCanvas.minWidth, maxX),
+      minHeight: Math.max(minCanvas.minHeight, maxY),
+    });
+  }, [nodes]);
 
   useEffect(() => {
     if (isEditMode) {
@@ -282,18 +327,22 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
               />
             </>
           )}
-          {isEditMode && <Alert alert={alert} setAlert={setAlert} />}
+
           {isEditMode ? (
-            <EditMode
-              dispatch={dispatch}
-              nodes={nodes}
-              nodeCount={nodeCount}
-              incrementNodeCount={() => {
-                setNodeCount(nodeCount + 1);
-              }}
-              provideEdgeLength={pageConfiguration.provideEdgeLength}
-              setAlert={setAlert}
-            />
+            <>
+              <Alert alert={alert} setAlert={setAlert} />
+              <EditMode
+                dispatch={dispatch}
+                nodes={nodes}
+                nodeCount={nodeCount}
+                incrementNodeCount={() => {
+                  setNodeCount(nodeCount + 1);
+                }}
+                provideEdgeLength={pageConfiguration.provideEdgeLength}
+                setAlert={setAlert}
+                minCanvas={minCanvas}
+              />
+            </>
           ) : (
             <Animation
               nodes={nodes}
@@ -311,6 +360,7 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
               provideEdgeLength={pageConfiguration.provideEdgeLength}
               addEdge={pageConfiguration.addEdge}
               pageID={pageConfiguration.id}
+              minCanvas={minCanvas}
             />
           )}
         </div>

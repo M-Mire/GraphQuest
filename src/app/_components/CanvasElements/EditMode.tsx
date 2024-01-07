@@ -22,6 +22,7 @@ interface EditModeProps {
   incrementNodeCount: () => void;
   provideEdgeLength?: boolean;
   setAlert: React.Dispatch<React.SetStateAction<Alerts | null>>;
+  minCanvas: { minHeight: number; minWidth: number };
 }
 
 const EditMode: React.FC<EditModeProps> = ({
@@ -31,6 +32,7 @@ const EditMode: React.FC<EditModeProps> = ({
   incrementNodeCount,
   provideEdgeLength,
   setAlert,
+  minCanvas,
 }) => {
   const elementRef = useRef<HTMLDivElement | null>(null);
   const [activeNode, setActiveNode] = useState<number>(-1);
@@ -120,12 +122,13 @@ const EditMode: React.FC<EditModeProps> = ({
         type: ACTIONS_NODE.ADD_NODE,
         payload: addNode,
       });
+      console.log(node_x);
       incrementNodeCount();
       if (nodes.length === 10) {
         setAlert(Alerts.Amber);
       }
       return;
-    } else {
+    } else if (nodes.length === 20) {
       setAlert(Alerts.Warning);
     }
   };
@@ -139,7 +142,18 @@ const EditMode: React.FC<EditModeProps> = ({
         onContextMenu={(e) => handleContextMenu(e)}
         style={{ position: "relative" }}
       >
-        <svg className="h-full w-full">
+        <svg
+          style={{
+            minWidth: `${
+              minCanvas.minWidth ? `${minCanvas.minWidth + 16}` : "100%"
+            }`,
+            width: "100%",
+            minHeight: `${
+              minCanvas.minHeight ? `${minCanvas.minHeight + 16}` : "100%"
+            }`,
+            height: "100%",
+          }}
+        >
           {nodes?.map((node) => {
             return (
               <NodeElement key={node.id} node={node} activeNode={activeNode} />
@@ -156,6 +170,7 @@ const EditMode: React.FC<EditModeProps> = ({
                 isCtxMenu={isCtxMenu}
                 nodes={nodes}
                 elementRef={elementRef}
+                minCanvas={minCanvas}
               />
             ) : null,
           )}

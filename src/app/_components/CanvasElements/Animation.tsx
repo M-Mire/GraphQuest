@@ -42,6 +42,7 @@ interface AnimationProps {
   ) => void;
   provideEdgeLength?: boolean;
   pageID: pageEnum;
+  minCanvas: { minHeight: number; minWidth: number };
 }
 
 function isCommand(type: InstructionType): type is Command {
@@ -76,6 +77,7 @@ const Animation: React.FC<AnimationProps> = ({
   algorithmName,
   provideEdgeLength,
   pageID,
+  minCanvas,
 }) => {
   const [tracker, setTracker] = useState<TrackerArray>([]);
   const handleSingleCall = (
@@ -157,7 +159,11 @@ const Animation: React.FC<AnimationProps> = ({
   return (
     <>
       <div className="absolute h-full w-full p-4">
-        <Canvas nodes={nodes} provideEdgeLength={provideEdgeLength} />
+        <Canvas
+          nodes={nodes}
+          provideEdgeLength={provideEdgeLength}
+          minCanvas={minCanvas}
+        />
         {pageID === pageEnum.BFS ? (
           <TraverseAnimationBFS nodes={nodes} />
         ) : pageID === pageEnum.DIJKSTRA ? (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getCoords } from "~/app/utils/getCoords";
 import type Node from "~/app/model/Node";
@@ -7,6 +7,10 @@ import type { ActionNode } from "~/app/_components/GraphUI/NodeElement";
 import useDeleteNodeQueryString from "~/app/hooks/useDeleteNodeQueryString";
 import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
 import updateNodeCoordEncoded from "~/app/utils/EncodeNode/updateNodeCoordEncoded";
+
+const CTX_WIDTH = 150;
+const CTX_HEIGHT = 80;
+
 interface ContextMenuProps {
   node: Node;
   dispatch: React.Dispatch<ActionNode>;
@@ -15,6 +19,7 @@ interface ContextMenuProps {
   isCtxMenu: number;
   nodes: Node[];
   elementRef: React.MutableRefObject<HTMLDivElement | null>;
+  minCanvas: { minHeight: number; minWidth: number };
 }
 
 const ContextMenu: React.FC<ContextMenuProps> = ({
@@ -24,8 +29,27 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   setCtxMenu,
   isCtxMenu,
   elementRef,
+  minCanvas,
 }) => {
-  const { x, y } = node;
+  const [canvasBounds, setCanvasBounds] = useState<{
+    xBound: number;
+    yBound: number;
+  }>({ xBound: -1, yBound: -1 });
+
+  useEffect(() => {
+    if (elementRef?.current) {
+      const bound = elementRef.current.getBoundingClientRect();
+      setCanvasBounds({
+        xBound: Math.max(bound.width, minCanvas.minWidth),
+        yBound: Math.max(bound.height, minCanvas.minHeight),
+      });
+    }
+  }, []);
+
+  const { x: xNode, y: yNode } = node;
+  const y =
+    yNode + CTX_HEIGHT > canvasBounds.yBound ? yNode - CTX_HEIGHT : yNode;
+  const x = xNode + CTX_WIDTH > canvasBounds.xBound ? xNode - CTX_WIDTH : xNode;
   const [hoveredText, setHoveredText] = useState<string | null>(null);
   const router = useRouter();
   const deleteNodeQueryString = useDeleteNodeQueryString(router);
@@ -114,8 +138,8 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
       <g transform={`translate(${x}, ${y})`}>
         <rect
           key={`rect-${node.val}`}
-          width={150}
-          height={80}
+          width={CTX_WIDTH}
+          height={CTX_HEIGHT}
           fill={`bg-AtomDark`}
           fillOpacity={0.8}
           rx={15}
@@ -126,7 +150,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
           key={`rectDelete-${node.val}`}
           x={5}
           y={37}
-          width={140}
+          width={CTX_WIDTH - 10}
           height={16}
           {...getRectStyles("Delete Node")}
           onMouseEnter={() => handleTextHover("Delete Node")}
@@ -149,7 +173,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
           key={`rectMove<-${node.val}`}
           x={5}
           y={7}
-          width={140}
+          width={CTX_WIDTH - 10}
           height={16}
           {...getRectStyles("Move Node")}
           onMouseEnter={() => handleTextHover("Move Node")}

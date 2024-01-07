@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NodeElement from "../GraphUI/NodeElement";
 import type Node from "~/app/model/Node";
 import Edge from "~/app/_components/GraphUI/Edge";
@@ -6,16 +6,32 @@ import Edge from "~/app/_components/GraphUI/Edge";
 interface CanvasProps {
   nodes: Node[];
   provideEdgeLength?: boolean;
+  minCanvas: { minHeight: number; minWidth: number };
 }
 
-const Canvas: React.FC<CanvasProps> = ({ nodes, provideEdgeLength }) => {
+const Canvas: React.FC<CanvasProps> = ({
+  nodes,
+  provideEdgeLength,
+  minCanvas,
+}) => {
   return (
     <>
       <div
         id="editMode"
         className="h-2/3 overflow-auto rounded-2xl bg-slate-600 sm:mb-2 md:relative md:left-0 md:top-0 md:w-[65%] lg:w-[70%]"
       >
-        <svg className="h-full w-full">
+        <svg
+          style={{
+            minWidth: `${
+              minCanvas.minWidth ? `${minCanvas.minWidth + 16}` : "100%"
+            }`,
+            width: "100%",
+            minHeight: `${
+              minCanvas.minHeight ? `${minCanvas.minHeight + 16}` : "100%"
+            }`,
+            height: "100%",
+          }}
+        >
           {nodes?.map((node) => {
             return <NodeElement key={node.id} node={node} />;
           })}

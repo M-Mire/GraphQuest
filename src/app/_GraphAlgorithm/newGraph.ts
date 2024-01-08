@@ -16,6 +16,7 @@ class NewGraph {
       const vertex = stack.pop();
       console.log("popped from stack ", vertex);
       if (vertex !== undefined && !visited.has(vertex)) {
+        console.log(vertex);
         visited.add(vertex);
         result.push(vertex);
 

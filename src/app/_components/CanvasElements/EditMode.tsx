@@ -106,6 +106,7 @@ const EditMode: React.FC<EditModeProps> = ({
     }
 
     if (!isMoveNode && nodes.length < 20) {
+      if (elementRef) console.log(elementRef.current?.scrollWidth);
       const { node_x, node_y } = getCoords(x, y, elementRef) as {
         node_x: number;
         node_y: number;

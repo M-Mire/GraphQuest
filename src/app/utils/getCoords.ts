@@ -11,12 +11,10 @@ export const getCoords = (
     const rect = elementRef.current.getBoundingClientRect();
     const node_x = x - rect.left + window.scrollX;
     const node_y = y - rect.top + window.scrollY;
+    // console.log(elementRef.current.scrollWidth);
 
     const MINBOUND_X = DEFAULT_RADIUS_BIG_CIRCLE + PADDING;
-    const MAXBOUND_X =
-      (window.innerWidth - rect.left) * 0.75 -
-      DEFAULT_RADIUS_BIG_CIRCLE -
-      PADDING;
+    const MAXBOUND_X = window.innerWidth - rect.left;
 
     const MINBOUND_Y = DEFAULT_RADIUS_BIG_CIRCLE + PADDING;
     const MAXBOUND_Y =

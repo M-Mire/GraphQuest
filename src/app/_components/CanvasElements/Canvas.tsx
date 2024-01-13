@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import NodeElement from "../GraphUI/NodeElement";
 import type Node from "~/app/model/Node";
 import Edge from "~/app/_components/GraphUI/Edge";
@@ -65,8 +64,6 @@ const Canvas: React.FC<CanvasProps> = ({
 export default Canvas;
 
 const InformationBoard = () => {
-  const [isOpen, setIsOpen] = useState(true);
-
   const RECT_HEIGHT = 150;
   const RECT_WIDTH = 150;
   const TEXT_H_FONT_SIZE = 14;
@@ -82,71 +79,61 @@ const InformationBoard = () => {
 
   return (
     <>
-      {isOpen && (
-        <>
-          <rect
-            x={0}
-            y={0}
-            width={RECT_WIDTH}
-            height={RECT_HEIGHT}
-            rx={ROUNDED_VAL}
-            ry={ROUNDED_VAL}
-            fill="black"
-            opacity={0.3}
-          />
-          <text
-            x={TEXT_H_X_PADDING}
-            y={TEXT_H_FONT_SIZE + 2}
-            fill="white"
-            fontSize={TEXT_H_FONT_SIZE}
-            fontWeight="bold"
-          >
-            Information Board
-          </text>
-          <circle
-            name={`CIRCLE`}
-            cx={X_NODE}
-            cy={FIRST_NODE_Y}
-            r={CIRCLE_RADIUS}
-            stroke="black"
-            strokeWidth="3"
-            fill="purple"
-          />
-          <text
-            x={X_NODE + TEXT_X_PADDING}
-            y={FIRST_NODE_Y + TEXT_Y_PADDING}
-            fill="white"
-            fontSize={TEXT_P_FONT_SIZE}
-            fontWeight="bold"
-          >
-            Processed
-          </text>
-          <circle
-            name={`CIRCLE`}
-            cx={X_NODE}
-            cy={FIRST_NODE_Y + NODE_PADDING}
-            r={CIRCLE_RADIUS}
-            stroke="black"
-            strokeWidth="3"
-            fill="grey"
-          />
-          <text
-            x={X_NODE + TEXT_X_PADDING}
-            y={FIRST_NODE_Y + NODE_PADDING + TEXT_Y_PADDING}
-            fill="white"
-            fontSize={TEXT_P_FONT_SIZE}
-            fontWeight="bold"
-          >
-            Children Visited
-          </text>
-        </>
-      )}
-      {/* <ToggleInformationBoard
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        x={RECT_WIDTH}
-        y={RECT_HEIGHT}
-      /> */}
+      <rect
+        x={0}
+        y={0}
+        width={RECT_WIDTH}
+        height={RECT_HEIGHT}
+        rx={ROUNDED_VAL}
+        ry={ROUNDED_VAL}
+        fill="black"
+        opacity={0.3}
+      />
+      <text
+        x={TEXT_H_X_PADDING}
+        y={TEXT_H_FONT_SIZE + 2}
+        fill="white"
+        fontSize={TEXT_H_FONT_SIZE}
+        fontWeight="bold"
+      >
+        Information Board
+      </text>
+      <circle
+        name={`CIRCLE`}
+        cx={X_NODE}
+        cy={FIRST_NODE_Y}
+        r={CIRCLE_RADIUS}
+        stroke="black"
+        strokeWidth="3"
+        fill="purple"
+      />
+      <text
+        x={X_NODE + TEXT_X_PADDING}
+        y={FIRST_NODE_Y + TEXT_Y_PADDING}
+        fill="white"
+        fontSize={TEXT_P_FONT_SIZE}
+        fontWeight="bold"
+      >
+        Processed
+      </text>
+      <circle
+        name={`CIRCLE`}
+        cx={X_NODE}
+        cy={FIRST_NODE_Y + NODE_PADDING}
+        r={CIRCLE_RADIUS}
+        stroke="black"
+        strokeWidth="3"
+        fill="grey"
+      />
+      <text
+        x={X_NODE + TEXT_X_PADDING}
+        y={FIRST_NODE_Y + NODE_PADDING + TEXT_Y_PADDING}
+        fill="white"
+        fontSize={TEXT_P_FONT_SIZE}
+        fontWeight="bold"
+      >
+        Children Visited
+      </text>
     </>
   );
 };

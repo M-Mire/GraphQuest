@@ -23,9 +23,8 @@ export type InstructionType = Command | Line | Order;
 export type TrackerElementType = number | number[] | Map<number, number>;
 
 export type SingleInstruction = [Command | Line, TrackerElementType];
-export type MultipleInstructions = [Order, Array<SingleInstruction>];
-
-export type TrackerArray = Array<SingleInstruction | MultipleInstructions>;
+export type MultipleInstructions = [Order, SingleInstruction[]];
+export type TrackerArray = (SingleInstruction | MultipleInstructions)[];
 
 export default class Graph {
   public graph: Map<number, number[]>;
@@ -55,62 +54,24 @@ export default class Graph {
   }
 
   BFS(root: number) {
-    this.TRACKER.push([Line.EntryLine, 1]);
-    this.TRACKER.push([Line.EntryLine, 2]);
     const visited = new Set();
-    this.addInstruction([
-      Order.Entry,
-      [
-        [Line.FinishedLine, 2],
-        [Line.EntryLine, 3],
-      ],
-    ]);
     const queue = [root];
 
-    this.addInstruction([
-      Order.Entry,
-      [
-        [Line.FinishedLine, 3],
-        [Command.Visited, root],
-        [Line.EntryLine, 4],
-      ],
-    ]);
+    this.addInstruction([Order.Entry, [[Command.Visited, root]]]);
     visited.add(root);
-    this.TRACKER.push([Line.FinishedLine, 4]);
 
     while (queue.length > 0) {
-      this.TRACKER.push([Line.EntryLine, 6]);
-      this.TRACKER.push([Line.EntryLine, 7]);
       const vertex = queue.shift()!;
 
-      this.addInstruction([
-        Order.Entry,
-        [
-          [Line.FinishedLine, 7],
-          [Command.EnteredQueue, vertex],
-        ],
-      ]);
+      this.addInstruction([Order.Entry, [[Command.EnteredQueue, vertex]]]);
 
       for (const neighbour of this.graph.get(vertex) ?? []) {
-        this.TRACKER.push([Line.EntryLine, 9]);
         if (!visited.has(neighbour)) {
-          this.TRACKER.push([Line.EntryLine, 10]);
-          this.TRACKER.push([Line.EntryLine, 11]);
           visited.add(neighbour);
 
-          this.addInstruction([
-            Order.Entry,
-            [
-              [Command.Visited, neighbour],
-              [Line.FinishedLine, 11],
-              [Line.EntryLine, 12],
-            ],
-          ]);
+          this.addInstruction([Order.Entry, [[Command.Visited, neighbour]]]);
           queue.push(neighbour);
-          this.TRACKER.push([Line.FinishedLine, 12]);
-          this.TRACKER.push([Line.FinishedLine, 10]);
         }
-        this.TRACKER.push([Line.FinishedLine, 9]);
       }
 
       this.addInstruction([
@@ -287,7 +248,7 @@ export class GraphDistance extends Graph {
     this.TRACKER.push([Line.FinishedLine, 1]);
     [...this.ALLNODES.keys()]
       .filter((node) => !visited.has(node))
-      .forEach((n, _) => {
+      .forEach((n) => {
         this.TRACKER.push([Command.Popped, n]);
       });
   }

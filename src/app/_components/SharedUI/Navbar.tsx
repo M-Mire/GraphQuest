@@ -38,7 +38,7 @@ const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams()!;
-  const isEditTest = searchParams.get("edit");
+  const isEditMode = searchParams?.get("edit");
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -123,13 +123,16 @@ const Navbar: React.FC<NavbarProps> = ({
         <li>
           <Link
             href={
-              isEditTest === "true"
+              isEditMode === "true"
                 ? pathname + "?" + deleteQueryString("edit")
                 : pathname + "?" + createQueryString("edit", "true")
             }
           >
-            <button className="rounded bg-white px-4 py-1 text-sm text-black transition duration-300 ease-in-out hover:bg-gray-400">
-              {isEditTest ? "View Graph" : "Edit"}
+            <button
+              name="changeView"
+              className="rounded bg-white px-4 py-1 text-sm text-black transition duration-300 ease-in-out hover:bg-gray-400"
+            >
+              {isEditMode ? "View Graph" : "Edit"}
             </button>
           </Link>
         </li>

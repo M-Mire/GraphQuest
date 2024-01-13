@@ -7,7 +7,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
 import DoneIcon from "@mui/icons-material/Done";
 import Link from "next/link";
-import { useSearchParams, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 interface MultiSwitcherProps {
   pageConfiguration: pageConfigurationType;
@@ -21,8 +21,6 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
   pageConfiguration,
   isEditMode,
   setMultiSwitcher,
-  clearNodes,
-  createQueryString,
   deleteQueryString,
 }) => {
   const [hoveredDiv, setHoveredDiv] = useState<pageEnum | null>(null);

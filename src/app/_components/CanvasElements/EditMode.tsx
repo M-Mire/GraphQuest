@@ -10,7 +10,7 @@ import type { ActionNode } from "~/app/_components/GraphUI/NodeElement";
 import Edge from "~/app/_components/GraphUI/Edge";
 import ContextMenu from "~/app/_components/SharedUI/ContextMenu";
 import InputWeight from "~/app/_components/GraphUI/InputWeight";
-import { getCoords } from "../../utils/getCoords";
+import { calculateNewNodePosition } from "../../utils/calculateNewNodePosition";
 import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
 import updateNodeEncoded from "~/app/utils/EncodeNode/updateNodeEncoded";
 import { Alerts } from "~/app/_components/SharedUI/Alert";
@@ -107,31 +107,26 @@ const EditMode: React.FC<EditModeProps> = ({
 
     if (!isMoveNode && nodes.length < 20) {
       if (elementRef) console.log(elementRef.current?.scrollWidth);
-      const { node_x, node_y } = getCoords(x, y, elementRef) as {
+      const { node_x, node_y } = calculateNewNodePosition(x, y, elementRef) as {
         node_x: number;
         node_y: number;
       };
       const addNode = createNewNode(node_x, node_y, nodeCount);
       const serializedObj = encodeURIComponent(JSON.stringify(addNode));
-      // // console.log(serializedObj);
-      // const deserializedObj = JSON.parse(decodeURIComponent(serializedObj));
-      // console.log(deserializedObj);
-      // console.log(Router.asPath);
       router.push(`?${createNodeQueryString("node", serializedObj)}`);
 
       dispatch({
         type: ACTIONS_NODE.ADD_NODE,
         payload: addNode,
       });
-      console.log(node_x);
       incrementNodeCount();
       if (nodes.length === 10) {
         setAlert(Alerts.Amber);
       }
-      return;
     } else if (nodes.length === 20) {
       setAlert(Alerts.Warning);
     }
+    return;
   };
   return (
     <div className="absolute h-full w-full p-4">
@@ -154,6 +149,7 @@ const EditMode: React.FC<EditModeProps> = ({
             }`,
             height: "100%",
           }}
+          role="img"
         >
           {nodes?.map((node) => {
             return (

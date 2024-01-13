@@ -39,7 +39,8 @@ const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
         fill="none"
       ></rect>
       <circle
-        name={"" + node.val}
+        data-testid={`node-${node.val}`}
+        name={"node-circle-" + node.val}
         cx={node.x}
         cy={node.y}
         r={DEFAULT_RADIUS_SMALL_CIRCLE}

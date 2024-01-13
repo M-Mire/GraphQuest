@@ -17,19 +17,21 @@ const TraverseCode: React.FC<TraverseCodeProps> = ({
   algorithmName,
 }) => {
   const [isCopy, setCopy] = useState<boolean>(false);
-  const handleCopyClick = async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopy(true);
-      setTimeout(() => {
-        setCopy(false);
-      }, 3000);
-    } catch (error) {
-      console.error("Failed to copy text:", error);
-    }
+  const handleCopyClick = () => {
+    navigator.clipboard.writeText(code).then(
+      () => {
+        setCopy(true);
+        setTimeout(() => {
+          setCopy(false);
+        }, 3000);
+      },
+      (error) => {
+        console.error("Failed to copy text:", error);
+      },
+    );
   };
   return (
-    <div className="rounded-md bg-[#40454A]">
+    <div className="mt-6 rounded-md bg-[#40454A] md:mt-0">
       <div className="flex items-center justify-between px-4 text-xs text-white">
         <p>{algorithmName}</p>
         {isCopy ? (

@@ -57,15 +57,6 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
 
   const isEditMode = searchParams.get("edit") === "true";
 
-  const deleteQueryString = useCallback(
-    (name: string) => {
-      const params = new URLSearchParams(searchParams);
-      params.delete(name);
-      return params.toString();
-    },
-    [searchParams],
-  );
-
   const handlePlayClick = () => {
     if (!isEditMode) {
       setRootValue(inputValue === "" ? 0 : parseInt(inputValue));

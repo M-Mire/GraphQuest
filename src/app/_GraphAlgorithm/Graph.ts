@@ -23,9 +23,8 @@ export type InstructionType = Command | Line | Order;
 export type TrackerElementType = number | number[] | Map<number, number>;
 
 export type SingleInstruction = [Command | Line, TrackerElementType];
-export type MultipleInstructions = [Order, Array<SingleInstruction>];
-
-export type TrackerArray = Array<SingleInstruction | MultipleInstructions>;
+export type MultipleInstructions = [Order, SingleInstruction[]];
+export type TrackerArray = (SingleInstruction | MultipleInstructions)[];
 
 export default class Graph {
   public graph: Map<number, number[]>;
@@ -249,7 +248,7 @@ export class GraphDistance extends Graph {
     this.TRACKER.push([Line.FinishedLine, 1]);
     [...this.ALLNODES.keys()]
       .filter((node) => !visited.has(node))
-      .forEach((n, _) => {
+      .forEach((n) => {
         this.TRACKER.push([Command.Popped, n]);
       });
   }

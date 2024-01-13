@@ -38,7 +38,7 @@ const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams()!;
-  const isEditMode = searchParams && searchParams.get("edit");
+  const isEditMode = searchParams?.get("edit");
 
   const createQueryString = useCallback(
     (name: string, value: string) => {

@@ -136,7 +136,7 @@ const Animation: React.FC<AnimationProps> = ({
 
         if (isOrder(command)) {
           // Loop through the Command and Line
-          const tmp = val as Array<SingleInstruction>;
+          const tmp = val as SingleInstruction[];
           for (const [cmd, value] of tmp) {
             handleSingleCall(cmd, value);
           }

@@ -197,7 +197,7 @@ interface PageProps {
 
 const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
   const searchParams = useSearchParams();
-  const urlNodes = searchParams.getAll("node");
+  const urlNodes = searchParams?.getAll("node") || [];
   const [nodeCount, setNodeCount] = useState<number>(urlNodes.length);
 
   const [rootValue, setRootValue] = useState<number | null>(null);
@@ -206,7 +206,7 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlay, setPlay] = useState<boolean>(false);
   const [lineNumbers, dispatchLineNumbers] = useReducer(lineReducer, []);
-  const isEditMode = searchParams.get("edit") === "true";
+  const isEditMode = searchParams && searchParams.get("edit") === "true";
 
   const [showMenu, setShowMenu] = useState(false);
   const [isMultiSwitcherActive, setMultiSwitcher] = useState(false);

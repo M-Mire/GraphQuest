@@ -29,7 +29,7 @@ const TraverseCode: React.FC<TraverseCodeProps> = ({
     }
   };
   return (
-    <div className="rounded-md bg-[#40454A]">
+    <div className="mt-6 rounded-md bg-[#40454A] md:mt-0">
       <div className="flex items-center justify-between px-4 text-xs text-white">
         <p>{algorithmName}</p>
         {isCopy ? (

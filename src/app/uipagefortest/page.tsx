@@ -1,8 +1,10 @@
 "use client";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
+import { handleOutOfBoundPosition } from "../utils/handleOutOfBoundPosition";
+import { DEFAULT_RADIUS_BIG_CIRCLE } from "../constants/Node";
 
 export default function DFSPage() {
   const [showMenu, setShowMenu] = useState(false);
@@ -46,12 +48,30 @@ export default function DFSPage() {
 }
 
 const Animation = () => {
+  const elementRef = useRef<HTMLDivElement | null>(null);
+  const handleClick = (e: React.MouseEvent) => {
+    const { pageX: x, pageY: y, target } = e;
+    const targetAsElem = target as HTMLElement;
+    const nodeName = targetAsElem.tagName;
+
+    if (nodeName !== "svg" && nodeName !== "circle" && nodeName !== "text") {
+      return;
+    }
+    const { node_x, node_y } = getCoords(x, y, elementRef) as {
+      node_x: number;
+      node_y: number;
+    };
+    console.log(node_x);
+  };
   return (
     <div className="absolute h-full w-full p-4">
-      <div className="h-2/3 overflow-auto rounded-2xl bg-slate-600 sm:mb-2 md:relative md:left-0 md:top-0 md:w-[65%] lg:w-[70%]">
-        <svg className="h-full w-full">
+      <div
+        ref={elementRef}
+        className="h-2/3 overflow-auto rounded-2xl bg-slate-600 sm:mb-2 md:relative md:left-0 md:top-0 md:w-[65%] lg:w-[70%]"
+      >
+        <svg className="h-full w-[650px]" onClick={handleClick}>
           {/*The nodes are slapped inside here/*/}
-          <Nodes val={10} x={50} y={56} />
+          <Nodes val={10} x={1900} y={56} />
         </svg>
       </div>
       <div className="mt-2 h-1/3 rounded-2xl bg-green-500 md:h-1/3 md:w-[65%] lg:h-1/3 lg:w-[70%]"></div>
@@ -232,4 +252,35 @@ const dimensionsConverter = (x: number) => {
     : x <= 1280
     ? "xl"
     : "2xl";
+};
+
+export const getCoords = (
+  x: number,
+  y: number,
+  elementRef: React.MutableRefObject<HTMLDivElement | null>,
+) => {
+  const PADDING = 3;
+  if (elementRef?.current) {
+    const rect = elementRef.current.getBoundingClientRect();
+    const node_x = x - rect.left + window.scrollX;
+    const node_y = y - rect.top + window.scrollY;
+    // console.log(elementRef.current.scrollWidth);
+
+    const MINBOUND_X = DEFAULT_RADIUS_BIG_CIRCLE + PADDING;
+    const MAXBOUND_X = elementRef.current.scrollWidth;
+    let scrollBarWidth = elementRef.current.scrollLeft + node_x;
+    console.log("MAXbOUND = ", MAXBOUND_X);
+    const MINBOUND_Y = DEFAULT_RADIUS_BIG_CIRCLE + PADDING;
+    const MAXBOUND_Y =
+      (window.innerHeight - rect.top) * 0.75 -
+      DEFAULT_RADIUS_BIG_CIRCLE -
+      PADDING;
+
+    return {
+      node_x: handleOutOfBoundPosition(scrollBarWidth, MINBOUND_X, MAXBOUND_X),
+      node_y: handleOutOfBoundPosition(node_y, MINBOUND_Y, MAXBOUND_Y),
+    };
+  } else {
+    console.log("elementRef is Null");
+  }
 };

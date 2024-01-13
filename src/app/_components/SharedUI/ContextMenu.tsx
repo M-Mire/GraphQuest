@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { getCoords } from "~/app/utils/getCoords";
+import { calculateNewNodePosition } from "~/app/utils/calculateNewNodePosition";
 import type Node from "~/app/model/Node";
 import { ACTIONS_NODE } from "~/app/_components/GraphUI/NodeElement";
 import type { ActionNode } from "~/app/_components/GraphUI/NodeElement";
@@ -66,7 +66,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   const handleMove = () => {
     setMoveNode(true);
     const handleMouseMove = (event: MouseEvent) => {
-      const { node_x, node_y } = getCoords(
+      const { node_x, node_y } = calculateNewNodePosition(
         event.clientX,
         event.clientY,
         elementRef,
@@ -88,7 +88,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
     window.addEventListener("mousemove", handleMouseMove);
 
     const handleMouseUp = (event: MouseEvent) => {
-      const { node_x, node_y } = getCoords(
+      const { node_x, node_y } = calculateNewNodePosition(
         event.clientX,
         event.clientY,
         elementRef,

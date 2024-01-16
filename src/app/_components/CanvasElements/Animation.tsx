@@ -154,7 +154,15 @@ const Animation: React.FC<AnimationProps> = ({
     return () => {
       clearInterval(timerId);
     };
-  }, [tracker, currentIndex, dispatch, isPlay]);
+  }, [
+    tracker,
+    currentIndex,
+    dispatch,
+    isPlay,
+    speed,
+    handleSingleCall,
+    setCurrentIndex,
+  ]);
 
   return (
     <>

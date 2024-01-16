@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import PauseCircleIcon from "@mui/icons-material/PauseCircle";
 import ReplayIcon from "@mui/icons-material/Replay";
@@ -52,9 +52,6 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
-
   const isEditMode = searchParams.get("edit") === "true";
 
   const handlePlayClick = () => {

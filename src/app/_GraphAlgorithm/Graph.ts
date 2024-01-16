@@ -68,9 +68,16 @@ export default class Graph {
       for (const neighbour of this.graph.get(vertex) ?? []) {
         if (!visited.has(neighbour)) {
           visited.add(neighbour);
-
-          this.addInstruction([Order.Entry, [[Command.Visited, neighbour]]]);
+          this.TRACKER.push([Command.VisitPairs, [vertex, neighbour]]);
+          this.addInstruction([
+            Order.Entry,
+            [
+              [Command.Visited, neighbour],
+              [Command.UnvisitPairs, [vertex, neighbour]],
+            ],
+          ]);
           queue.push(neighbour);
+          this.TRACKER.push();
         }
       }
 

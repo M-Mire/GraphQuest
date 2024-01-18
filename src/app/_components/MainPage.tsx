@@ -76,16 +76,38 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
         case Command.VisitPairs:
           pairValue = value as number[];
           return nodes.map((node) => {
-            if (node.val === pairValue[0] || node.val === pairValue[1]) {
-              return { ...node, currentlyVisitedPair: true };
+            if (node.val === pairValue[0]) {
+              const connectedTo = Array.isArray(node.connectedTo)
+                ? node.connectedTo
+                : [];
+              return {
+                ...node,
+                connectedTo: [...connectedTo, pairValue[1]],
+              } as Node;
+            } else if (node.val === pairValue[1]) {
+              const connectedTo = Array.isArray(node.connectedTo)
+                ? node.connectedTo
+                : [];
+              return {
+                ...node,
+                connectedTo: [...connectedTo, pairValue[0]],
+              } as Node;
             }
             return node;
           });
         case Command.UnvisitPairs:
           pairValue = value as number[];
           return nodes.map((node) => {
-            if (node.val === pairValue[0] || node.val === pairValue[1]) {
-              return { ...node, currentlyVisitedPair: false };
+            if (node.val === pairValue[0]) {
+              const connectedTo = Array.isArray(node.connectedTo)
+                ? node.connectedTo.filter((val) => val !== pairValue[1])
+                : [];
+              return { ...node, connectedTo } as Node;
+            } else if (node.val === pairValue[1]) {
+              const connectedTo = Array.isArray(node.connectedTo)
+                ? node.connectedTo.filter((val) => val !== pairValue[0])
+                : [];
+              return { ...node, connectedTo } as Node;
             }
             return node;
           });
@@ -338,9 +360,10 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
                 incrementNodeCount={() => {
                   setNodeCount(nodeCount + 1);
                 }}
-                provideEdgeLength={pageConfiguration.provideEdgeLength}
+                isWeighted={pageConfiguration.isWeighted}
                 setAlert={setAlert}
                 minCanvas={minCanvas}
+                isUndirectedGraph={pageConfiguration.isUndirectedGraph}
               />
             </>
           ) : (
@@ -357,10 +380,11 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
               runAlgorithm={pageConfiguration.runAlgorithm}
               code={pageConfiguration.code}
               algorithmName={pageConfiguration.algorithmName}
-              provideEdgeLength={pageConfiguration.provideEdgeLength}
+              isWeighted={pageConfiguration.isWeighted}
               addEdge={pageConfiguration.addEdge}
               pageID={pageConfiguration.id}
               minCanvas={minCanvas}
+              isUndirectedGraph={pageConfiguration.isUndirectedGraph}
             />
           )}
         </div>

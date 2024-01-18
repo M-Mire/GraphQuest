@@ -88,34 +88,35 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
             Esc
           </div>
         </div>
-
-        {!!filteredAlgorithms.length ? (
-          filteredAlgorithms.map((k) => {
-            return (
-              <div key={k[0]} className="px-4">
-                <div
-                  className={`mt-2 flex w-full items-center justify-between p-1 text-white ${
-                    pageConfiguration.algorithmName === k[1].algorithmName
-                      ? "rounded bg-gray-700"
-                      : hoveredDiv === k[0]
-                      ? "rounded bg-gray-500"
-                      : ""
-                  }`}
-                  onMouseEnter={() => handleMouseEnter(k[0])}
-                >
-                  <p>{k[1].algorithmName}</p>
-                  {pageConfiguration.algorithmName === k[1].algorithmName && (
-                    <DoneIcon />
-                  )}
+        <div style={{ maxHeight: "calc(100% - 3rem)", overflowY: "auto" }}>
+          {!!filteredAlgorithms.length ? (
+            filteredAlgorithms.map((k, i) => {
+              return (
+                <div key={k[0]} className="px-4">
+                  <div
+                    className={`mt-2 flex w-full items-center justify-between p-1 text-white ${
+                      pageConfiguration.algorithmName === k[1].algorithmName
+                        ? "rounded bg-gray-700"
+                        : hoveredDiv === k[0]
+                        ? "rounded bg-gray-500"
+                        : ""
+                    } ${i === filteredAlgorithms.length - 1 && "mb-2"}`}
+                    onMouseEnter={() => handleMouseEnter(k[0])}
+                  >
+                    <p>{k[1].algorithmName}</p>
+                    {pageConfiguration.algorithmName === k[1].algorithmName && (
+                      <DoneIcon />
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })
-        ) : (
-          <p className="p-4 text-sm text-slate-400">
-            Your search for &quot;{query}&ldquo; algorithm was unsuccessful
-          </p>
-        )}
+              );
+            })
+          ) : (
+            <p className="p-4 text-sm text-slate-400">
+              Your search for &quot;{query}&ldquo; algorithm was unsuccessful
+            </p>
+          )}
+        </div>
       </div>
 
       {hoveredDiv !== null &&

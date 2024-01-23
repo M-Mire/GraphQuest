@@ -7,7 +7,7 @@ const updateNodeEncoded = (node: Node, childNode: number, distance: number) => {
   updateNode.childNodes.push(childNode);
   updateNode.distances.push(distance);
   updateNode.visited = false;
-  updateNode.currentlyVisitedPair = false;
+  updateNode.connectedTo = [];
   console.log(updateNode);
   return encodeURIComponent(JSON.stringify(updateNode));
 };

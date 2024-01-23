@@ -12,7 +12,7 @@ const updateNodeWeightEncoded = (
   const indexOfChild = updateNode.childNodes.indexOf(childNode);
   updateNode.distances[indexOfChild] = weight;
   updateNode.visited = false;
-  updateNode.currentlyVisitedPair = false;
+  updateNode.connectedTo = [];
   return encodeURIComponent(JSON.stringify(updateNode));
 };
 

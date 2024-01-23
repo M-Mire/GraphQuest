@@ -5,13 +5,15 @@ export enum pageEnum {
   BFS = "BFS",
   DFS = "DFS",
   DIJKSTRA = "DIJKSTRA",
+  PRIMS_JARNIK = "PRIMS_JARNIK",
 }
 
 export interface pageConfigurationType {
   id: pageEnum;
   algorithmName: string;
   urlName: string;
-  provideEdgeLength: boolean;
+  isWeighted: boolean;
+  isUndirectedGraph: boolean;
   runAlgorithm: (g: Graph | GraphDistance, rootValue: number) => void;
   addEdge: (
     g: Graph | GraphDistance,
@@ -25,7 +27,8 @@ export const pageConfigurationBFS: pageConfigurationType = {
   id: pageEnum.BFS,
   algorithmName: "Breadth-First Search",
   urlName: "/",
-  provideEdgeLength: false,
+  isWeighted: false,
+  isUndirectedGraph: false,
   runAlgorithm: (g: Graph, rootValue: number) => {
     g.BFS(rootValue);
   },
@@ -54,7 +57,8 @@ export const pageConfigurationDFS: pageConfigurationType = {
   id: pageEnum.DFS,
   algorithmName: "Depth-First Search",
   urlName: "/dfs",
-  provideEdgeLength: false,
+  isWeighted: false,
+  isUndirectedGraph: false,
   runAlgorithm: (g: Graph, rootValue: number) => {
     g.DFS(rootValue);
   },
@@ -82,7 +86,8 @@ export const pageConfigurationDijkstra: pageConfigurationType = {
   id: pageEnum.DIJKSTRA,
   algorithmName: "Dijkstra Algorithm",
   urlName: "/dijkstra",
-  provideEdgeLength: true,
+  isWeighted: true,
+  isUndirectedGraph: false,
   runAlgorithm: (g: Graph | GraphDistance, rootValue: number) => {
     if (g instanceof GraphDistance) g.DIJKSTRA(rootValue);
   },
@@ -123,11 +128,64 @@ export const pageConfigurationDijkstra: pageConfigurationType = {
                   distance[neighbor] = altDistance`,
 };
 
+export const pageConfigurationPrimJarnik: pageConfigurationType = {
+  id: pageEnum.PRIMS_JARNIK,
+  algorithmName: "Prim-Jarnik Algorithm",
+  urlName: "/primjarnik",
+  isWeighted: true,
+  isUndirectedGraph: true,
+  runAlgorithm: (g: Graph | GraphDistance, rootValue: number) => {
+    if (g instanceof GraphDistance) g.PRIMSJARNIK(rootValue);
+  },
+  addEdge: (
+    g: Graph | GraphDistance,
+    from: number,
+    to: number,
+    distance?: number,
+  ) => {
+    if (g instanceof GraphDistance) g.addEdgeCostUndirected(from, to, distance);
+  },
+  code: `PRIMSJARNIK(root: number) {
+  const visited = new Set<number>();
+  const mstEdges: Array<{ node1: number; node2: number; weight: number }> = [];
+
+  if (!this.nodes.has(root)) {
+    return mstEdges;
+  }
+
+  visited.add(root);
+
+  while (visited.size < this.nodes.size) {
+    let minEdge = null;
+    for (const edge of this.edges) {
+      if ((visited.has(edge.node1) && !visited.has(edge.node2)) ||
+          (visited.has(edge.node2) && !visited.has(edge.node1))
+      ) {
+        if (!minEdge || edge.weight < minEdge.weight) {
+          minEdge = edge;
+        }
+      }
+    }
+    if (!minEdge) {
+      break;
+    }
+    mstEdges.push(minEdge);
+
+    if (!visited.has(minEdge.node1)) {
+      visited.add(minEdge.node1);
+    } else {
+      visited.add(minEdge.node2);
+    }
+  }
+}`,
+};
+
 export const pageConfigurationMap: Map<pageEnum, pageConfigurationType> =
   new Map<pageEnum, pageConfigurationType>([
     [pageEnum.BFS, pageConfigurationBFS],
     [pageEnum.DFS, pageConfigurationDFS],
     [pageEnum.DIJKSTRA, pageConfigurationDijkstra],
+    [pageEnum.PRIMS_JARNIK, pageConfigurationPrimJarnik],
   ]);
 
 export default pageConfigurationType;

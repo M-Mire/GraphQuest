@@ -18,6 +18,9 @@ import { DEFAULT_RADIUS_BIG_CIRCLE } from "~/app/constants/Node/index";
 
 const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
   switch (action.type) {
+    case ACTIONS_NODE.TEST_NODE_DIAGNOSTIC:
+      console.log(nodes);
+      return nodes;
     case ACTIONS_NODE.ADD_NODE:
       const newNode = action.payload as Node;
       const nodeExists = nodes.some((node) => node.val === newNode.val);
@@ -116,7 +119,12 @@ const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
       }
     case ACTIONS_NODE.NODE_RESET:
       return nodes.map((node) => {
-        return { ...node, visited: false, visitedChildrens: false };
+        return {
+          ...node,
+          visited: false,
+          visitedChildrens: false,
+          connectedTo: [],
+        };
       });
     case ACTIONS_NODE.DELETE_ALL:
       return [] as Node[];
@@ -224,8 +232,8 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
 
   const [rootValue, setRootValue] = useState<number | null>(null);
   const [nodes, dispatch] = useReducer(nodeReducer, []);
-  const [speed, setSpeed] = useState<number>(500);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [speed, setSpeed] = useState<number>(50);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isPlay, setPlay] = useState<boolean>(false);
   const [lineNumbers, dispatchLineNumbers] = useReducer(lineReducer, []);
   const isEditMode = searchParams && searchParams.get("edit") === "true";
@@ -385,6 +393,7 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
               pageID={pageConfiguration.id}
               minCanvas={minCanvas}
               isUndirectedGraph={pageConfiguration.isUndirectedGraph}
+              setPlay={setPlay}
             />
           )}
         </div>

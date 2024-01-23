@@ -3,18 +3,25 @@ import { COLOUR_SELECTION } from "~/app/_components/GraphUI/NodeElement";
 import type Node from "~/app/model/Node";
 import { Command } from "~/app/_GraphAlgorithm/Graph";
 import type { Line, TrackerArray } from "~/app/_GraphAlgorithm/Graph";
-import newNode from "~/app/utils/createNewNode";
+import {
+  InstructionType,
+  Order,
+  SingleInstruction,
+  TrackerElementType,
+} from "~/app/_GraphAlgorithm/Graph";
 
 interface TraverseAnimationProps {
   tracker: TrackerArray;
   currentIndex: number;
   nodes: Node[];
+  isPlay: boolean;
 }
 
 const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
   nodes,
   currentIndex,
   tracker,
+  isPlay,
 }) => {
   const rectHeight = 80;
   const rectWidth = 70;
@@ -31,47 +38,60 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
   const [containerHeight, setContainerHeight] = useState<number>(400);
 
   useEffect(() => {
+    if (currentIndex === -1) {
+      resetAnimation();
+    }
+  }, [currentIndex]);
+
+  useEffect(() => {
     if (
       currentIndex >= 0 &&
       currentIndex < tracker.length &&
-      tracker[currentIndex]
+      tracker[currentIndex] &&
+      isPlay
     ) {
       const [command, val] = tracker[currentIndex] as [
-        Command | Line,
-        number | number[] | Map<number, number>,
+        Command | Line | Order,
+        TrackerElementType | SingleInstruction[],
       ];
-      if (command as Command) {
-        const getNode = nodes.find((node) => node.val === val)!;
-        if (command === Command.Visited) {
-          getNode.visited = true;
-          setVisitedNodes([...visitedNodes, getNode]);
-
-          if (previousCost !== null) {
-            setCurrentWeight(currentWeight + previousCost);
-            setPrevCost(null);
-          }
+      if (isOrder(command)) {
+        const tmp = val as SingleInstruction[];
+        for (const [cmd, value] of tmp) {
+          handleCommand(cmd, value);
         }
-        if (command === Command.VisitPairs) {
-          const [val1, val2] = val as [number, number];
-          const getVal1 = nodes.find((node) => node.val === val1);
-          const getVal2 = nodes.find((node) => node.val === val2);
-
-          const flag1 = getVal1?.distances[getVal1.childNodes.indexOf(val2)];
-          const flag2 = getVal2?.distances[getVal2.childNodes.indexOf(val1)];
-          if (flag2 !== undefined) {
-            setPrevCost(flag2);
-          } else if (flag1 !== undefined) {
-            setPrevCost(flag1);
-          } else {
-            console.log("Animation current weight incorrect");
-          }
-
-          //   getVal1.distances[node.childNodes.indexOf(childVal)]
-        }
+      } else if (isCommand(command)) {
+        const tmp = val as TrackerElementType;
+        handleCommand(command, tmp);
       }
     }
-  }, [currentIndex, tracker]);
+  }, [currentIndex, tracker, isPlay]);
 
+  const handleCommand = (command: InstructionType, val: TrackerElementType) => {
+    console.log(command);
+    const getNode = nodes.find((node) => node.val === val)!;
+    if (command === Command.Visited) {
+      const updatedNode = { ...getNode, visited: true };
+      setVisitedNodes([...visitedNodes, updatedNode]);
+      if (previousCost !== null) {
+        setCurrentWeight(currentWeight + previousCost);
+        setPrevCost(null);
+      }
+    }
+    if (command === Command.VisitPairs) {
+      const [val1, val2] = val as [number, number];
+      const getVal1 = nodes.find((node) => node.val === val1);
+      const getVal2 = nodes.find((node) => node.val === val2);
+      const flag1 = getVal1?.distances[getVal1.childNodes.indexOf(val2)];
+      const flag2 = getVal2?.distances[getVal2.childNodes.indexOf(val1)];
+      if (flag2 !== undefined) {
+        setPrevCost(flag2);
+      } else if (flag1 !== undefined) {
+        setPrevCost(flag1);
+      } else {
+        console.log("Animation current weight incorrect");
+      }
+    }
+  };
   useEffect(() => {
     const updateContainerHeight = () => {
       if (containerRef.current) {
@@ -85,6 +105,12 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
       window.removeEventListener("resize", updateContainerHeight);
     };
   }, []);
+
+  const resetAnimation = () => {
+    setVisitedNodes([]);
+    setPrevCost(null);
+    setCurrentWeight(0);
+  };
   const lineX = padding + rectWidth + (rectWidth + rectMargin) / 2;
   return (
     <div
@@ -189,3 +215,11 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
 };
 
 export default TraverseAnimationPrims;
+
+function isCommand(type: InstructionType): type is Command {
+  return (type as Command) in Command;
+}
+
+function isOrder(type: InstructionType): type is Order {
+  return type === Order.Entry;
+}

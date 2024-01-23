@@ -11,6 +11,6 @@ export default function newNode(x: number, y: number, val: number): Node {
     visitedChildrens: false,
     childNodes: [],
     distances: [],
-    currentlyVisitedPair: false,
+    connectedTo: [],
   };
 }

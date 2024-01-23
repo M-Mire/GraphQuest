@@ -43,8 +43,8 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
         const getNode = nodes.find((node) => node.val === val)!;
         if (command === Command.Visited) {
           // If Command.Visited add to the stack
-          getNode.visited = true;
-          setVisitedNodes([...visitedNodes, getNode]);
+          const copyNode = { ...getNode, visited: true };
+          setVisitedNodes([...visitedNodes, copyNode]);
         } else if (command === Command.PoppedStack) {
           //If Command.PoppedStack add to the popped stack
 
@@ -55,8 +55,8 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
           setVisitedNodes(filteredVisited);
 
           //Add to Popped Stack
-          getNode.visitedChildrens = true;
-          setPoppedStack(getNode);
+          const copyNode = { ...getNode, visitedChildrens: true };
+          setPoppedStack(copyNode);
         }
       }
     }
@@ -172,9 +172,9 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
           const x = (i + 1) * (rectWidth + rectMargin) + padding;
           const y = midpointY;
           return (
-            <g key={`g-${node.id}`}>
+            <g key={`g-visited-${node.id}-${i}`}>
               <rect
-                key={`rect-${node.id}`}
+                key={`rect-visited-${node.id}`}
                 x={x}
                 y={y}
                 width={rectWidth}
@@ -188,7 +188,7 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
                 strokeWidth={3}
               />
               <text
-                key={`text-${node.id}`}
+                key={`text-visited-${node.id}`}
                 x={x + rectWidth / 2}
                 y={y + rectHeight / 2}
                 textAnchor="middle"

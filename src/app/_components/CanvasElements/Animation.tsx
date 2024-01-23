@@ -45,6 +45,7 @@ interface AnimationProps {
   pageID: pageEnum;
   minCanvas: { minHeight: number; minWidth: number };
   isUndirectedGraph: boolean;
+  setPlay: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function isCommand(type: InstructionType): type is Command {
@@ -81,6 +82,7 @@ const Animation: React.FC<AnimationProps> = ({
   pageID,
   minCanvas,
   isUndirectedGraph,
+  setPlay,
 }) => {
   const [tracker, setTracker] = useState<TrackerArray>([]);
   const handleSingleCall = (
@@ -143,6 +145,7 @@ const Animation: React.FC<AnimationProps> = ({
 
   useEffect(() => {
     const timerId = setInterval(() => {
+      if (currentIndex < 0) setCurrentIndex(currentIndex + 1);
       if (currentIndex < tracker.length && isPlay) {
         const [command, val] = tracker[currentIndex]!;
 
@@ -160,6 +163,7 @@ const Animation: React.FC<AnimationProps> = ({
         setCurrentIndex(currentIndex + 1);
       } else {
         clearInterval(timerId);
+        setPlay(false);
       }
     }, speed);
 
@@ -204,6 +208,7 @@ const Animation: React.FC<AnimationProps> = ({
             nodes={nodes}
             currentIndex={currentIndex}
             tracker={tracker}
+            isPlay={isPlay}
           />
         ) : null}
 

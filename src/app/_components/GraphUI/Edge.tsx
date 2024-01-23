@@ -12,10 +12,11 @@ interface EdgeProps {
   y1: number;
   x2: number;
   y2: number;
-  provideEdgeLength?: boolean;
+  isWeighted: boolean;
   node: Node;
   childNode: Node;
   dispatch?: React.Dispatch<ActionNode>;
+  isUndirectedGraph: boolean;
 }
 
 const Edge: React.FC<EdgeProps> = ({
@@ -23,10 +24,11 @@ const Edge: React.FC<EdgeProps> = ({
   y1,
   x2,
   y2,
-  provideEdgeLength,
+  isWeighted,
   node,
   childNode,
   dispatch,
+  isUndirectedGraph,
 }) => {
   const getNodeDistance = () => {
     if (node && childNode?.val !== undefined) {
@@ -65,7 +67,7 @@ const Edge: React.FC<EdgeProps> = ({
   };
 
   const handleTextClick = () => {
-    if (provideEdgeLength) {
+    if (isWeighted) {
       setEditable(true);
     }
   };
@@ -100,18 +102,21 @@ const Edge: React.FC<EdgeProps> = ({
 
   return (
     <>
-      <defs>
-        <marker
-          id="markerArrow"
-          markerWidth="13"
-          markerHeight="13"
-          refX="9.5"
-          refY="6"
-          orient="auto"
-        >
-          <path d="M2,2 L2,11 L10,6 L2,2" style={{ fill: "#HHH" }} />
-        </marker>
-      </defs>
+      {!isUndirectedGraph && (
+        <defs>
+          <marker
+            id="markerArrow"
+            markerWidth="13"
+            markerHeight="13"
+            refX="9.5"
+            refY="6"
+            orient="auto"
+          >
+            <path d="M2,2 L2,11 L10,6 L2,2" style={{ fill: "#HHH" }} />
+          </marker>
+        </defs>
+      )}
+
       <line
         x1={edgeStartX}
         y1={edgeStartY}
@@ -119,14 +124,13 @@ const Edge: React.FC<EdgeProps> = ({
         y2={edgeEndY}
         markerEnd={"url(#markerArrow)"}
         style={{
-          stroke:
-            node?.currentlyVisitedPair && childNode?.currentlyVisitedPair
-              ? "yellow"
-              : "black",
+          stroke: node?.connectedTo?.includes(childNode.val)
+            ? "yellow"
+            : "black",
           strokeWidth: 2,
         }}
       />
-      {provideEdgeLength ? (
+      {isWeighted ? (
         <foreignObject
           x={midX}
           y={midY}

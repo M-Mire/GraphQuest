@@ -20,9 +20,10 @@ interface EditModeProps {
   nodes: Node[];
   nodeCount: number;
   incrementNodeCount: () => void;
-  provideEdgeLength?: boolean;
+  isWeighted: boolean;
   setAlert: React.Dispatch<React.SetStateAction<Alerts | null>>;
   minCanvas: { minHeight: number; minWidth: number };
+  isUndirectedGraph: boolean;
 }
 
 const EditMode: React.FC<EditModeProps> = ({
@@ -30,9 +31,10 @@ const EditMode: React.FC<EditModeProps> = ({
   nodes,
   nodeCount,
   incrementNodeCount,
-  provideEdgeLength,
+  isWeighted,
   setAlert,
   minCanvas,
+  isUndirectedGraph,
 }) => {
   const elementRef = useRef<HTMLDivElement | null>(null);
   const [activeNode, setActiveNode] = useState<number>(-1);
@@ -77,7 +79,7 @@ const EditMode: React.FC<EditModeProps> = ({
         if (activeNode === -1) setActiveNode(clickedNode);
         else if (activeNode === clickedNode) setActiveNode(-1);
         else if (activeNode !== -1 && clickedNode >= 0) {
-          if (provideEdgeLength) {
+          if (isWeighted) {
             setInputWeight(true);
             setInputWeightNums([activeNode, clickedNode]);
           } else {
@@ -182,10 +184,11 @@ const EditMode: React.FC<EditModeProps> = ({
                     y1={parentNode.y}
                     x2={childNode.x}
                     y2={childNode.y}
-                    provideEdgeLength={provideEdgeLength}
+                    isWeighted={isWeighted}
                     node={parentNode}
                     childNode={childNode}
                     dispatch={dispatch}
+                    isUndirectedGraph={isUndirectedGraph}
                   />
                 );
               }

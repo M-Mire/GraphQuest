@@ -4,14 +4,16 @@ import Edge from "~/app/_components/GraphUI/Edge";
 
 interface CanvasProps {
   nodes: Node[];
-  provideEdgeLength?: boolean;
+  isWeighted: boolean;
   minCanvas: { minHeight: number; minWidth: number };
+  isUndirectedGraph: boolean;
 }
 
 const Canvas: React.FC<CanvasProps> = ({
   nodes,
-  provideEdgeLength,
+  isWeighted,
   minCanvas,
+  isUndirectedGraph,
 }) => {
   return (
     <>
@@ -45,9 +47,10 @@ const Canvas: React.FC<CanvasProps> = ({
                     y1={parentNode.y}
                     x2={childNode.x}
                     y2={childNode.y}
-                    provideEdgeLength={provideEdgeLength}
+                    isWeighted={isWeighted}
                     node={parentNode}
                     childNode={childNode}
+                    isUndirectedGraph={isUndirectedGraph}
                   />
                 );
               }

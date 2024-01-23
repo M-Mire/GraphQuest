@@ -142,11 +142,15 @@ export default class Graph {
 export class GraphDistance extends Graph {
   private ALLNODES: Map<number, number>;
   private distances: Map<string, number>;
+  private nodes: Set<number>;
+  private edges: Array<{ node1: number; node2: number; weight: number }>;
 
   constructor() {
     super();
     this.distances = new Map();
     this.ALLNODES = new Map();
+    this.nodes = new Set();
+    this.edges = [];
   }
   addEdgeDistance(u: number, v: number, distance?: number) {
     this.addEdge(u, v);
@@ -258,5 +262,142 @@ export class GraphDistance extends Graph {
       .forEach((n) => {
         this.TRACKER.push([Command.Popped, n]);
       });
+  }
+  addEdgeCostUndirected(node1: number, node2: number, weight?: number) {
+    if (!this.nodes.has(node1)) {
+      this.nodes.add(node1);
+    }
+    if (!this.nodes.has(node2)) {
+      this.nodes.add(node2);
+    }
+    if (weight !== undefined) this.edges.push({ node1, node2, weight });
+  }
+  PRIMSJARNIK(root: number) {
+    this.TRACKER.push([Line.EntryLine, 1]);
+    const visited = new Set<number>();
+    const mstEdges: Array<{ node1: number; node2: number; weight: number }> =
+      [];
+    this.TRACKER.push([Line.EntryLine, 2]);
+    this.TRACKER.push([Line.FinishedLine, 2]);
+    this.TRACKER.push([Line.EntryLine, 3]);
+    this.TRACKER.push([Line.FinishedLine, 3]);
+    if (!this.nodes.has(root)) {
+      this.TRACKER.push([Line.EntryLine, 5]);
+      this.TRACKER.push([Line.FinishedLine, 5]);
+      this.TRACKER.push([Line.EntryLine, 6]);
+      this.TRACKER.push([Line.FinishedLine, 6]);
+      return mstEdges;
+    }
+
+    visited.add(root);
+    this.addInstruction([
+      Order.Entry,
+      [
+        [Command.Visited, root],
+        [Line.EntryLine, 9],
+      ],
+    ]);
+    this.TRACKER.push([Line.FinishedLine, 9]);
+
+    while (visited.size < this.nodes.size) {
+      this.TRACKER.push([Line.EntryLine, 11]);
+      let minEdge: { node1: number; node2: number; weight: number } | null =
+        null;
+      this.TRACKER.push([Line.EntryLine, 12]);
+      this.TRACKER.push([Line.FinishedLine, 12]);
+      for (const edge of this.edges) {
+        this.TRACKER.push([Line.EntryLine, 13]);
+        if (
+          (visited.has(edge.node1) && !visited.has(edge.node2)) ||
+          (visited.has(edge.node2) && !visited.has(edge.node1))
+        ) {
+          this.addInstruction([
+            Order.Entry,
+            [
+              [Line.EntryLine, 14],
+              [Line.EntryLine, 15],
+              [Line.EntryLine, 16],
+            ],
+          ]);
+          if (!minEdge || edge.weight < minEdge.weight) {
+            this.TRACKER.push([Line.EntryLine, 17]);
+            minEdge = edge;
+            this.TRACKER.push([Line.EntryLine, 18]);
+            this.TRACKER.push([Line.FinishedLine, 18]);
+            this.TRACKER.push([Line.FinishedLine, 17]);
+          }
+          this.addInstruction([
+            Order.Entry,
+            [
+              [Line.FinishedLine, 14],
+              [Line.FinishedLine, 15],
+              [Line.FinishedLine, 16],
+            ],
+          ]);
+        }
+      }
+      this.TRACKER.push([Line.FinishedLine, 13]);
+      if (!minEdge) {
+        this.TRACKER.push([Line.EntryLine, 22]);
+        this.TRACKER.push([Line.EntryLine, 23]);
+        this.addInstruction([
+          Order.Entry,
+          [
+            [Line.FinishedLine, 22],
+            [Line.FinishedLine, 23],
+            [Line.FinishedLine, 11],
+          ],
+        ]);
+        break;
+      }
+      mstEdges.push(minEdge);
+      this.TRACKER.push([Command.VisitPairs, [minEdge.node1, minEdge.node2]]);
+      this.addInstruction([
+        Order.Entry,
+        [
+          [Command.VisitPairs, [minEdge.node1, minEdge.node2]],
+          [Line.EntryLine, 25],
+        ],
+      ]);
+      this.TRACKER.push([Line.FinishedLine, 25]);
+
+      if (!visited.has(minEdge.node1)) {
+        visited.add(minEdge.node1);
+        this.addInstruction([
+          Order.Entry,
+          [
+            [Line.EntryLine, 27],
+            [Line.EntryLine, 28],
+            [Command.Visited, minEdge.node1],
+          ],
+        ]);
+        this.addInstruction([
+          Order.Entry,
+          [
+            [Line.FinishedLine, 27],
+            [Line.FinishedLine, 28],
+          ],
+        ]);
+      } else {
+        visited.add(minEdge.node2);
+        this.addInstruction([
+          Order.Entry,
+          [
+            [Line.EntryLine, 29],
+            [Line.EntryLine, 30],
+            [Command.Visited, minEdge.node2],
+          ],
+        ]);
+        this.addInstruction([
+          Order.Entry,
+          [
+            [Line.FinishedLine, 29],
+            [Line.FinishedLine, 30],
+          ],
+        ]);
+      }
+      this.TRACKER.push([Line.FinishedLine, 11]);
+    }
+    this.TRACKER.push([Line.FinishedLine, 1]);
   }
 }

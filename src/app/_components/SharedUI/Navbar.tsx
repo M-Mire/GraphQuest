@@ -1,7 +1,10 @@
 import { useCallback } from "react";
 import Link from "next/link";
 import ControlButtons from "./ControlButtons";
-import type { ActionNode } from "../GraphUI/NodeElement";
+import {
+  ACTIONS_NODE,
+  ActionNode,
+} from "~/app/_components/GraphUI/NodeElement";
 import type { ActionLine } from "../CanvasElements/Animation";
 import { useSearchParams, usePathname } from "next/navigation";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
@@ -61,7 +64,15 @@ const Navbar: React.FC<NavbarProps> = ({
   return (
     <nav className="flex h-16 items-center justify-between border-b-2 border-gray-600 bg-black px-4 py-4">
       <div className="flex items-center">
-        <div className="text-sm font-bold text-white">
+        <div
+          className="text-sm font-bold text-white"
+          onClick={() => {
+            dispatch({
+              type: ACTIONS_NODE.TEST_NODE_DIAGNOSTIC,
+              payload: NaN,
+            });
+          }}
+        >
           <AccountTreeIcon fontSize="medium" />
         </div>
         <div className="ml-2 flex items-center text-sm font-bold text-white">

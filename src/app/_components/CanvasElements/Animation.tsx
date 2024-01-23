@@ -4,6 +4,7 @@ import TraverseCode from "~/app/_components/TraverseAnimation/AnimationCode";
 import TraverseAnimationBFS from "~/app/_components/TraverseAnimation/AnimationBFS";
 import TraverseAnimationDijkstra from "~/app/_components/TraverseAnimation/AnimationDijkstra";
 import TraverseAnimationDFS from "../TraverseAnimation/AnimationDFS";
+import AnimationPrims from "../TraverseAnimation/AnimationPrims";
 import { ACTIONS_NODE } from "../GraphUI/NodeElement";
 import type { ActionNode } from "../GraphUI/NodeElement";
 import type Node from "~/app/model/Node";
@@ -40,9 +41,11 @@ interface AnimationProps {
     to: number,
     distance?: number,
   ) => void;
-  provideEdgeLength?: boolean;
+  isWeighted: boolean;
   pageID: pageEnum;
   minCanvas: { minHeight: number; minWidth: number };
+  isUndirectedGraph: boolean;
+  setPlay: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function isCommand(type: InstructionType): type is Command {
@@ -75,9 +78,11 @@ const Animation: React.FC<AnimationProps> = ({
   runAlgorithm,
   code,
   algorithmName,
-  provideEdgeLength,
+  isWeighted,
   pageID,
   minCanvas,
+  isUndirectedGraph,
+  setPlay,
 }) => {
   const [tracker, setTracker] = useState<TrackerArray>([]);
   const handleSingleCall = (
@@ -99,13 +104,12 @@ const Animation: React.FC<AnimationProps> = ({
 
   useEffect(() => {
     if (rootValue !== null) {
-      const g =
-        provideEdgeLength === undefined ? new Graph() : new GraphDistance();
+      const g = isWeighted === false ? new Graph() : new GraphDistance();
       nodes
         .filter((node) => node.childNodes && node.childNodes.length > 0)
         .map((node) => {
           return Array.from(node.childNodes).map((child: number) => {
-            if (provideEdgeLength === undefined) {
+            if (isWeighted === false) {
               if (g instanceof Graph) {
                 g.addEdge(node.val, child);
               }
@@ -114,23 +118,34 @@ const Animation: React.FC<AnimationProps> = ({
                 // console.log(node);
                 // console.log(node.distances);
                 // console.log();
-                g.addEdgeDistance(
-                  node.val,
-                  child,
-                  node.distances[node.childNodes.indexOf(child)],
-                );
+                if (pageID === pageEnum.DIJKSTRA) {
+                  g.addEdgeDistance(
+                    node.val,
+                    child,
+                    node.distances[node.childNodes.indexOf(child)],
+                  );
+                } else if (pageID === pageEnum.PRIMS_JARNIK) {
+                  g.addEdgeCostUndirected(
+                    node.val,
+                    child,
+                    node.distances[node.childNodes.indexOf(child)],
+                  );
+                } else {
+                  console.log("Not a valid PageId in Animation.tsx");
+                }
               }
             }
           });
         });
       runAlgorithm(g, rootValue);
-      // console.log(g.getTracker());
+      console.log(g.getTracker());
       setTracker(g.getTracker());
     }
   }, [rootValue]);
 
   useEffect(() => {
     const timerId = setInterval(() => {
+      if (currentIndex < 0) setCurrentIndex(currentIndex + 1);
       if (currentIndex < tracker.length && isPlay) {
         const [command, val] = tracker[currentIndex]!;
 
@@ -148,6 +163,7 @@ const Animation: React.FC<AnimationProps> = ({
         setCurrentIndex(currentIndex + 1);
       } else {
         clearInterval(timerId);
+        setPlay(false);
       }
     }, speed);
 
@@ -169,8 +185,9 @@ const Animation: React.FC<AnimationProps> = ({
       <div className="absolute h-full w-full p-4">
         <Canvas
           nodes={nodes}
-          provideEdgeLength={provideEdgeLength}
+          isWeighted={isWeighted}
           minCanvas={minCanvas}
+          isUndirectedGraph={isUndirectedGraph}
         />
         {pageID === pageEnum.BFS ? (
           <TraverseAnimationBFS nodes={nodes} />
@@ -185,6 +202,13 @@ const Animation: React.FC<AnimationProps> = ({
             nodes={nodes}
             currentIndex={currentIndex}
             tracker={tracker}
+          />
+        ) : pageID === pageEnum.PRIMS_JARNIK ? (
+          <AnimationPrims
+            nodes={nodes}
+            currentIndex={currentIndex}
+            tracker={tracker}
+            isPlay={isPlay}
           />
         ) : null}
 

@@ -69,7 +69,7 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
       type: ACTIONS_NODE.NODE_RESET,
       payload: NaN,
     });
-    setCurrentIndex(0);
+    setCurrentIndex(-1);
     setPlay(false);
     dispatchLineNumbers({
       type: Line.LineReset,

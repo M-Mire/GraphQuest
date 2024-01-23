@@ -7,5 +7,5 @@ export default interface Node {
   visitedChildrens: boolean;
   childNodes: number[];
   distances: number[];
-  currentlyVisitedPair: boolean;
+  connectedTo: number[];
 }

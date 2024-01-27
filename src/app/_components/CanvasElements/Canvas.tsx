@@ -1,8 +1,14 @@
 import NodeElement from "../GraphUI/NodeElement";
+import { useState } from "react";
 import type Node from "~/app/model/Node";
 import Edge from "~/app/_components/GraphUI/Edge";
-
+import InformationBoardNode from "../SharedUI/InformationBoardNode";
+import InformationBoard from "../SharedUI/InformationBoard";
+import { useThemeContext } from "~/app/context/ThemeContext";
 interface CanvasProps {
+  isPlay: boolean;
+  rootValue: number | null;
+  setRootValue: React.Dispatch<React.SetStateAction<number | null>>;
   nodes: Node[];
   isWeighted: boolean;
   minCanvas: { minHeight: number; minWidth: number };
@@ -10,204 +16,124 @@ interface CanvasProps {
 }
 
 const Canvas: React.FC<CanvasProps> = ({
+  isPlay,
+  rootValue,
+  setRootValue,
   nodes,
   isWeighted,
   minCanvas,
   isUndirectedGraph,
 }) => {
+  const { theme } = useThemeContext();
+  const style = {
+    minWidth: `${minCanvas.minWidth ? `${minCanvas.minWidth + 16}` : "100%"}`,
+    width: "100%",
+    minHeight: `${
+      minCanvas.minHeight ? `calc( ${minCanvas.minHeight}px )` : "calc( 100% )"
+    }`,
+    height: "calc(100% - 50px)",
+  };
+  const handleClick = (e: React.MouseEvent) => {
+    if (isPlay) {
+      return;
+    } // if Animation is playing user can't set new RootValue
+    const { target } = e;
+    const nodeName = (target as HTMLElement).tagName;
+
+    if (nodeName !== "svg" && nodeName !== "circle" && nodeName !== "text") {
+      return;
+    }
+    const textContent = (target as HTMLElement).getAttribute("name");
+    if (textContent) {
+      const clickedNode = nodes.find(
+        (node) => node.val === parseInt(textContent),
+      )!.val;
+      setRootValue(clickedNode);
+    }
+  };
   return (
     <>
       <div
         id="editMode"
-        className="h-2/3 overflow-auto rounded-2xl bg-slate-600 sm:mb-2 md:relative md:left-0 md:top-0 md:w-[65%] lg:w-[70%]"
+        className="h-2/3 overflow-auto rounded-2xl border-2 sm:mb-2 md:relative md:left-0 md:top-0 md:w-[65%] lg:w-[70%]"
+        style={{
+          background: theme.background.secondary,
+          borderColor: theme.background.quaternary,
+        }}
       >
-        <svg
-          style={{
-            minWidth: `${
-              minCanvas.minWidth ? `${minCanvas.minWidth + 16}` : "100%"
-            }`,
-            width: "100%",
-            minHeight: `${
-              minCanvas.minHeight ? `${minCanvas.minHeight + 16}` : "100%"
-            }`,
-            height: "100%",
-          }}
-        >
-          {nodes?.map((node) => {
-            return <NodeElement key={node.id} node={node} />;
-          })}
-          {nodes.map((parentNode) =>
-            parentNode.childNodes.map((childVal, id) => {
-              const childNode = nodes.find((node) => node.val === childVal);
-              if (childNode) {
+        <InformationBoard minCanvas={minCanvas}>
+          <InformationBoardNode
+            name={"Root Node"}
+            colour={theme.node.root}
+            stroke={theme.node.rootStroke}
+          />
+          <InformationBoardNode
+            name={"Visited Node"}
+            colour={theme.node.visited}
+          />
+          <InformationBoardNode
+            name={"Completed Node"}
+            colour={theme.node.completed}
+          />
+          <InformationBoardNode
+            name={"Unvisited Node"}
+            colour={theme.node.unvisited}
+          />
+        </InformationBoard>
+        <div style={style}>
+          <svg
+            style={{
+              minWidth: `${
+                minCanvas.minWidth ? `${minCanvas.minWidth + 16}` : "100%"
+              }`,
+              width: "100%",
+              minHeight: `${
+                minCanvas.minHeight
+                  ? `calc(2/3 * ${minCanvas.minHeight}px)`
+                  : " 100% "
+              }`,
+              height: "100%",
+            }}
+            onClick={(e) => handleClick(e)}
+          >
+            {nodes?.map((node) => {
+              if (node.val === rootValue) {
                 return (
-                  <Edge
-                    key={id}
-                    x1={parentNode.x}
-                    y1={parentNode.y}
-                    x2={childNode.x}
-                    y2={childNode.y}
-                    isWeighted={isWeighted}
-                    node={parentNode}
-                    childNode={childNode}
-                    isUndirectedGraph={isUndirectedGraph}
+                  <NodeElement
+                    key={node.id}
+                    node={node}
+                    rootValue={rootValue}
                   />
                 );
               }
-              return null;
-            }),
-          )}
-          <InformationBoard />
-        </svg>
+              return <NodeElement key={node.id} node={node} />;
+            })}
+            {nodes.map((parentNode) =>
+              parentNode.childNodes.map((childVal, id) => {
+                const childNode = nodes.find((node) => node.val === childVal);
+                if (childNode) {
+                  return (
+                    <Edge
+                      key={id}
+                      x1={parentNode.x}
+                      y1={parentNode.y}
+                      x2={childNode.x}
+                      y2={childNode.y}
+                      isWeighted={isWeighted}
+                      node={parentNode}
+                      childNode={childNode}
+                      isUndirectedGraph={isUndirectedGraph}
+                    />
+                  );
+                }
+                return null;
+              }),
+            )}
+          </svg>
+        </div>
       </div>
     </>
   );
 };
 
 export default Canvas;
-
-const InformationBoard = () => {
-  const RECT_HEIGHT = 150;
-  const RECT_WIDTH = 150;
-  const TEXT_H_FONT_SIZE = 14;
-  const TEXT_H_X_PADDING = 10;
-  const TEXT_P_FONT_SIZE = 12;
-  const X_NODE = 20;
-  const CIRCLE_RADIUS = 10;
-  const FIRST_NODE_Y = 45;
-  const NODE_PADDING = 35;
-  const TEXT_Y_PADDING = 4;
-  const TEXT_X_PADDING = 20;
-  const ROUNDED_VAL = 20;
-
-  return (
-    <>
-      <rect
-        x={0}
-        y={0}
-        width={RECT_WIDTH}
-        height={RECT_HEIGHT}
-        rx={ROUNDED_VAL}
-        ry={ROUNDED_VAL}
-        fill="black"
-        opacity={0.3}
-      />
-      <text
-        x={TEXT_H_X_PADDING}
-        y={TEXT_H_FONT_SIZE + 2}
-        fill="white"
-        fontSize={TEXT_H_FONT_SIZE}
-        fontWeight="bold"
-      >
-        Information Board
-      </text>
-      <circle
-        name={`CIRCLE`}
-        cx={X_NODE}
-        cy={FIRST_NODE_Y}
-        r={CIRCLE_RADIUS}
-        stroke="black"
-        strokeWidth="3"
-        fill="purple"
-      />
-      <text
-        x={X_NODE + TEXT_X_PADDING}
-        y={FIRST_NODE_Y + TEXT_Y_PADDING}
-        fill="white"
-        fontSize={TEXT_P_FONT_SIZE}
-        fontWeight="bold"
-      >
-        Processed
-      </text>
-      <circle
-        name={`CIRCLE`}
-        cx={X_NODE}
-        cy={FIRST_NODE_Y + NODE_PADDING}
-        r={CIRCLE_RADIUS}
-        stroke="black"
-        strokeWidth="3"
-        fill="grey"
-      />
-      <text
-        x={X_NODE + TEXT_X_PADDING}
-        y={FIRST_NODE_Y + NODE_PADDING + TEXT_Y_PADDING}
-        fill="white"
-        fontSize={TEXT_P_FONT_SIZE}
-        fontWeight="bold"
-      >
-        Children Visited
-      </text>
-    </>
-  );
-};
-
-interface ToggleInformationBoardProps {
-  isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  x: number;
-  y: number;
-}
-const ToggleInformationBoard: React.FC<ToggleInformationBoardProps> = ({
-  isOpen,
-  setIsOpen,
-  x,
-  y,
-}) => {
-  const RECT_HEIGHT = 30;
-  const RECT_WIDTH = 20;
-  const RECT_Y = y / 2 - RECT_HEIGHT / 2;
-  const RECT_X = isOpen ? x : 0;
-  const LINE_X = 15;
-  const LINE_Y = 15;
-  const RECT_PADDING = 6;
-  return (
-    <g
-      onClick={() => {
-        setIsOpen(!isOpen);
-      }}
-    >
-      <rect
-        x={RECT_X}
-        y={RECT_Y}
-        width={RECT_WIDTH}
-        height={RECT_HEIGHT}
-        fill="white"
-        stroke="#acb1d6"
-        strokeWidth={2}
-      />
-      <rect
-        x={RECT_X + (!isOpen ? RECT_PADDING : 0)}
-        y={RECT_Y}
-        width={RECT_WIDTH - 5 - 1}
-        height={RECT_HEIGHT}
-        fill="#acb1d6"
-        opacity={0.6}
-      />
-
-      <line
-        x1={RECT_X + LINE_X - 5}
-        y1={RECT_Y + LINE_Y - 5}
-        x2={RECT_X + (!isOpen ? RECT_PADDING + LINE_X : 0)}
-        y2={RECT_Y + RECT_HEIGHT / 2}
-        stroke="#011a87"
-        strokeWidth="2"
-      />
-      <line
-        x1={RECT_X + LINE_X + (!isOpen ? RECT_PADDING : 0)}
-        y1={RECT_Y + LINE_Y}
-        x2={RECT_X + (!isOpen ? RECT_PADDING : 0)}
-        y2={RECT_Y + RECT_HEIGHT / 2}
-        stroke="#011a87"
-        strokeWidth="2"
-      />
-      <line
-        x1={RECT_X + LINE_X - 5}
-        y1={RECT_Y + LINE_Y + 5}
-        x2={RECT_X + (!isOpen ? RECT_PADDING + LINE_X : 0)}
-        y2={RECT_Y + RECT_HEIGHT / 2}
-        stroke="#011a87"
-        strokeWidth="2"
-      />
-    </g>
-  );
-};

@@ -38,14 +38,13 @@ export const pageConfigurationBFS: pageConfigurationType = {
   code: `BFS(root: number):
   const queue = [root];
   const visited = new Set();
+  visited.add(root);
 
   while (queue.length) {
     const vertex = queue.shift();
-
-    if (!visited.has(vertex)) {
-      visited.add(vertex);
-
-      for (const neighbor of graph[vertex]) {
+    for (const neighbor of graph[vertex]) {
+      if (!visited.has(neighbor)) {
+        visited.add(neighbor);
         queue.push(neighbor);
       }
     }

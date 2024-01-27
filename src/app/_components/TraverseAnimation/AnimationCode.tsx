@@ -1,9 +1,9 @@
 import { useState } from "react";
 import SyntaxHighlighter from "react-syntax-highlighter";
-import { atomOneDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import IconButton from "@mui/material/IconButton";
 import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 import CheckIcon from "@mui/icons-material/Check";
+import { useThemeContext } from "~/app/context/ThemeContext";
 
 interface TraverseCodeProps {
   lineNumbers: number[];
@@ -17,6 +17,7 @@ const TraverseCode: React.FC<TraverseCodeProps> = ({
   algorithmName,
 }) => {
   const [isCopy, setCopy] = useState<boolean>(false);
+  const { theme } = useThemeContext();
   const handleCopyClick = () => {
     navigator.clipboard.writeText(code).then(
       () => {
@@ -30,16 +31,23 @@ const TraverseCode: React.FC<TraverseCodeProps> = ({
       },
     );
   };
+
   return (
-    <div className="mt-6 rounded-md bg-[#40454A] md:mt-0">
-      <div className="flex items-center justify-between px-4 text-xs text-white">
+    <div
+      className="mt-4 rounded-md border-2  md:mt-0"
+      style={{ background: theme.background.tertiary }}
+    >
+      <div
+        className="flex items-center justify-between px-4 text-xs "
+        style={{ color: theme.text.title }}
+      >
         <p>{algorithmName}</p>
         {isCopy ? (
           <div className="inline-flex items-center py-1">
             <IconButton color="primary">
               <CheckIcon
                 fontSize={iconSize}
-                style={{ fill: "#FFF", fontSize: "1rem" }}
+                style={{ fill: theme.text.secondary, fontSize: "1rem" }}
               />
             </IconButton>
             Copied!
@@ -52,7 +60,7 @@ const TraverseCode: React.FC<TraverseCodeProps> = ({
             <IconButton color="primary">
               <ContentPasteIcon
                 fontSize={iconSize}
-                style={{ fill: "#FFF", fontSize: "1rem" }}
+                style={{ fill: theme.text.secondary, fontSize: "1rem" }}
               />
             </IconButton>
             Copy Code
@@ -61,7 +69,7 @@ const TraverseCode: React.FC<TraverseCodeProps> = ({
       </div>
       <SyntaxHighlighter
         language="javascript"
-        style={atomOneDark}
+        style={theme.code.style as Record<string, React.CSSProperties>}
         wrapLines={true}
         wrapLongLines={false}
         showLineNumbers={true}
@@ -73,7 +81,7 @@ const TraverseCode: React.FC<TraverseCodeProps> = ({
           };
           lineNumbers.forEach((line) => {
             if (line === lineNumber) {
-              style.backgroundColor = "#FFDB81";
+              style.backgroundColor = "#957FB8";
             }
           });
           return { style };

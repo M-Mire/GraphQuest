@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { COLOUR_SELECTION } from "~/app/_components/GraphUI/NodeElement";
+import { getNodeColour } from "~/app/utils/getNodeColour";
 import type Node from "~/app/model/Node";
 interface TraverseAnimationProps {
   nodes: Node[];
@@ -110,7 +110,7 @@ const TraverseAnimationBFS: React.FC<TraverseAnimationProps> = ({ nodes }) => {
   return (
     <div
       ref={containerRef}
-      className="mt-2 h-1/3 rounded-2xl bg-slate-500 md:h-1/3 md:w-[65%] lg:h-1/3 lg:w-[70%]"
+      className="h-full w-full"
       style={{ overflowX: "auto" }}
     >
       <svg
@@ -129,11 +129,7 @@ const TraverseAnimationBFS: React.FC<TraverseAnimationProps> = ({ nodes }) => {
                 y={y}
                 width={rectWidth}
                 height={rectHeight}
-                fill={COLOUR_SELECTION(
-                  false,
-                  node.visited,
-                  node.visitedChildrens,
-                )}
+                fill={getNodeColour(false, node.visited, node.visitedChildrens)}
                 stroke="white"
                 strokeWidth={3}
               />

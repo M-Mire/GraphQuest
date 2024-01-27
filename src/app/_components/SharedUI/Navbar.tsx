@@ -8,10 +8,12 @@ import {
 import type { ActionLine } from "../CanvasElements/Animation";
 import { useSearchParams, usePathname } from "next/navigation";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import IconButton from "@mui/material/IconButton";
+import { useThemeContext } from "~/app/context/ThemeContext";
+import Themes from "./NavItems/Themes";
 
 export interface NavbarProps {
-  rootValue: number | null;
-  setRootValue: React.Dispatch<React.SetStateAction<number | null>>;
   setSpeed: React.Dispatch<React.SetStateAction<number>>;
   speed: number;
   dispatch: React.Dispatch<ActionNode>;
@@ -25,8 +27,6 @@ export interface NavbarProps {
   toggleMenu: () => void;
 }
 const Navbar: React.FC<NavbarProps> = ({
-  rootValue,
-  setRootValue,
   setSpeed,
   speed,
   dispatch,
@@ -39,6 +39,7 @@ const Navbar: React.FC<NavbarProps> = ({
   showMenu,
   toggleMenu,
 }) => {
+  const { theme } = useThemeContext();
   const pathname = usePathname();
   const searchParams = useSearchParams()!;
   const isEditMode = searchParams?.get("edit");
@@ -60,12 +61,15 @@ const Navbar: React.FC<NavbarProps> = ({
     },
     [searchParams],
   );
-
   return (
-    <nav className="flex h-16 items-center justify-between border-b-2 border-gray-600 bg-black px-4 py-4">
+    <nav
+      className="flex h-16 items-center justify-between border-b-2 border-gray-600 px-4 py-4"
+      style={{ background: theme.background.tertiary }}
+    >
       <div className="flex items-center">
         <div
-          className="text-sm font-bold text-white"
+          className="text-sm font-bold "
+          style={{ color: theme.text.title }}
           onClick={() => {
             dispatch({
               type: ACTIONS_NODE.TEST_NODE_DIAGNOSTIC,
@@ -75,12 +79,18 @@ const Navbar: React.FC<NavbarProps> = ({
         >
           <AccountTreeIcon fontSize="medium" />
         </div>
-        <div className="ml-2 flex items-center text-sm font-bold text-white">
+        <div
+          className="ml-2 flex items-center text-sm font-bold "
+          style={{ color: theme.text.title }}
+        >
           GraphQuest: {algorithmName}
         </div>
-        <div className="ml-1 flex items-center text-sm font-bold text-gray-200">
+        <div
+          className="ml-1 flex items-center text-sm font-bold "
+          style={{ color: theme.text.title }}
+        >
           <button
-            className="rounded px-2 py-1 text-sm transition duration-300 ease-in-out hover:bg-gray-200"
+            className={`rounded px-2 py-1 text-sm transition duration-300 ease-in-out hover:bg-[#9ea9b8]`}
             onClick={handleSVGClick}
           >
             <svg
@@ -95,8 +105,6 @@ const Navbar: React.FC<NavbarProps> = ({
           </button>
         </div>
         <ControlButtons
-          rootValue={rootValue}
-          setRootValue={setRootValue}
           setSpeed={setSpeed}
           speed={speed}
           dispatch={dispatch}
@@ -113,9 +121,14 @@ const Navbar: React.FC<NavbarProps> = ({
       >
         {/* Rendering of "=" or 'X' icon */}
         {showMenu ? (
-          <span onClick={toggleMenu}>&times;</span> // 'X' icon when menu is open
+          <span
+            style={{ color: theme.background.quaternary }}
+            onClick={toggleMenu}
+          >
+            &times;
+          </span> // 'X' icon when menu is open
         ) : (
-          <span>&#9776;</span> // Burger icon
+          <span style={{ color: theme.background.quaternary }}>&#9776;</span> // Burger icon
         )}
       </label>
       <input
@@ -141,11 +154,28 @@ const Navbar: React.FC<NavbarProps> = ({
           >
             <button
               name="changeView"
-              className="rounded bg-white px-4 py-1 text-sm text-black transition duration-300 ease-in-out hover:bg-gray-400"
+              className="rounded border-2 px-4 py-1  text-sm transition duration-300 ease-in-out hover:bg-gray-400"
+              style={{
+                background: theme.background.primary,
+                color: theme.text.primary,
+                borderColor: theme.background.quaternary,
+              }}
             >
               {isEditMode ? "View Graph" : "Edit"}
             </button>
           </Link>
+        </li>
+        <li className="ml-2">
+          <Themes />
+        </li>
+        <li className="ml-2">
+          <IconButton
+            color="primary"
+            size="small"
+            style={{ color: theme.background.quaternary }}
+          >
+            <HelpOutlineIcon style={{ fontSize: "2rem" }} />
+          </IconButton>
         </li>
       </ul>
     </nav>

@@ -54,19 +54,45 @@ export default class Graph {
   }
 
   BFS(root: number) {
-    const visited = new Set();
+    this.TRACKER.push([Line.EntryLine, 1]);
+
+    this.TRACKER.push([Line.EntryLine, 2]);
+    this.addInstruction([
+      Order.Entry,
+      [
+        [Line.FinishedLine, 2],
+        [Line.EntryLine, 3],
+      ],
+    ]);
     const queue = [root];
+    const visited = new Set();
 
-    this.addInstruction([Order.Entry, [[Command.Visited, root]]]);
     visited.add(root);
-
+    this.addInstruction([
+      Order.Entry,
+      [
+        [Command.Visited, root],
+        [Line.FinishedLine, 3],
+        [Line.EntryLine, 4],
+      ],
+    ]);
+    this.TRACKER.push([Line.FinishedLine, 4]);
     while (queue.length > 0) {
+      this.TRACKER.push([Line.EntryLine, 6]);
       const vertex = queue.shift()!;
 
-      this.addInstruction([Order.Entry, [[Command.EnteredQueue, vertex]]]);
-
+      this.addInstruction([
+        Order.Entry,
+        [
+          [Command.EnteredQueue, vertex],
+          [Line.EntryLine, 7],
+        ],
+      ]);
+      this.TRACKER.push([Line.FinishedLine, 7]);
       for (const neighbour of this.graph.get(vertex) ?? []) {
+        this.TRACKER.push([Line.EntryLine, 8]);
         if (!visited.has(neighbour)) {
+          this.TRACKER.push([Line.EntryLine, 9]);
           visited.add(neighbour);
           this.TRACKER.push([Command.VisitPairs, [vertex, neighbour]]);
           this.addInstruction([
@@ -74,11 +100,26 @@ export default class Graph {
             [
               [Command.Visited, neighbour],
               [Command.UnvisitPairs, [vertex, neighbour]],
+              [Line.EntryLine, 10],
             ],
           ]);
           queue.push(neighbour);
-          this.TRACKER.push();
+          this.addInstruction([
+            Order.Entry,
+            [
+              [Line.FinishedLine, 10],
+              [Line.EntryLine, 11],
+            ],
+          ]);
+          this.addInstruction([
+            Order.Entry,
+            [
+              [Line.FinishedLine, 11],
+              [Line.FinishedLine, 9],
+            ],
+          ]);
         }
+        this.TRACKER.push([Line.FinishedLine, 8]);
       }
 
       this.addInstruction([
@@ -88,6 +129,7 @@ export default class Graph {
           [Line.FinishedLine, 6],
         ],
       ]);
+      this.TRACKER.push([Line.FinishedLine, 6]);
     }
     this.TRACKER.push([Line.FinishedLine, 1]);
   }

@@ -21,9 +21,12 @@ import type {
   SingleInstruction,
 } from "~/app/_GraphAlgorithm/Graph";
 import { pageEnum } from "~/app/_pageConfigs/config";
+import { useThemeContext } from "~/app/context/ThemeContext";
 
 interface AnimationProps {
+  handleNodeReset: () => void;
   nodes: Node[];
+  setRootValue: React.Dispatch<React.SetStateAction<number | null>>;
   rootValue: number | null;
   dispatch: React.Dispatch<ActionNode>;
   speed: number;
@@ -66,6 +69,8 @@ export interface ActionLine {
 }
 
 const Animation: React.FC<AnimationProps> = ({
+  handleNodeReset,
+  setRootValue,
   nodes,
   rootValue,
   dispatch,
@@ -84,6 +89,7 @@ const Animation: React.FC<AnimationProps> = ({
   isUndirectedGraph,
   setPlay,
 }) => {
+  const { theme } = useThemeContext();
   const [tracker, setTracker] = useState<TrackerArray>([]);
   const handleSingleCall = (
     Instruction: InstructionType,
@@ -103,7 +109,8 @@ const Animation: React.FC<AnimationProps> = ({
   };
 
   useEffect(() => {
-    if (rootValue !== null) {
+    if (rootValue !== null && isPlay) {
+      handleNodeReset();
       const g = isWeighted === false ? new Graph() : new GraphDistance();
       nodes
         .filter((node) => node.childNodes && node.childNodes.length > 0)
@@ -141,12 +148,15 @@ const Animation: React.FC<AnimationProps> = ({
       console.log(g.getTracker());
       setTracker(g.getTracker());
     }
-  }, [rootValue]);
+  }, [rootValue, isPlay]);
 
   useEffect(() => {
     const timerId = setInterval(() => {
       if (currentIndex < 0) setCurrentIndex(currentIndex + 1);
       if (currentIndex < tracker.length && isPlay) {
+        if (tracker[currentIndex] === undefined) {
+          return;
+        }
         const [command, val] = tracker[currentIndex]!;
 
         if (isOrder(command)) {
@@ -184,35 +194,49 @@ const Animation: React.FC<AnimationProps> = ({
     <>
       <div className="absolute h-full w-full p-4">
         <Canvas
+          isPlay={isPlay}
+          rootValue={rootValue}
+          setRootValue={setRootValue}
           nodes={nodes}
           isWeighted={isWeighted}
           minCanvas={minCanvas}
           isUndirectedGraph={isUndirectedGraph}
         />
-        {pageID === pageEnum.BFS ? (
-          <TraverseAnimationBFS nodes={nodes} />
-        ) : pageID === pageEnum.DIJKSTRA ? (
-          <TraverseAnimationDijkstra
-            nodes={nodes}
-            currentIndex={currentIndex}
-            tracker={tracker}
-          />
-        ) : pageID === pageEnum.DFS ? (
-          <TraverseAnimationDFS
-            nodes={nodes}
-            currentIndex={currentIndex}
-            tracker={tracker}
-          />
-        ) : pageID === pageEnum.PRIMS_JARNIK ? (
-          <AnimationPrims
-            nodes={nodes}
-            currentIndex={currentIndex}
-            tracker={tracker}
-            isPlay={isPlay}
-          />
-        ) : null}
-
-        <div className="mx-auto w-2/3 md:absolute md:right-0 md:top-4 md:mr-3 md:h-[calc(100%_-_1.5rem)] md:w-[33%] lg:mr-4 lg:w-[28%]">
+        <div
+          className="mt-2 h-1/3 rounded-2xl  border-2 md:h-1/3 md:w-[65%] lg:h-1/3 lg:w-[70%]"
+          style={{
+            background: theme.background.secondary,
+            borderColor: theme.background.quaternary,
+          }}
+        >
+          {pageID === pageEnum.BFS ? (
+            <TraverseAnimationBFS nodes={nodes} />
+          ) : pageID === pageEnum.DIJKSTRA ? (
+            // <TraverseAnimationDijkstra
+            //   nodes={nodes}
+            //   currentIndex={currentIndex}
+            //   tracker={tracker}
+            // /> TODO:
+            <></>
+          ) : pageID === pageEnum.DFS ? (
+            <TraverseAnimationDFS
+              nodes={nodes}
+              currentIndex={currentIndex}
+              tracker={tracker}
+            />
+          ) : pageID === pageEnum.PRIMS_JARNIK ? (
+            <AnimationPrims
+              nodes={nodes}
+              currentIndex={currentIndex}
+              tracker={tracker}
+              isPlay={isPlay}
+            />
+          ) : null}
+        </div>
+        <div
+          className="mx-auto w-2/3 md:absolute md:right-0 md:top-4 md:mr-3 md:h-[calc(100%_-_1.5rem)] md:w-[33%] lg:mr-4 lg:w-[28%]"
+          style={{ background: theme.background.primary }}
+        >
           <TraverseCode
             lineNumbers={lineNumbers}
             code={code}

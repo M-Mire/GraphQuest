@@ -8,6 +8,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import DoneIcon from "@mui/icons-material/Done";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useThemeContext } from "~/app/context/ThemeContext";
 
 interface MultiSwitcherProps {
   pageConfiguration: pageConfigurationType;
@@ -27,6 +28,7 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
   const [query, setQuery] = useState<string>("");
   const pathname = usePathname();
   const mapArray = Array.from(pageConfigurationMap);
+  const { theme } = useThemeContext();
 
   const filteredAlgorithms = useMemo(() => {
     return mapArray.filter((algorithm) => {
@@ -64,12 +66,21 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
       onMouseEnter={() => handleMouseEnter(hoveredDiv)}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="absolute z-10 h-48 w-64 rounded-l-lg border-2 border-solid border-slate-700 bg-black">
-        <div className="flex h-12 w-full items-center justify-between border-b-2 border-solid border-slate-700">
+      <div
+        className="absolute z-10 h-48 w-64 rounded-l-lg border-2 border-solid "
+        style={{
+          borderColor: theme.background.quaternary,
+          background: theme.background.primary,
+        }}
+      >
+        <div
+          className="flex h-12 w-full items-center justify-between border-b-2 border-solid "
+          style={{ borderColor: theme.background.quaternary }}
+        >
           <div className="flex items-center">
             <SearchIcon
               style={{
-                fill: "white",
+                fill: theme.background.quaternary,
                 fontSize: "1.5rem",
               }}
               className="ml-4 mr-1"
@@ -84,7 +95,13 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
               autoFocus
             />
           </div>
-          <div className="mr-2 flex items-center rounded-lg border-2 border-slate-500 p-[1px] text-xs text-white">
+          <div
+            className="mr-2 flex items-center rounded-lg border-2  p-[1px] text-xs"
+            style={{
+              borderColor: theme.background.quaternary,
+              color: theme.text.primary,
+            }}
+          >
             Esc
           </div>
         </div>
@@ -94,7 +111,7 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
               return (
                 <div key={k[0]} className="px-4">
                   <div
-                    className={`mt-2 flex w-full items-center justify-between p-1 text-white ${
+                    className={`mt-2 flex w-full items-center justify-between p-1  ${
                       pageConfiguration.algorithmName === k[1].algorithmName
                         ? "rounded bg-gray-700"
                         : hoveredDiv === k[0]
@@ -102,6 +119,7 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
                         : ""
                     } ${i === filteredAlgorithms.length - 1 && "mb-2"}`}
                     onMouseEnter={() => handleMouseEnter(k[0])}
+                    style={{ color: theme.text.primary }}
                   >
                     <p>{k[1].algorithmName}</p>
                     {pageConfiguration.algorithmName === k[1].algorithmName && (
@@ -112,7 +130,7 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
               );
             })
           ) : (
-            <p className="p-4 text-sm text-slate-400">
+            <p className="p-4 text-sm " style={{ color: theme.text.primary }}>
               Your search for &quot;{query}&ldquo; algorithm was unsuccessful
             </p>
           )}
@@ -126,11 +144,20 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
           return (
             <div
               key={k[0]}
-              className="absolute left-64 z-10 h-48 w-64 rounded-r-lg border-y-2 border-r-2 border-solid border-slate-700 bg-black"
-              style={{ display: hoveredDiv === k[0] ? "block" : "none" }}
+              className="absolute left-64 z-10 h-48 w-64 rounded-r-lg border-y-2 border-r-2 border-solid "
+              style={{
+                display: hoveredDiv === k[0] ? "block" : "none",
+                borderColor: theme.background.quaternary,
+                background: theme.background.primary,
+              }}
             >
-              <div className=" flex h-12 w-full justify-between border-b-2 border-solid border-slate-700">
-                <p className="m-auto text-white">{k[0]}</p>
+              <div
+                className=" flex h-12 w-full justify-between border-b-2 border-solid "
+                style={{ borderColor: theme.background.quaternary }}
+              >
+                <p className="m-auto" style={{ color: theme.text.primary }}>
+                  {k[0]}
+                </p>
               </div>
 
               <div className="px-4">
@@ -139,6 +166,10 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
                     pageConfiguration={pageConfiguration}
                     k={k}
                     isEditMode={isEditMode}
+                    styles={{
+                      color: theme.text.primary,
+                      background: theme.background.quaternary,
+                    }}
                   />
                 ) : (
                   <Link href={k[1].urlName + "?edit=true"}>
@@ -146,6 +177,10 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
                       pageConfiguration={pageConfiguration}
                       k={k}
                       isEditMode={isEditMode}
+                      styles={{
+                        color: theme.text.primary,
+                        background: theme.background.quaternary,
+                      }}
                     />
                   </Link>
                 )}
@@ -156,6 +191,10 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
                     pageConfiguration={pageConfiguration}
                     k={k}
                     isEditMode={isEditMode}
+                    styles={{
+                      color: theme.text.primary,
+                      background: theme.background.quaternary,
+                    }}
                   />
                 ) : (
                   <Link
@@ -169,6 +208,10 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
                       pageConfiguration={pageConfiguration}
                       k={k}
                       isEditMode={isEditMode}
+                      styles={{
+                        color: theme.text.primary,
+                        background: theme.background.quaternary,
+                      }}
                     />
                   </Link>
                 )}
@@ -186,24 +229,32 @@ interface ButtonProps {
   pageConfiguration: pageConfigurationType;
   k: [pageEnum, pageConfigurationType];
   isEditMode: boolean;
+  styles: { color: string; background: string };
 }
 
 const EditButton: React.FC<ButtonProps> = ({
   pageConfiguration,
   k,
   isEditMode,
+  styles,
 }) => {
   return (
     <div
-      className={`mt-2 flex w-full items-center justify-between rounded p-1 text-white hover:bg-slate-500 ${
+      className={`mt-2 flex w-full items-center justify-between rounded p-1  hover:bg-slate-500 ${
         pageConfiguration.algorithmName === k[1].algorithmName && isEditMode
           ? "bg-gray-700"
           : ""
       }`}
+      style={{ color: styles.color }}
     >
-      <p>
-        <EditIcon /> Edit {k[0]}
-      </p>
+      <span>
+        <EditIcon
+          style={{
+            fill: styles.background,
+          }}
+        />
+        Edit {k[0]}
+      </span>
       {isEditMode && pageConfiguration.algorithmName === k[1].algorithmName && (
         <DoneIcon />
       )}
@@ -215,17 +266,24 @@ const ViewButton: React.FC<ButtonProps> = ({
   pageConfiguration,
   k,
   isEditMode,
+  styles,
 }) => {
   return (
     <div
-      className={`mt-2 flex w-full items-center justify-between rounded p-1 text-white hover:bg-slate-500 ${
+      className={`mt-2 flex w-full items-center justify-between rounded p-1 hover:bg-slate-500 ${
         pageConfiguration.algorithmName === k[1].algorithmName && !isEditMode
           ? "bg-gray-700"
           : ""
       }`}
+      style={{ color: styles.color }}
     >
       <p>
-        <RemoveRedEyeIcon /> View {k[0]}
+        <RemoveRedEyeIcon
+          style={{
+            fill: styles.background,
+          }}
+        />
+        View {k[0]}
       </p>
       {!isEditMode &&
         pageConfiguration.algorithmName === k[1].algorithmName && <DoneIcon />}

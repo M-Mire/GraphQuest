@@ -1,36 +1,22 @@
-import { useState } from "react";
+import { ReactNode } from "react";
 import IconButton from "@mui/material/IconButton";
-import PauseCircleIcon from "@mui/icons-material/PauseCircle";
+import PauseIcon from "@mui/icons-material/Pause";
 import ReplayIcon from "@mui/icons-material/Replay";
 import FastRewindIcon from "@mui/icons-material/FastRewind";
-import PlayCircleIcon from "@mui/icons-material/PlayCircle";
-import TextField from "@mui/material/TextField";
 import FastForwardIcon from "@mui/icons-material/FastForward";
-
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import {
   ACTIONS_NODE,
   ActionNode,
 } from "~/app/_components/GraphUI/NodeElement";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { ActionLine } from "../CanvasElements/Animation";
 import { Line } from "~/app/_GraphAlgorithm/Graph";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import isStringNumber from "~/app/utils/isStringNumber";
+import { useThemeContext } from "~/app/context/ThemeContext";
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#e3f2fd",
-      light: "#42a5f5",
-      dark: "#1565c0",
-      contrastText: "#fff",
-    },
-  },
-});
+const style = { fontSize: "1rem" };
 
 export interface ControlButtonsProps {
-  rootValue: number | null;
-  setRootValue: React.Dispatch<React.SetStateAction<number | null>>;
   setSpeed: React.Dispatch<React.SetStateAction<number>>;
   speed: number;
   dispatch: React.Dispatch<ActionNode>;
@@ -41,7 +27,6 @@ export interface ControlButtonsProps {
 }
 
 const ControlButtons: React.FC<ControlButtonsProps> = ({
-  setRootValue,
   setSpeed,
   speed,
   dispatch,
@@ -50,13 +35,11 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
   isPlay,
   dispatchLineNumbers,
 }) => {
-  const [inputValue, setInputValue] = useState<string>("");
   const searchParams = useSearchParams();
   const isEditMode = searchParams.get("edit") === "true";
 
   const handlePlayClick = () => {
     if (!isEditMode) {
-      setRootValue(inputValue === "" ? 0 : parseInt(inputValue));
       setPlay(true);
     }
   };
@@ -92,124 +75,81 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
       setSpeed(speed + 250);
     }
   };
-
-  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Backspace") return;
-    if (event.key === "Enter" && inputValue !== "") {
-      event.currentTarget.blur();
-    } else if (!isStringNumber(event.key)) {
-      event.preventDefault();
-    }
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
-  };
+  const { theme } = useThemeContext();
+  const colour = theme.background.quaternary;
 
   return (
-    <div className="relative ml-5 flex items-center text-sm font-bold text-gray-200">
-      <TextField
-        placeholder="Enter root number "
-        variant="outlined"
-        size="small"
-        fullWidth
-        InputProps={{
-          startAdornment: (
-            <>
-              {!isPlay ? (
-                <IconButton
-                  color="primary"
-                  size="small"
-                  onClick={handlePlayClick}
-                >
-                  <PlayCircleIcon
-                    fontSize="medium"
-                    style={{
-                      fill: "#306844",
-                      position: "absolute",
-                      fontSize: "1.7rem",
-                    }}
-                  />
-                </IconButton>
-              ) : (
-                <IconButton
-                  color="primary"
-                  size="small"
-                  onClick={handlePauseClick}
-                >
-                  <PauseCircleIcon
-                    fontSize="medium"
-                    style={{
-                      fill: "red",
-                      position: "absolute",
-                      fontSize: "1.7rem",
-                    }}
-                  />
-                </IconButton>
-              )}
-            </>
-          ),
-          style: {
-            background: "black",
-            outlineStyle: "solid",
-            outlineWidth: "2px",
-            outlineColor: "white",
-            borderRadius: "20px 20px 20px 20px",
-            width: "12rem",
-            height: "30px",
-          },
-          inputProps: { min: 0, style: { color: "white", padding: "10px" } },
-        }}
-        InputLabelProps={{ style: { color: "white" }, shrink: true }}
-        onKeyDown={handleInputKeyDown}
-        onChange={handleInputChange}
-        value={inputValue}
-      />
+    <div className="relative ml-5 flex items-center text-sm font-bold">
       <div
         className="ml-3 mr-2 flex items-center rounded-full
- border-2 border-white p-[0.2rem]"
+ border-2  p-[0.2rem]"
+        style={{ background: theme.background.primary, borderColor: colour }}
       >
-        <div
-          className="ml-2 flex items-center rounded-full
- border-2 border-white"
+        <CustomButton onClick={handleRewindClick} colour={colour} ml={true}>
+          <FastRewindIcon style={style} />
+        </CustomButton>
+        {!isPlay ? (
+          <CustomButton onClick={handlePlayClick} colour={colour} ml={true}>
+            <PlayArrowIcon style={style} />
+          </CustomButton>
+        ) : (
+          <CustomButton onClick={handlePauseClick} colour={colour} ml={true}>
+            <PauseIcon style={style} />
+          </CustomButton>
+        )}
+
+        <CustomButton
+          onClick={handleFastForwardClick}
+          colour={colour}
+          ml={true}
         >
-          <ThemeProvider theme={theme}>
-            <IconButton
-              color="primary"
-              size="small"
-              onClick={handleRewindClick}
-            >
-              <FastRewindIcon style={{ fontSize: "1rem" }} />
-            </IconButton>
-          </ThemeProvider>
-        </div>
-        <div
-          className="ml-2 flex items-center rounded-full
- border-2 border-white"
+          <FastForwardIcon style={style} />
+        </CustomButton>
+
+        <CustomButton
+          onClick={handleResetClick}
+          colour={colour}
+          ml={true}
+          mr={true}
         >
-          <ThemeProvider theme={theme}>
-            <IconButton
-              color="primary"
-              size="small"
-              onClick={handleFastForwardClick}
-            >
-              <FastForwardIcon style={{ fontSize: "1rem" }} />
-            </IconButton>
-          </ThemeProvider>
-        </div>
-        <div
-          className="ml-2 mr-2 flex items-center rounded-full
- border-2 border-white"
-        >
-          <ThemeProvider theme={theme}>
-            <IconButton color="primary" size="small" onClick={handleResetClick}>
-              <ReplayIcon style={{ fontSize: "1rem" }} />
-            </IconButton>
-          </ThemeProvider>
-        </div>
+          <ReplayIcon style={style} />
+        </CustomButton>
       </div>
     </div>
   );
 };
 
 export default ControlButtons;
+
+interface CustomButtonProps {
+  onClick: () => void;
+  children: ReactNode;
+  colour: string;
+  mr?: boolean;
+  ml?: boolean;
+}
+
+const CustomButton: React.FC<CustomButtonProps> = ({
+  onClick,
+  children,
+  ml,
+  mr,
+  colour,
+}) => {
+  return (
+    <div
+      className={`flex items-center rounded-full  ${ml ? "ml-2" : ""} ${
+        mr ? "mr-2" : ""
+      }`}
+    >
+      <IconButton
+        color="primary"
+        size="small"
+        onClick={onClick}
+        style={{ color: colour }}
+      >
+        {children}
+      </IconButton>
+    </div>
+  );
+};

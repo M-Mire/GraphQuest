@@ -21,7 +21,6 @@ export const calculateNewNodePosition = (
     const { left, top, width } = elementRef.current.getBoundingClientRect();
     // Calculate adjusted coordinates considering element's scroll and offset
     const node_x = x - left + elementRef.current.scrollLeft;
-    console.log(width, " width x");
     const node_y = y - top + elementRef.current.scrollTop;
 
     // Define minimum and maximum bounds for x and y coordinates

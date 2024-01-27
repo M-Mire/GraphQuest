@@ -14,6 +14,13 @@ import { calculateNewNodePosition } from "../../utils/calculateNewNodePosition";
 import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
 import updateNodeEncoded from "~/app/utils/EncodeNode/updateNodeEncoded";
 import { Alerts } from "~/app/_components/SharedUI/Alert";
+import {
+  DEFAULT_NODE_UNVISITED_COLOUR,
+  DEFAULT_NODE_ACTIVE_COLOUR,
+} from "~/app/constants/Node/index";
+import InformationBoardNode from "../SharedUI/InformationBoardNode";
+import InformationBoard from "../SharedUI/InformationBoard";
+import { useThemeContext } from "~/app/context/ThemeContext";
 
 interface EditModeProps {
   dispatch: React.Dispatch<ActionNode>;
@@ -36,6 +43,17 @@ const EditMode: React.FC<EditModeProps> = ({
   minCanvas,
   isUndirectedGraph,
 }) => {
+  const style = {
+    minWidth: `${minCanvas.minWidth ? `${minCanvas.minWidth + 16}` : "100%"}`,
+    width: "100%",
+    minHeight: `${
+      minCanvas.minHeight ? `calc( ${minCanvas.minHeight}px )` : "100%"
+    }`,
+    height: "calc(100% - 50px)",
+  };
+
+  const { theme } = useThemeContext();
+
   const elementRef = useRef<HTMLDivElement | null>(null);
   const [activeNode, setActiveNode] = useState<number>(-1);
   const router = useRouter();
@@ -107,8 +125,7 @@ const EditMode: React.FC<EditModeProps> = ({
       return;
     }
 
-    if (!isMoveNode && nodes.length < 20) {
-      if (elementRef) console.log(elementRef.current?.scrollWidth);
+    if (!isMoveNode && nodes.length < 20 && elementRef) {
       const { node_x, node_y } = calculateNewNodePosition(x, y, elementRef) as {
         node_x: number;
         node_y: number;
@@ -133,78 +150,94 @@ const EditMode: React.FC<EditModeProps> = ({
   return (
     <div className="absolute h-full w-full p-4">
       <div
-        id="editMode"
-        ref={elementRef}
-        className="gridded mx-auto my-14 h-2/3 overflow-auto rounded-2xl bg-slate-600 md:relative md:left-0 md:top-0 md:w-[65%] lg:w-[70%]"
-        onMouseDown={(e) => handleClick(e)}
-        onContextMenu={(e) => handleContextMenu(e)}
-        style={{ position: "relative" }}
+        className="mx-auto my-14 h-2/3 overflow-auto rounded-2xl  md:relative md:left-0 md:top-0 md:w-[65%] lg:w-[70%]"
+        style={{
+          background: theme.background.secondary,
+          borderColor: theme.background.quaternary,
+        }}
       >
-        <svg
-          style={{
-            minWidth: `${
-              minCanvas.minWidth ? `${minCanvas.minWidth + 16}` : "100%"
-            }`,
-            width: "100%",
-            minHeight: `${
-              minCanvas.minHeight ? `${minCanvas.minHeight + 16}` : "100%"
-            }`,
-            height: "100%",
-          }}
-          role="img"
-        >
-          {nodes?.map((node) => {
-            return (
-              <NodeElement key={node.id} node={node} activeNode={activeNode} />
-            );
-          })}
-          {nodes?.map((node) =>
-            node.val === isCtxMenu && !isMoveNode ? (
-              <ContextMenu
-                key={node.id}
-                node={node}
+        <InformationBoard minCanvas={minCanvas}>
+          <InformationBoardNode
+            name={"Active Node"}
+            colour={theme.node.active}
+          />
+          <InformationBoardNode name={"Node"} colour={theme.node.unvisited} />
+        </InformationBoard>
+        <div style={style} id="editMode" ref={elementRef} className="">
+          <svg
+            style={{
+              minWidth: `${
+                minCanvas.minWidth ? `${minCanvas.minWidth + 16}` : "100%"
+              }`,
+              width: "100%",
+              minHeight: `${
+                minCanvas.minHeight
+                  ? `calc(2/3 * ${minCanvas.minHeight}px )`
+                  : " 100% "
+              }`,
+              height: "100%",
+            }}
+            role="img"
+            onMouseDown={(e) => handleClick(e)}
+            onContextMenu={(e) => handleContextMenu(e)}
+          >
+            {nodes?.map((node) => {
+              return (
+                <NodeElement
+                  key={node.id}
+                  node={node}
+                  activeNode={activeNode}
+                />
+              );
+            })}
+            {nodes?.map((node) =>
+              node.val === isCtxMenu && !isMoveNode ? (
+                <ContextMenu
+                  key={node.id}
+                  node={node}
+                  dispatch={dispatch}
+                  setMoveNode={setMoveNode}
+                  setCtxMenu={setCtxMenu}
+                  isCtxMenu={isCtxMenu}
+                  nodes={nodes}
+                  elementRef={elementRef}
+                  minCanvas={minCanvas}
+                />
+              ) : null,
+            )}
+            {nodes.map((parentNode) =>
+              parentNode.childNodes.map((childVal, id) => {
+                const childNode = nodes.find((node) => node.val === childVal);
+                if (childNode) {
+                  return (
+                    <Edge
+                      key={id}
+                      x1={parentNode.x}
+                      y1={parentNode.y}
+                      x2={childNode.x}
+                      y2={childNode.y}
+                      isWeighted={isWeighted}
+                      node={parentNode}
+                      childNode={childNode}
+                      dispatch={dispatch}
+                      isUndirectedGraph={isUndirectedGraph}
+                    />
+                  );
+                }
+                return null;
+              }),
+            )}
+            {isInputWeight && !isMoveNode ? (
+              <InputWeight
+                nums={inputWeightNums}
                 dispatch={dispatch}
-                setMoveNode={setMoveNode}
-                setCtxMenu={setCtxMenu}
-                isCtxMenu={isCtxMenu}
+                setInputWeight={setInputWeight}
+                setInputWeightNums={setInputWeightNums}
                 nodes={nodes}
-                elementRef={elementRef}
-                minCanvas={minCanvas}
               />
-            ) : null,
-          )}
-          {nodes.map((parentNode) =>
-            parentNode.childNodes.map((childVal, id) => {
-              const childNode = nodes.find((node) => node.val === childVal);
-              if (childNode) {
-                return (
-                  <Edge
-                    key={id}
-                    x1={parentNode.x}
-                    y1={parentNode.y}
-                    x2={childNode.x}
-                    y2={childNode.y}
-                    isWeighted={isWeighted}
-                    node={parentNode}
-                    childNode={childNode}
-                    dispatch={dispatch}
-                    isUndirectedGraph={isUndirectedGraph}
-                  />
-                );
-              }
-              return null;
-            }),
-          )}
-          {isInputWeight && !isMoveNode ? (
-            <InputWeight
-              nums={inputWeightNums}
-              dispatch={dispatch}
-              setInputWeight={setInputWeight}
-              setInputWeightNums={setInputWeightNums}
-              nodes={nodes}
-            />
-          ) : null}
-        </svg>
+            ) : null}
+          </svg>
+        </div>
       </div>
     </div>
   );

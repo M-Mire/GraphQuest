@@ -1,80 +1,92 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import type { Command } from "../../_GraphAlgorithm/Graph";
 import {
-  DEFAULT_RECTANGLE_SIZE,
   DEFAULT_RADIUS_SMALL_CIRCLE,
   DEFAULT_RADIUS_BIG_CIRCLE,
-  DEFAULT_NODE_PROCESSED_COLOUR,
-  DEFAULT_NODE_VISITED_COLOUR,
-  DEFAULT_NODE_CLICKED_COLOUR,
-  DEFAULT_NODE_COLOUR,
+  DEFAULT_NODE_ROOT_STROKE_COLOUR,
 } from "~/app/constants/Node/index";
+import { getNodeColour } from "~/app/utils/getNodeColour";
 import type Node from "~/app/model/Node";
+import { useThemeContext } from "~/app/context/ThemeContext";
+import { Theme } from "~/app/types";
 
 interface NodeElementProps {
   node: Node;
   activeNode?: number;
+  rootValue?: number | null;
 }
 
-const NodeElement: React.FC<NodeElementProps> = ({ node, activeNode }) => {
-  const [isClicked, setClicked] = useState<boolean>(false);
+const NodeElement: React.FC<NodeElementProps> = memo(
+  ({ node, activeNode, rootValue }) => {
+    const [isClicked, setClicked] = useState<boolean>(false);
+    const { theme } = useThemeContext();
+    const handleClick = (e: React.MouseEvent) => {
+      if (e.button === 2) {
+        return;
+      }
+      if (activeNode === -1 || activeNode === node.val) {
+        setClicked(!isClicked);
+      }
+    };
 
-  const handleClick = (e: React.MouseEvent) => {
-    if (e.button === 2) {
-      return;
-    }
-    if (activeNode === -1 || activeNode === node.val) {
-      setClicked(!isClicked);
-    }
-  };
+    return (
+      <>
+        <circle
+          data-testid={`node-${node.val}`}
+          name={"node-circle-" + node.val}
+          cx={node.x}
+          cy={node.y}
+          r={DEFAULT_RADIUS_SMALL_CIRCLE}
+          fill={getNodeColour(isClicked, node.visited, node.visitedChildrens)}
+        />
+        <circle
+          name={"" + node.val}
+          cx={node.x}
+          cy={node.y}
+          r={DEFAULT_RADIUS_BIG_CIRCLE}
+          stroke={
+            rootValue === node.val
+              ? DEFAULT_NODE_ROOT_STROKE_COLOUR
+              : theme.background.quaternary
+          }
+          strokeWidth="3"
+          fill={getNodeThemeColour(
+            isClicked,
+            node.visited,
+            node.visitedChildrens,
+            theme,
+          )}
+          onMouseDown={(e) => {
+            handleClick(e);
+          }}
+        />
+        <text
+          name={"" + node.val}
+          x={node.x}
+          y={node.y + 5.333333}
+          fontSize="16"
+          fill={theme.text.secondary}
+          textAnchor="middle"
+          className="no-select"
+          onMouseDown={(e) => {
+            handleClick(e);
+          }}
+        >
+          {node.val}
+        </text>
+      </>
+    );
+  },
+  (prevProps, nextProps) => {
+    return (
+      prevProps.node === nextProps.node &&
+      prevProps.activeNode === nextProps.activeNode &&
+      prevProps.rootValue === nextProps.rootValue
+    );
+  },
+);
 
-  return (
-    <>
-      <rect
-        name={"" + node.val}
-        x={node.x - DEFAULT_RECTANGLE_SIZE / 2}
-        y={node.y - DEFAULT_RECTANGLE_SIZE / 2}
-        height={DEFAULT_RECTANGLE_SIZE}
-        width={DEFAULT_RECTANGLE_SIZE}
-        fill="none"
-      ></rect>
-      <circle
-        data-testid={`node-${node.val}`}
-        name={"node-circle-" + node.val}
-        cx={node.x}
-        cy={node.y}
-        r={DEFAULT_RADIUS_SMALL_CIRCLE}
-        fill={COLOUR_SELECTION(isClicked, node.visited, node.visitedChildrens)}
-      />
-      <circle
-        name={"" + node.val}
-        cx={node.x}
-        cy={node.y}
-        r={DEFAULT_RADIUS_BIG_CIRCLE}
-        stroke="black"
-        strokeWidth="3"
-        fill={COLOUR_SELECTION(isClicked, node.visited, node.visitedChildrens)}
-        onMouseDown={(e) => {
-          handleClick(e);
-        }}
-      />
-      <text
-        name={"" + node.val}
-        x={node.x}
-        y={node.y + 5.333333}
-        fontSize="16"
-        fill="black"
-        textAnchor="middle"
-        className="no-select"
-        onMouseDown={(e) => {
-          handleClick(e);
-        }}
-      >
-        {node.val}
-      </text>
-    </>
-  );
-};
+NodeElement.displayName = "NodeElement";
 
 export default NodeElement;
 
@@ -116,20 +128,17 @@ export type ActionNode = {
     | Node;
 };
 
-export const COLOUR_SELECTION = (
+const getNodeThemeColour = (
   isClicked: boolean,
   visited: boolean,
   visitedChildrens: boolean,
+  currentTheme: Theme,
 ) => {
   return isClicked
-    ? DEFAULT_NODE_CLICKED_COLOUR
+    ? currentTheme.node.active
     : visited
     ? visitedChildrens
-      ? DEFAULT_NODE_VISITED_COLOUR
-      : DEFAULT_NODE_PROCESSED_COLOUR
-    : DEFAULT_NODE_COLOUR;
+      ? currentTheme.node.completed
+      : currentTheme.node.visited
+    : currentTheme.node.unvisited;
 };
-
-export function updateVisitedChildrens(node: Node, newValue: boolean) {
-  node.visitedChildrens = newValue;
-}

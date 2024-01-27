@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { COLOUR_SELECTION } from "~/app/_components/GraphUI/NodeElement";
+import { getNodeColour } from "~/app/utils/getNodeColour";
 import type Node from "~/app/model/Node";
 import { Command } from "~/app/_GraphAlgorithm/Graph";
 import type { Line, TrackerArray } from "~/app/_GraphAlgorithm/Graph";
@@ -81,7 +81,7 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
   return (
     <div
       ref={containerRef}
-      className="mt-2 h-1/3 rounded-2xl bg-slate-500 md:h-1/3 md:w-[65%] lg:h-1/3 lg:w-[70%]"
+      className="h-full w-full"
       style={{ overflowX: "auto" }}
     >
       <svg
@@ -97,7 +97,7 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
               y={midpointY}
               width={rectWidth}
               height={rectHeight}
-              fill={COLOUR_SELECTION(
+              fill={getNodeColour(
                 false,
                 poppedStack.visited,
                 poppedStack.visitedChildrens,
@@ -179,11 +179,7 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
                 y={y}
                 width={rectWidth}
                 height={rectHeight}
-                fill={COLOUR_SELECTION(
-                  false,
-                  node.visited,
-                  node.visitedChildrens,
-                )}
+                fill={getNodeColour(false, node.visited, node.visitedChildrens)}
                 stroke="white"
                 strokeWidth={3}
               />

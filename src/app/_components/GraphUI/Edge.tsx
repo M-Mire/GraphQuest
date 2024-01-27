@@ -6,6 +6,7 @@ import isStringNumber from "~/app/utils/isStringNumber";
 import { useSearchParams, useRouter } from "next/navigation";
 import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
 import updateNodeWeightEncoded from "~/app/utils/EncodeNode/updateNodeWeightEncoded";
+import { useThemeContext } from "~/app/context/ThemeContext";
 
 interface EdgeProps {
   x1: number;
@@ -30,6 +31,9 @@ const Edge: React.FC<EdgeProps> = ({
   dispatch,
   isUndirectedGraph,
 }) => {
+  const { theme } = useThemeContext();
+  const arrowStyle = theme.edge.color;
+
   const getNodeDistance = () => {
     if (node && childNode?.val !== undefined) {
       const indexOfChild = node.childNodes.indexOf(childNode.val);
@@ -84,7 +88,7 @@ const Edge: React.FC<EdgeProps> = ({
     } else if (!isStringNumber(e.key)) e.preventDefault();
   };
 
-  const circleRadius = 18;
+  const circleRadius = 21;
 
   const dx = x2 - x1;
   const dy = y2 - y1;
@@ -112,7 +116,12 @@ const Edge: React.FC<EdgeProps> = ({
             refY="6"
             orient="auto"
           >
-            <path d="M2,2 L2,11 L10,6 L2,2" style={{ fill: "#HHH" }} />
+            <path
+              d="M2,2 L2,11 L10,6 L2,2"
+              style={{
+                fill: arrowStyle,
+              }}
+            />
           </marker>
         </defs>
       )}
@@ -124,9 +133,7 @@ const Edge: React.FC<EdgeProps> = ({
         y2={edgeEndY}
         markerEnd={"url(#markerArrow)"}
         style={{
-          stroke: node?.connectedTo?.includes(childNode.val)
-            ? "yellow"
-            : "black",
+          stroke: arrowStyle,
           strokeWidth: 2,
         }}
       />
@@ -150,7 +157,9 @@ const Edge: React.FC<EdgeProps> = ({
               onKeyDown={handleInputKeyDown}
             />
           ) : (
-            <span onClick={handleTextClick}>{inputValue}</span>
+            <span onClick={handleTextClick} style={{ color: theme.edge.color }}>
+              {inputValue}
+            </span>
           )}
         </foreignObject>
       ) : null}

@@ -14,7 +14,8 @@ import type pageConfigurationType from "~/app/_pageConfigs/config";
 import type Node from "~/app/model/Node";
 import Alert from "~/app/_components/SharedUI/Alert";
 import type { Alerts } from "~/app/_components/SharedUI/Alert";
-import { DEFAULT_RADIUS_BIG_CIRCLE } from "~/app/constants/Node/index";
+import { useThemeContext } from "../context/ThemeContext";
+import useMinCanvas from "../hooks/useMinCanvas";
 
 const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
   switch (action.type) {
@@ -226,13 +227,14 @@ interface PageProps {
 }
 
 const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
+  const { theme } = useThemeContext();
   const searchParams = useSearchParams();
   const urlNodes = searchParams?.getAll("node") || [];
   const [nodeCount, setNodeCount] = useState<number>(urlNodes.length);
 
   const [rootValue, setRootValue] = useState<number | null>(null);
   const [nodes, dispatch] = useReducer(nodeReducer, []);
-  const [speed, setSpeed] = useState<number>(50);
+  const [speed, setSpeed] = useState<number>(500);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isPlay, setPlay] = useState<boolean>(false);
   const [lineNumbers, dispatchLineNumbers] = useReducer(lineReducer, []);
@@ -241,32 +243,13 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [isMultiSwitcherActive, setMultiSwitcher] = useState(false);
   const [alert, setAlert] = useState<Alerts | null>(null);
-  const [minCanvas, setMinCanvas] = useState<{
-    minHeight: number;
-    minWidth: number;
-  }>({
-    minWidth: -1,
-    minHeight: -1,
-  });
+  const minCanvas = useMinCanvas(nodes, urlNodes);
 
   useEffect(() => {
     if (nodes.length === 0) {
       addNodesFromURL(nodes, dispatch, urlNodes);
-      setMinCanvas(getMinCanvas(nodes, urlNodes));
     }
-  }, []);
-
-  useEffect(() => {
-    const maxX =
-      Math.ceil(Math.max(...nodes.map((node) => node.x))) +
-      DEFAULT_RADIUS_BIG_CIRCLE;
-    const maxY =
-      Math.ceil(Math.max(...nodes.map((node) => node.y))) +
-      DEFAULT_RADIUS_BIG_CIRCLE;
-    setMinCanvas({
-      minWidth: Math.max(minCanvas.minWidth, maxX),
-      minHeight: Math.max(minCanvas.minHeight, maxY),
-    });
+    document.body.style.backgroundColor = theme.background.primary;
   }, [nodes]);
 
   useEffect(() => {
@@ -324,12 +307,22 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
     });
   };
 
+  const handleNodeReset = () => {
+    dispatch({
+      type: ACTIONS_NODE.NODE_RESET,
+      payload: NaN,
+    });
+    setCurrentIndex(-1);
+    dispatchLineNumbers({
+      type: Line.LineReset,
+      payload: 0,
+    });
+  };
+
   return (
     <>
-      <div className="relative flex h-screen flex-col bg-black">
+      <div className="relative flex h-screen flex-col">
         <Navbar
-          rootValue={rootValue}
-          setRootValue={setRootValue}
           setSpeed={setSpeed}
           speed={speed}
           dispatch={dispatch}
@@ -342,7 +335,10 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
           showMenu={showMenu}
           toggleMenu={toggleMenu}
         />
-        <div className="relative h-full bg-black">
+        <div
+          className="relative h-full"
+          style={{ background: theme.background.primary }}
+        >
           {showMenu ? <ShowMenuItems /> : null}
 
           {isMultiSwitcherActive && (
@@ -377,6 +373,7 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
           ) : (
             <Animation
               nodes={nodes}
+              setRootValue={setRootValue}
               rootValue={rootValue}
               dispatch={dispatch}
               speed={speed}
@@ -394,6 +391,7 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
               minCanvas={minCanvas}
               isUndirectedGraph={pageConfiguration.isUndirectedGraph}
               setPlay={setPlay}
+              handleNodeReset={handleNodeReset}
             />
           )}
         </div>
@@ -405,8 +403,15 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
 export default MainPage;
 
 const ShowMenuItems = () => {
+  const { theme } = useThemeContext();
   return (
-    <div className="absolute inset-0 z-20 bg-red-500 px-4 text-white lg:hidden">
+    <div
+      className="absolute inset-0 z-20 px-4 text-white lg:hidden"
+      style={{
+        background: theme.background.quaternary,
+        color: theme.background.secondary,
+      }}
+    >
       <div className=" border-b border-white py-3">
         <p>Menu Content Here</p>
       </div>

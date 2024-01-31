@@ -27,3 +27,16 @@ export interface Theme {
     style: React.CSSProperties;
   };
 }
+
+export type NodeType = "start" | "end" | "visited" | "normal" | "shortestPath";
+
+export type GridNode = {
+  row: number;
+  col: number;
+  type: NodeType;
+  previousNode: GridNode | null;
+  isBlock: boolean;
+  distance: number;
+};
+
+export type Grid = GridNode[][];

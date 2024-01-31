@@ -6,7 +6,7 @@ import themes from "../themes/themes";
 export const useTheme = () => {
   const [getThemeStorageValue, setThemeStorageValue] = useLocalStorage<Theme>(
     "theme",
-    themes.nightFox!,
+    themes.nordic!,
   );
   const [theme, setSystemTheme] = useState<Theme>(getThemeStorageValue);
 

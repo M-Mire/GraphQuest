@@ -1,8 +1,7 @@
 import NodeElement from "../GraphUI/NodeElement";
-import { useState } from "react";
 import type Node from "~/app/model/Node";
 import Edge from "~/app/_components/GraphUI/Edge";
-import InformationBoardNode from "../SharedUI/InformationBoardNode";
+import InformationBoardGraphNode from "../SharedUI/InformationBoardItems/InformationBoardGraphNode";
 import InformationBoard from "../SharedUI/InformationBoard";
 import { useThemeContext } from "~/app/context/ThemeContext";
 interface CanvasProps {
@@ -62,20 +61,20 @@ const Canvas: React.FC<CanvasProps> = ({
         }}
       >
         <InformationBoard minCanvas={minCanvas}>
-          <InformationBoardNode
+          <InformationBoardGraphNode
             name={"Root Node"}
             colour={theme.node.root}
             stroke={theme.node.rootStroke}
           />
-          <InformationBoardNode
+          <InformationBoardGraphNode
             name={"Visited Node"}
             colour={theme.node.visited}
           />
-          <InformationBoardNode
+          <InformationBoardGraphNode
             name={"Completed Node"}
             colour={theme.node.completed}
           />
-          <InformationBoardNode
+          <InformationBoardGraphNode
             name={"Unvisited Node"}
             colour={theme.node.unvisited}
           />

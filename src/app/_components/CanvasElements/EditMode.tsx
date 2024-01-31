@@ -14,19 +14,13 @@ import { calculateNewNodePosition } from "../../utils/calculateNewNodePosition";
 import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
 import updateNodeEncoded from "~/app/utils/EncodeNode/updateNodeEncoded";
 import { Alerts } from "~/app/_components/SharedUI/Alert";
-import {
-  DEFAULT_NODE_UNVISITED_COLOUR,
-  DEFAULT_NODE_ACTIVE_COLOUR,
-} from "~/app/constants/Node/index";
-import InformationBoardNode from "../SharedUI/InformationBoardNode";
+import InformationBoardGraphNode from "../SharedUI/InformationBoardItems/InformationBoardGraphNode";
 import InformationBoard from "../SharedUI/InformationBoard";
 import { useThemeContext } from "~/app/context/ThemeContext";
 
 interface EditModeProps {
   dispatch: React.Dispatch<ActionNode>;
   nodes: Node[];
-  nodeCount: number;
-  incrementNodeCount: () => void;
   isWeighted: boolean;
   setAlert: React.Dispatch<React.SetStateAction<Alerts | null>>;
   minCanvas: { minHeight: number; minWidth: number };
@@ -36,8 +30,6 @@ interface EditModeProps {
 const EditMode: React.FC<EditModeProps> = ({
   dispatch,
   nodes,
-  nodeCount,
-  incrementNodeCount,
   isWeighted,
   setAlert,
   minCanvas,
@@ -130,7 +122,7 @@ const EditMode: React.FC<EditModeProps> = ({
         node_x: number;
         node_y: number;
       };
-      const addNode = createNewNode(node_x, node_y, nodeCount);
+      const addNode = createNewNode(node_x, node_y, nodes.length);
       const serializedObj = encodeURIComponent(JSON.stringify(addNode));
       router.push(`?${createNodeQueryString("node", serializedObj)}`);
 
@@ -138,7 +130,6 @@ const EditMode: React.FC<EditModeProps> = ({
         type: ACTIONS_NODE.ADD_NODE,
         payload: addNode,
       });
-      incrementNodeCount();
       if (nodes.length === 10) {
         setAlert(Alerts.Amber);
       }
@@ -157,11 +148,14 @@ const EditMode: React.FC<EditModeProps> = ({
         }}
       >
         <InformationBoard minCanvas={minCanvas}>
-          <InformationBoardNode
+          <InformationBoardGraphNode
             name={"Active Node"}
             colour={theme.node.active}
           />
-          <InformationBoardNode name={"Node"} colour={theme.node.unvisited} />
+          <InformationBoardGraphNode
+            name={"Node"}
+            colour={theme.node.unvisited}
+          />
         </InformationBoard>
         <div style={style} id="editMode" ref={elementRef} className="">
           <svg

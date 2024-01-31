@@ -54,3 +54,154 @@ background-size: 25px 25px;
   background: #555;
 }
 
+
+.bordered-div {
+  width: 100%;
+  height: 100%;
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.node-visited {
+  animation-name: visitedAnimation;
+  animation-duration: 1s;
+  animation-timing-function: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+@keyframes visitedAnimation {
+  0% {
+    transform: scale(0);
+    background-color: rgba(255, 69, 0, 0.8);
+    border-radius: 10%;
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.2);
+    background-color: rgba(186, 85, 211, 0.8);
+    border-radius: 20%;
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(1);
+    background-color: rgba(0, 191, 255, 0.8);
+    border-radius: 15%;
+    opacity: 0.4;
+  }
+}
+
+.node-shortest-path {
+  animation-name: shortestPath;
+  animation-duration: 1s;
+  animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+}
+
+@keyframes shortestPath {
+  0% {
+    transform: scale(0);
+    background-color: rgba(255, 69, 0, 0.8);
+    border-radius: 50%;
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.2);
+    background-color: rgba(255, 215, 0, 0.8);
+    border-radius: 20%;
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(1);
+    background-color: rgba(147, 112, 219, 0.8);
+    border-radius: 10%;
+    opacity: 0.9;
+  }
+}
+
+.node-block {
+  animation: fade 1s ease infinite alternate;
+  background-color: white; 
+}
+
+@keyframes fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.5; 
+  }
+}
+
+.node-start-green {
+  animation-name: startNodeGreenAnimation;
+  animation-duration: 1s;
+  animation-timing-function: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+}
+
+@keyframes startNodeGreenAnimation {
+  0% {
+    transform: scale(0);
+    background-color: rgba(102, 255, 102, 0.8);
+    border-radius: 10%;
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.2);
+    background-color: rgba(255, 102, 102, 0.8); 
+    border-radius: 20%;
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(1);
+    background-color: rgba(63, 255, 63, 0.8); 
+    border-radius: 15%;
+  }
+}
+
+.node-end-red {
+  animation-name: endNodeRedAnimation;
+  animation-duration: 1s;
+  animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+}
+
+@keyframes endNodeRedAnimation {
+  0% {
+    transform: scale(0);
+    background-color: rgba(255, 102, 102, 0.8); 
+    border-radius: 50%;
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.2);
+    background-color: rgba(255, 255, 102, 0.8); 
+    border-radius: 20%;
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(1);
+    background-color: rgba(255, 53, 53, 0.8);
+    border-radius: 10%;
+  }
+}

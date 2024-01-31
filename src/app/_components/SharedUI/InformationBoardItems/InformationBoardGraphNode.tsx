@@ -1,9 +1,9 @@
-interface InformationBoardNodeProps {
+interface InformationBoardGraphNodeProps {
   name: string;
   colour: string;
   stroke?: string;
 }
-const InformationBoardNode: React.FC<InformationBoardNodeProps> = ({
+const InformationBoardGraphNode: React.FC<InformationBoardGraphNodeProps> = ({
   name,
   colour,
   stroke,
@@ -28,4 +28,4 @@ const InformationBoardNode: React.FC<InformationBoardNodeProps> = ({
     </div>
   );
 };
-export default InformationBoardNode;
+export default InformationBoardGraphNode;

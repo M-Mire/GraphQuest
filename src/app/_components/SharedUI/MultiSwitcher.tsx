@@ -14,7 +14,6 @@ interface MultiSwitcherProps {
   pageConfiguration: pageConfigurationType;
   isEditMode: boolean;
   setMultiSwitcher: React.Dispatch<React.SetStateAction<boolean>>;
-  clearNodes: () => void;
   createQueryString: (name: string, value: string) => string;
   deleteQueryString: (name: string) => string;
 }
@@ -67,7 +66,7 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
       onMouseLeave={handleMouseLeave}
     >
       <div
-        className="absolute z-10 h-48 w-64 rounded-l-lg border-2 border-solid "
+        className="absolute z-10 mt-16 h-48 w-64 rounded-l-lg border-2 border-solid"
         style={{
           borderColor: theme.background.quaternary,
           background: theme.background.primary,
@@ -144,7 +143,7 @@ const MultiSwitcher: React.FC<MultiSwitcherProps> = ({
           return (
             <div
               key={k[0]}
-              className="absolute left-64 z-10 h-48 w-64 rounded-r-lg border-y-2 border-r-2 border-solid "
+              className="absolute left-64 z-10 mt-16 h-48 w-64 rounded-r-lg border-y-2 border-r-2 border-solid"
               style={{
                 display: hoveredDiv === k[0] ? "block" : "none",
                 borderColor: theme.background.quaternary,

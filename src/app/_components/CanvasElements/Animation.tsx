@@ -212,12 +212,12 @@ const Animation: React.FC<AnimationProps> = ({
           {pageID === pageEnum.BFS ? (
             <TraverseAnimationBFS nodes={nodes} />
           ) : pageID === pageEnum.DIJKSTRA ? (
-            // <TraverseAnimationDijkstra
-            //   nodes={nodes}
-            //   currentIndex={currentIndex}
-            //   tracker={tracker}
-            // /> TODO:
-            <></>
+            <TraverseAnimationDijkstra
+              nodes={nodes}
+              currentIndex={currentIndex}
+              tracker={tracker}
+              isPlay={isPlay}
+            />
           ) : pageID === pageEnum.DFS ? (
             <TraverseAnimationDFS
               nodes={nodes}

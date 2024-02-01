@@ -1,82 +1,69 @@
-import React, { useState, useEffect, memo, useCallback } from "react";
-import { NodeType, Grid, GridNode } from "../../types";
-import ExplorerGraph from "../../ExplorersAlgorithm/dijkstra";
+import React, { useState, useEffect, useRef } from "react";
+import type { Grid, GridNode, MousePressedNode } from "../../types";
+import ExplorerGraph from "~/app/ExplorersAlgorithm/ExplorerAlgorithm";
 import Node from "./Node";
 import { useThemeContext } from "~/app/context/ThemeContext";
-const ROWS = 15;
-const COLS = 40;
-const START_NODE: GridNode = {
-  row: 10,
-  col: 10,
-  type: "start",
-  isBlock: false,
-  distance: Infinity,
-  previousNode: null,
-};
-const END_NODE: GridNode = {
-  row: 10,
-  col: 15,
-  type: "end",
-  isBlock: false,
-  distance: Infinity,
-  previousNode: null,
-};
-
-const renderBoard = (
-  startNode: { row: number; col: number },
-  endNode: { row: number; col: number },
-): Grid => {
-  const grid: Grid = [];
-  for (let i = 0; i < ROWS; i++) {
-    const row: GridNode[] = [];
-    for (let j = 0; j < COLS; j++) {
-      const isStartNode = startNode.row === i && startNode.col === j;
-      const isEndNode = endNode.row === i && endNode.col === j;
-
-      let nodeType: NodeType = "normal";
-      if (isStartNode) {
-        nodeType = "start";
-      } else if (isEndNode) {
-        nodeType = "end";
-      }
-      row.push({
-        row: i,
-        col: j,
-        type: nodeType,
-        distance: Infinity,
-        isBlock: false,
-        previousNode: null,
-      });
-    }
-    grid.push(row);
-  }
-  return grid;
-};
+import type { ExploreAlgorithmsType } from "../../types";
 
 interface BoardProps {
   isPlay: boolean;
   setPlay: React.Dispatch<React.SetStateAction<boolean>>;
+  startNode: GridNode;
+  setStartNode: React.Dispatch<React.SetStateAction<GridNode>>;
+  endNode: GridNode;
+  setEndNode: React.Dispatch<React.SetStateAction<GridNode>>;
+  board: Grid;
+  setBoard: React.Dispatch<React.SetStateAction<Grid>>;
+  isMovedWhilstAnimated: boolean;
+  setMovedWhilstAnimated: React.Dispatch<React.SetStateAction<boolean>>;
+  ALGORITHM: string;
 }
-const Board = ({ isPlay, setPlay }: BoardProps) => {
+const Board = ({
+  isPlay,
+  setPlay,
+  startNode,
+  setStartNode,
+  endNode,
+  setEndNode,
+  board,
+  setBoard,
+  isMovedWhilstAnimated,
+  setMovedWhilstAnimated,
+  ALGORITHM,
+}: BoardProps) => {
   const { theme } = useThemeContext();
-  const [startNode, setStartNode] = useState(START_NODE);
-  const [endNode, setEndNode] = useState(END_NODE);
-  const [board, setBoard] = useState<Grid>(renderBoard(startNode, endNode));
-  const [isMousePressed, setMousePressed] = useState<NodeType | null>(null);
+  const [isMousePressed, setMousePressed] = useState<MousePressedNode | null>(
+    null,
+  );
   const [lastBlockEdited, setLastBlockEdited] = useState<GridNode | null>(null);
   const [isAnimated, setAnimated] = useState<boolean>(false);
-  const ANIMATION_SPEED = 20;
+  // let nodeRef = useRef(null);
+
+  const ANIMATION_SPEED = 30;
 
   const animateDijkstra = async () => {
-    const explorerGraphs = new ExplorerGraph(board);
-
+    const newBoard: Grid = board.map((row) =>
+      row.map((node) => {
+        console.log;
+        return {
+          ...node,
+          previousNode: null,
+          distance: Infinity,
+          type: "normal",
+        };
+      }),
+    );
+    const explorerGraphs = new ExplorerGraph(newBoard);
     try {
-      const { shortestPath, visitedNodesInOrder } = explorerGraphs.dijkstra(
-        startNode.row,
-        startNode.col,
-        endNode.row,
-        endNode.col,
-      );
+      const { shortestPath, visitedNodesInOrder } =
+        ExplorerGraph.executeAlgorithm(
+          ALGORITHM,
+          startNode.row,
+          startNode.col,
+          endNode.row,
+          endNode.col,
+          newBoard,
+        );
 
       // Animate visited nodes
       for (let i = 0; i < visitedNodesInOrder.length; i++) {
@@ -127,34 +114,20 @@ const Board = ({ isPlay, setPlay }: BoardProps) => {
   };
 
   const clearBoard = () => {
-    setAnimated(false);
     setBoard((prevBoard) => {
       const updatedBoard: Grid = prevBoard.map((r) =>
         r.map((n) => {
-          if (n.row === startNode.row && n.col === startNode.col) {
-            return {
-              ...n,
-              type: "start",
-              previousNode: null,
-              distance: Infinity,
-            };
-          } else if (n.row === endNode.row && n.col === endNode.col) {
-            return {
-              ...n,
-              type: "end",
-              previousNode: null,
-              distance: Infinity,
-            };
-          } else if (n.type === "shortestPath" || n.type === "visited") {
-            return {
-              ...n,
-              type: "normal",
-              previousNode: null,
-              distance: Infinity,
-            } as GridNode;
-          }
-          return { ...n, previousNode: null, distance: Infinity };
+          return {
+            ...n,
+            previousNode: null,
+            distance: Infinity,
+            type: "normal",
+          };
         }),
+      );
+      console.log(
+        "updated ",
+        updatedBoard.flat().filter((node) => node.type !== "normal"),
       );
       return updatedBoard;
     });
@@ -163,30 +136,56 @@ const Board = ({ isPlay, setPlay }: BoardProps) => {
   useEffect(() => {
     const runAnimation = async () => {
       if (isPlay) {
+        setMovedWhilstAnimated(false);
+        setAnimated(false);
         clearBoard();
         await animateDijkstra();
+        setAnimated(true);
       }
-      setAnimated(true);
     };
+
+    if (
+      isAnimated &&
+      (isMousePressed === "start" || isMousePressed === "end")
+    ) {
+      setMovedWhilstAnimated(true);
+      const newBoard: Grid = board.map((row) =>
+        row.map((node) => {
+          console.log;
+          return {
+            ...node,
+            previousNode: null,
+            distance: Infinity,
+            type: "normal",
+          };
+        }),
+      );
+      const updatedBoard = ExplorerGraph.executeInstantAlgorithm(
+        ALGORITHM,
+        startNode.row,
+        startNode.col,
+        endNode.row,
+        endNode.col,
+        newBoard,
+      );
+      setBoard(updatedBoard);
+    }
 
     runAnimation().catch((error) => {
       console.error("Animation error:", error);
     });
-  }, [isPlay, isMousePressed]);
+  }, [isPlay, isMousePressed, startNode, endNode]);
 
   const handleMouseDown = (row: number, col: number) => {
     if (isPlay) return;
     const currentNode = board[row]![col]!;
-    let nodeType = currentNode.type;
-
-    if (currentNode.type === "shortestPath" && isAnimated) {
-      if (
-        currentNode.row === startNode.row &&
-        currentNode.col === startNode.col
-      ) {
-        nodeType = "start";
-      }
-    }
+    const isStartNode = startNode.row === row && startNode.col === col;
+    const isEndNode = endNode.row === row && endNode.col === col;
+    const nodeType = isStartNode
+      ? "start"
+      : isEndNode
+      ? "end"
+      : ("normal" as MousePressedNode);
     setMousePressed(nodeType);
   };
 
@@ -195,39 +194,23 @@ const Board = ({ isPlay, setPlay }: BoardProps) => {
 
     const newBoard = [...board];
 
-    const currentNode = newBoard[row]![col]!;
-
-    if (isMousePressed === "start" && currentNode.type !== "end") {
-      newBoard[startNode.row]![startNode.col]!.type = "normal";
-
-      setStartNode({
-        row: row,
-        col: col,
-        type: "start",
-        isBlock: false,
-        distance: Infinity,
-        previousNode: null,
-      });
-      newBoard[row]![col]!.type = "start";
-    } else if (isMousePressed === "end" && currentNode.type !== "start") {
-      newBoard[endNode.row]![endNode.col]!.type = "normal";
-      setEndNode({
-        row: row,
-        col: col,
-        type: "end",
-        isBlock: false,
-        distance: Infinity,
-        previousNode: null,
-      });
-
-      newBoard[row]![col]!.type = "end";
-    } else if (
-      (isMousePressed === "normal" ||
-        isMousePressed === "visited" ||
-        isMousePressed === "shortestPath") &&
-      (startNode.row !== row || startNode.col !== col) &&
-      (endNode.row !== row || endNode.col !== col)
-    ) {
+    if (isMousePressed === "start") {
+      if (row !== startNode.row || col !== startNode.col) {
+        // console.log(nodeRef.current, "parent");
+        console.log(row, col);
+        // trying to prevent unnecessary renders
+        newBoard[startNode.row]![startNode.col]!.isStart = false;
+        newBoard[row]![col]!.isStart = true;
+        setStartNode({ ...startNode, row, col });
+      }
+    } else if (isMousePressed === "end") {
+      if (row !== endNode.row || col !== endNode.col) {
+        newBoard[endNode.row]![endNode.col]!.isEnd = false;
+        newBoard[row]![col]!.isEnd = true;
+        setEndNode({ ...endNode, row, col });
+      }
+    } else {
+      console.log(isMousePressed);
       if (
         !lastBlockEdited ||
         lastBlockEdited.row !== row ||
@@ -235,18 +218,20 @@ const Board = ({ isPlay, setPlay }: BoardProps) => {
       ) {
         const isBlock = newBoard[row]![col]!.isBlock;
         newBoard[row]![col]!.isBlock = !isBlock;
-
         setLastBlockEdited({
           row,
           col,
-          type: newBoard[row]![col]!.type,
-          isBlock: newBoard[row]![col]!.isBlock,
-          distance: Infinity,
+          isBlock: !isBlock,
+          type: "normal",
+          isStart: startNode.row === row && startNode.col === col,
+          isEnd: endNode.row === row && endNode.col === col,
           previousNode: null,
+          distance: Infinity,
+          gScore: Infinity,
+          fScore: Infinity,
         });
       }
     }
-
     setBoard(newBoard);
   };
 
@@ -269,6 +254,7 @@ const Board = ({ isPlay, setPlay }: BoardProps) => {
               {row.map((node, j) => {
                 return (
                   <Node
+                    // forwardedRef={nodeRef}
                     key={`${i}-${j}`}
                     node={node}
                     startNode={startNode}
@@ -280,6 +266,7 @@ const Board = ({ isPlay, setPlay }: BoardProps) => {
                       handleMouseMove(row, col)
                     }
                     handleMouseUp={handleMouseUp}
+                    isMovedWhilstAnimated={isMovedWhilstAnimated}
                   />
                 );
               })}

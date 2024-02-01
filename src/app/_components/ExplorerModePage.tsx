@@ -5,12 +5,57 @@ import Board from "./ExplorerElements/Board";
 import { useState } from "react";
 import InformationBoard from "./SharedUI/InformationBoard";
 import InformationBoardExplorerNode from "./SharedUI/InformationBoardItems/InformationBoardExplorerNode";
+import { Grid, GridNode, NodeType } from "../types";
+import { ExploreAlgorithmsType } from "../types";
+
+const algorithmMap = {
+  bfs: "bfs",
+  dijkstra: "dijkstra",
+  dfs: "dfs",
+  greedyBFS: "greedyBFS",
+  aStar: "aStar",
+};
+
+const ROWS = 25;
+const COLS = 40;
+const START_NODE: GridNode = {
+  row: 0,
+  col: 0,
+  type: "normal",
+  isStart: true,
+  isEnd: false,
+  isBlock: false,
+  distance: Infinity,
+  gScore: Infinity,
+  fScore: Infinity,
+  previousNode: null,
+};
+const END_NODE: GridNode = {
+  row: 3,
+  col: 4,
+  type: "normal",
+  isStart: false,
+  isEnd: true,
+  isBlock: false,
+  distance: Infinity,
+  gScore: Infinity,
+  fScore: Infinity,
+  previousNode: null,
+};
 
 const ExplorerModePage = () => {
   useThemeBackground();
 
   //States
   const [isPlay, setPlay] = useState<boolean>(false);
+  const [startNode, setStartNode] = useState(START_NODE);
+  const [endNode, setEndNode] = useState(END_NODE);
+  const [board, setBoard] = useState<Grid>(renderBoard(startNode, endNode));
+  const [isMovedWhilstAnimated, setMovedWhilstAnimated] =
+    useState<boolean>(false);
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState<string>(
+    algorithmMap.dfs,
+  );
 
   return (
     <div className="relative flex h-screen flex-col">
@@ -29,8 +74,8 @@ const ExplorerModePage = () => {
           {!isPlay ? "click me" : "playing"}
         </button>
       </Navbar>
-      <div className=" flex w-full justify-center">
-        <div className="my-2 mt-[50px] overflow-auto rounded-2xl border-2 ">
+      <div className="flex w-full justify-center">
+        <div className="bg-red my-2 mt-[50px] overflow-auto rounded-2xl border-2">
           <InformationBoard>
             <InformationBoardExplorerNode
               name="Start Node"
@@ -53,11 +98,80 @@ const ExplorerModePage = () => {
               nodeClassName="node-block"
             />
           </InformationBoard>
-          <Board isPlay={isPlay} setPlay={setPlay} />
+          <Board
+            isPlay={isPlay}
+            setPlay={setPlay}
+            startNode={startNode}
+            setStartNode={setStartNode}
+            endNode={endNode}
+            setEndNode={setEndNode}
+            board={board}
+            setBoard={setBoard}
+            isMovedWhilstAnimated={isMovedWhilstAnimated}
+            setMovedWhilstAnimated={setMovedWhilstAnimated}
+            ALGORITHM={selectedAlgorithm}
+          />
+          {/* <div className="flex justify-center gap-4">
+            <Board
+              isPlay={isPlay}
+              setPlay={setPlay}
+              startNode={startNode}
+              setStartNode={setStartNode}
+              endNode={endNode}
+              setEndNode={setEndNode}
+              board={board}
+              setBoard={setBoard}
+              isMovedWhilstAnimated={isMovedWhilstAnimated}
+              setMovedWhilstAnimated={setMovedWhilstAnimated}
+            />
+            <div className="h-full border-l border-gray-500"></div>
+            <Board
+              isPlay={isPlay}
+              setPlay={setPlay}
+              startNode={startNode}
+              setStartNode={setStartNode}
+              endNode={endNode}
+              setEndNode={setEndNode}
+              board={board}
+              setBoard={setBoard}
+              isMovedWhilstAnimated={isMovedWhilstAnimated}
+              setMovedWhilstAnimated={setMovedWhilstAnimated}
+            />
+          </div> */}
         </div>
       </div>
     </div>
   );
 };
 
+const renderBoard = (
+  startNode: { row: number; col: number },
+  endNode: { row: number; col: number },
+): Grid => {
+  const grid: Grid = [];
+  for (let i = 0; i < ROWS; i++) {
+    const row: GridNode[] = [];
+    for (let j = 0; j < COLS; j++) {
+      const isStartNode = startNode.row === i && startNode.col === j;
+      const isEndNode = endNode.row === i && endNode.col === j;
+
+      const nodeType: NodeType = "normal";
+
+      row.push({
+        row: i,
+        col: j,
+        type: nodeType,
+        isStart: isStartNode,
+        isEnd: isEndNode,
+        distance: Infinity,
+        gScore: Infinity,
+        fScore: Infinity,
+        isBlock: false,
+        previousNode: null,
+      });
+    }
+    grid.push(row);
+  }
+  return grid;
+};
 export default ExplorerModePage;

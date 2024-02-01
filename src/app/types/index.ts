@@ -28,15 +28,28 @@ export interface Theme {
   };
 }
 
-export type NodeType = "start" | "end" | "visited" | "normal" | "shortestPath";
+export type NodeType = "visited" | "normal" | "shortestPath";
 
 export type GridNode = {
   row: number;
   col: number;
   type: NodeType;
+  isStart: boolean;
+  isEnd: boolean;
   previousNode: GridNode | null;
   isBlock: boolean;
   distance: number;
+  gScore: number;
+  fScore: number;
 };
 
 export type Grid = GridNode[][];
+
+export type MousePressedNode = "start" | "end" | "normal";
+
+export type ExploreAlgorithmsType =
+  | "bfs"
+  | "dijkstra"
+  | "dfs"
+  | "greedyBFS"
+  | "aStar";

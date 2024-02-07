@@ -1,4 +1,5 @@
 import type { GridNode } from "../types";
+import { algorithmMap, AlgorithmEnum } from "../_pageConfigs/configExplorer";
 
 export default class ExplorerGraph {
   public grid: GridNode[][];
@@ -8,7 +9,7 @@ export default class ExplorerGraph {
   }
 
   public static executeAlgorithm(
-    algorithm: string,
+    algorithm: AlgorithmEnum | null,
     startRow: number,
     startCol: number,
     endRow: number,
@@ -18,15 +19,15 @@ export default class ExplorerGraph {
     const explorerGraphs = new ExplorerGraph(grid);
 
     switch (algorithm) {
-      case "bfs":
+      case AlgorithmEnum.BFS:
         return explorerGraphs.bfs(startRow, startCol, endRow, endCol);
-      case "dijkstra":
+      case AlgorithmEnum.Dijkstra:
         return explorerGraphs.dijkstra(startRow, startCol, endRow, endCol);
-      case "dfs":
+      case AlgorithmEnum.DFS:
         return explorerGraphs.dfs(startRow, startCol, endRow, endCol);
-      case "greedyBFS":
+      case AlgorithmEnum.GreedyBFS:
         return explorerGraphs.greedyBFS(startRow, startCol, endRow, endCol);
-      case "aStar":
+      case AlgorithmEnum.AStar:
         return explorerGraphs.aStar(startRow, startCol, endRow, endCol);
       default:
         throw new Error(`Unknown algorithm: ${algorithm}`);
@@ -34,7 +35,7 @@ export default class ExplorerGraph {
   }
 
   public static executeInstantAlgorithm(
-    algorithm: string,
+    algorithm: AlgorithmEnum | null,
     startRow: number,
     startCol: number,
     endRow: number,
@@ -44,25 +45,25 @@ export default class ExplorerGraph {
     const explorerGraphs = new ExplorerGraph(grid);
 
     switch (algorithm) {
-      case "bfs":
+      case AlgorithmEnum.BFS:
         return explorerGraphs.bfsInstant(startRow, startCol, endRow, endCol);
-      case "dijkstra":
+      case AlgorithmEnum.Dijkstra:
         return explorerGraphs.dijkstraInstant(
           startRow,
           startCol,
           endRow,
           endCol,
         );
-      case "dfs":
+      case AlgorithmEnum.DFS:
         return explorerGraphs.dfsInstant(startRow, startCol, endRow, endCol);
-      case "greedyBFS":
+      case AlgorithmEnum.GreedyBFS:
         return explorerGraphs.greedyBFSInstant(
           startRow,
           startCol,
           endRow,
           endCol,
         );
-      case "aStar":
+      case AlgorithmEnum.AStar:
         return explorerGraphs.aStarInstant(startRow, startCol, endRow, endCol);
       default:
         console.error(`Unknown algorithm: ${algorithm}`);
@@ -221,13 +222,6 @@ export default class ExplorerGraph {
       currentNode.type = "shortestPath";
       currentNode = currentNode.previousNode;
     }
-    console.log(
-      " start node = ",
-      startNode,
-      this.grid,
-      "",
-      this.grid.flat().filter((node) => node.type === "shortestPath"),
-    );
     return this.grid;
   }
 
@@ -637,12 +631,14 @@ export default class ExplorerGraph {
       const neighbors = this.getNeighbors(currentNode);
 
       for (const neighbor of neighbors) {
-        if (closedSet.includes(neighbor) || neighbor.isBlock) {
+        if (
+          closedSet.includes(neighbor) ||
+          (neighbor.isBlock && !neighbor.isEnd)
+        ) {
           continue;
         }
 
         const tentativeGScore = currentNode.gScore + 1;
-
         if (!openSet.includes(neighbor)) {
           openSet.push(neighbor);
         } else if (tentativeGScore >= neighbor.gScore) {
@@ -660,7 +656,6 @@ export default class ExplorerGraph {
         visitedNodesInOrder.push(currentNode);
       }
     }
-
     if (endNode.gScore === Infinity) {
       return { shortestPath: [], visitedNodesInOrder };
     }
@@ -716,7 +711,10 @@ export default class ExplorerGraph {
       const neighbors = this.getNeighbors(currentNode);
 
       for (const neighbor of neighbors) {
-        if (closedSet.includes(neighbor) || neighbor.isBlock) {
+        if (
+          closedSet.includes(neighbor) ||
+          (neighbor.isBlock && !neighbor.isEnd)
+        ) {
           continue;
         }
 
@@ -752,6 +750,7 @@ export default class ExplorerGraph {
 
     return this.grid;
   }
+
   private calculateHeuristic(node: GridNode, targetNode: GridNode): number {
     return (
       Math.abs(node.row - targetNode.row) + Math.abs(node.col - targetNode.col)

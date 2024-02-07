@@ -3,7 +3,7 @@ import type { Grid, GridNode, MousePressedNode } from "../../types";
 import ExplorerGraph from "~/app/ExplorersAlgorithm/ExplorerAlgorithm";
 import Node from "./Node";
 import { useThemeContext } from "~/app/context/ThemeContext";
-import type { ExploreAlgorithmsType } from "../../types";
+import { AlgorithmEnum } from "~/app/_pageConfigs/configExplorer";
 
 interface BoardProps {
   isPlay: boolean;
@@ -16,7 +16,7 @@ interface BoardProps {
   setBoard: React.Dispatch<React.SetStateAction<Grid>>;
   isMovedWhilstAnimated: boolean;
   setMovedWhilstAnimated: React.Dispatch<React.SetStateAction<boolean>>;
-  ALGORITHM: string;
+  selectedAlgorithm: AlgorithmEnum | null;
 }
 const Board = ({
   isPlay,
@@ -29,7 +29,7 @@ const Board = ({
   setBoard,
   isMovedWhilstAnimated,
   setMovedWhilstAnimated,
-  ALGORITHM,
+  selectedAlgorithm,
 }: BoardProps) => {
   const { theme } = useThemeContext();
   const [isMousePressed, setMousePressed] = useState<MousePressedNode | null>(
@@ -37,14 +37,13 @@ const Board = ({
   );
   const [lastBlockEdited, setLastBlockEdited] = useState<GridNode | null>(null);
   const [isAnimated, setAnimated] = useState<boolean>(false);
-  // let nodeRef = useRef(null);
+  const nodeRef = useRef<HTMLElement[][]>([]);
 
   const ANIMATION_SPEED = 30;
 
   const animateDijkstra = async () => {
     const newBoard: Grid = board.map((row) =>
       row.map((node) => {
-        console.log;
         return {
           ...node,
           previousNode: null,
@@ -53,11 +52,10 @@ const Board = ({
         };
       }),
     );
-    const explorerGraphs = new ExplorerGraph(newBoard);
     try {
       const { shortestPath, visitedNodesInOrder } =
         ExplorerGraph.executeAlgorithm(
-          ALGORITHM,
+          selectedAlgorithm,
           startNode.row,
           startNode.col,
           endNode.row,
@@ -68,18 +66,11 @@ const Board = ({
       // Animate visited nodes
       for (let i = 0; i < visitedNodesInOrder.length; i++) {
         const node = visitedNodesInOrder[i]!;
-
-        // console.log(`Visited Node: ${node.row}-${node.col} (${node.type})`);
-
         await new Promise<void>((resolve) => {
           setTimeout(() => {
-            setBoard((prevBoard) => {
-              const updatedBoard = prevBoard.map((row) =>
-                row.map((n) => ({ ...n })),
-              );
-              updatedBoard[node.row]![node.col]!.type = "visited";
-              return updatedBoard;
-            });
+            nodeRef.current[node.row]?.[node.col]?.classList.add(
+              "node-visited",
+            );
             resolve();
           }, ANIMATION_SPEED);
         });
@@ -97,16 +88,11 @@ const Board = ({
   };
   const animateShortestPath = async (shortestPath: GridNode[]) => {
     for (const node of shortestPath) {
-      // console.log(`Shortest Node: ${node.row}-${node.col} (${node.type})`);
       await new Promise<void>((resolve) => {
         setTimeout(() => {
-          setBoard((prevBoard) => {
-            const updatedBoard = prevBoard.map((row) =>
-              row.map((node) => ({ ...node })),
-            );
-            updatedBoard[node.row]![node.col]!.type = "shortestPath";
-            return updatedBoard;
-          });
+          nodeRef.current[node.row]?.[node.col]?.classList.add(
+            "node-shortest-path",
+          );
           resolve();
         }, ANIMATION_SPEED);
       });
@@ -117,6 +103,11 @@ const Board = ({
     setBoard((prevBoard) => {
       const updatedBoard: Grid = prevBoard.map((r) =>
         r.map((n) => {
+          const nodeElement = nodeRef.current[n.row]?.[n.col];
+          if (nodeElement) {
+            // Reset classes
+            nodeElement.classList.remove("node-visited", "node-shortest-path");
+          }
           return {
             ...n,
             previousNode: null,
@@ -124,10 +115,6 @@ const Board = ({
             type: "normal",
           };
         }),
-      );
-      console.log(
-        "updated ",
-        updatedBoard.flat().filter((node) => node.type !== "normal"),
       );
       return updatedBoard;
     });
@@ -161,7 +148,7 @@ const Board = ({
         }),
       );
       const updatedBoard = ExplorerGraph.executeInstantAlgorithm(
-        ALGORITHM,
+        selectedAlgorithm,
         startNode.row,
         startNode.col,
         endNode.row,
@@ -175,6 +162,10 @@ const Board = ({
       console.error("Animation error:", error);
     });
   }, [isPlay, isMousePressed, startNode, endNode]);
+
+  useEffect(() => {
+    clearBoard();
+  }, [selectedAlgorithm]);
 
   const handleMouseDown = (row: number, col: number) => {
     if (isPlay) return;
@@ -196,9 +187,6 @@ const Board = ({
 
     if (isMousePressed === "start") {
       if (row !== startNode.row || col !== startNode.col) {
-        // console.log(nodeRef.current, "parent");
-        console.log(row, col);
-        // trying to prevent unnecessary renders
         newBoard[startNode.row]![startNode.col]!.isStart = false;
         newBoard[row]![col]!.isStart = true;
         setStartNode({ ...startNode, row, col });
@@ -210,7 +198,6 @@ const Board = ({
         setEndNode({ ...endNode, row, col });
       }
     } else {
-      console.log(isMousePressed);
       if (
         !lastBlockEdited ||
         lastBlockEdited.row !== row ||
@@ -239,45 +226,44 @@ const Board = ({
     setMousePressed(null);
   };
 
-  const renderGrid = () => {
-    return (
-      <div
-        className="overflow-hidden"
-        style={{
-          background: theme.background.secondary,
-          borderColor: theme.background.quaternary,
-        }}
-      >
-        {board.map((row, i) => {
-          return (
-            <div key={i} className="flex justify-center">
-              {row.map((node, j) => {
-                return (
-                  <Node
-                    // forwardedRef={nodeRef}
-                    key={`${i}-${j}`}
-                    node={node}
-                    startNode={startNode}
-                    endNode={endNode}
-                    handleMouseDown={(row: number, col: number) =>
-                      handleMouseDown(row, col)
-                    }
-                    handleMouseMove={(row: number, col: number) =>
-                      handleMouseMove(row, col)
-                    }
-                    handleMouseUp={handleMouseUp}
-                    isMovedWhilstAnimated={isMovedWhilstAnimated}
-                  />
-                );
-              })}
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
-
-  return <div>{renderGrid()}</div>;
+  return (
+    <div
+      className="overflow-hidden"
+      style={{
+        background: theme.background.secondary,
+        borderColor: theme.background.quaternary,
+      }}
+    >
+      {board.map((row, i) => {
+        return (
+          <div key={i} className="flex justify-center">
+            {row.map((node, j) => {
+              return (
+                <Node
+                  key={`${i}-${j}`}
+                  node={node}
+                  startNode={startNode}
+                  endNode={endNode}
+                  handleMouseDown={(row: number, col: number) =>
+                    handleMouseDown(row, col)
+                  }
+                  handleMouseMove={(row: number, col: number) =>
+                    handleMouseMove(row, col)
+                  }
+                  handleMouseUp={handleMouseUp}
+                  isMovedWhilstAnimated={isMovedWhilstAnimated}
+                  ref={(el) => {
+                    nodeRef.current[i] = nodeRef.current[i] ?? [];
+                    nodeRef.current[i]![j] = el!;
+                  }}
+                />
+              );
+            })}
+          </div>
+        );
+      })}
+    </div>
+  );
 };
 
 export default Board;

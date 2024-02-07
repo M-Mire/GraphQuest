@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useThemeContext } from "~/app/context/ThemeContext";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import themes from "~/app/themes/themes";
 import { getThemes } from "~/app/utils/getThemes";
+import ColorLensIcon from "@mui/icons-material/ColorLens";
 
 const Themes = () => {
   const { theme, setTheme } = useThemeContext();
@@ -24,14 +24,19 @@ const Themes = () => {
 
   return (
     <div className="relative">
-      <button
-        name="changeView"
-        className="rounded border-2 py-1 pl-2 pr-1 text-sm transition duration-300 ease-in-out hover:bg-gray-400"
-        style={themeStyle}
+      <div
+        className=" px-[2px] pb-[2px] pt-[1px] text-sm transition duration-300 ease-in-out hover:bg-gray-400"
+        style={{ ...themeStyle, background: "inherit" }}
         onClick={() => setDropDown(!isOpen)}
       >
-        Themes <ArrowDropDownIcon style={{ padding: 0, fontSize: "1rem" }} />
-      </button>
+        <ColorLensIcon
+          style={{
+            padding: 0,
+            fontSize: "1.5rem",
+            color: theme.background.quaternary,
+          }}
+        />
+      </div>
       {isOpen && (
         <>
           <div

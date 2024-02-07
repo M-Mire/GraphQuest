@@ -6,17 +6,10 @@ import { useState } from "react";
 import InformationBoard from "./SharedUI/InformationBoard";
 import InformationBoardExplorerNode from "./SharedUI/InformationBoardItems/InformationBoardExplorerNode";
 import { Grid, GridNode, NodeType } from "../types";
-import { ExploreAlgorithmsType } from "../types";
+import ControlAlgorithmButton from "./ExplorerElements/ControlAlgorithmButton";
+import { AlgorithmEnum, algorithmMap } from "../_pageConfigs/configExplorer";
 
-const algorithmMap = {
-  bfs: "bfs",
-  dijkstra: "dijkstra",
-  dfs: "dfs",
-  greedyBFS: "greedyBFS",
-  aStar: "aStar",
-};
-
-const ROWS = 25;
+const ROWS = 15;
 const COLS = 40;
 const START_NODE: GridNode = {
   row: 0,
@@ -31,8 +24,8 @@ const START_NODE: GridNode = {
   previousNode: null,
 };
 const END_NODE: GridNode = {
-  row: 3,
-  col: 4,
+  row: 5,
+  col: 10,
   type: "normal",
   isStart: false,
   isEnd: true,
@@ -53,9 +46,8 @@ const ExplorerModePage = () => {
   const [board, setBoard] = useState<Grid>(renderBoard(startNode, endNode));
   const [isMovedWhilstAnimated, setMovedWhilstAnimated] =
     useState<boolean>(false);
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState<string>(
-    algorithmMap.dfs,
-  );
+  const [selectedAlgorithm, setSelectedAlgorithm] =
+    useState<AlgorithmEnum | null>(null);
 
   return (
     <div className="relative flex h-screen flex-col">
@@ -63,16 +55,12 @@ const ExplorerModePage = () => {
         algorithmName="Explorer's Mode"
         pageConfiguration={pageConfiguration}
       >
-        <button
-          className={`bg-yellow-400 text-red-500 ${
-            isPlay ? "cursor-not-allowed" : ""
-          }`}
-          onClick={() => {
-            setPlay(true);
-          }}
-        >
-          {!isPlay ? "click me" : "playing"}
-        </button>
+        <ControlAlgorithmButton
+          isPlay={isPlay}
+          setPlay={setPlay}
+          selectedAlgorithm={selectedAlgorithm}
+          setSelectedAlgorithm={setSelectedAlgorithm}
+        />
       </Navbar>
       <div className="flex w-full justify-center">
         <div className="bg-red my-2 mt-[50px] overflow-auto rounded-2xl border-2">
@@ -109,7 +97,7 @@ const ExplorerModePage = () => {
             setBoard={setBoard}
             isMovedWhilstAnimated={isMovedWhilstAnimated}
             setMovedWhilstAnimated={setMovedWhilstAnimated}
-            ALGORITHM={selectedAlgorithm}
+            selectedAlgorithm={selectedAlgorithm}
           />
           {/* <div className="flex justify-center gap-4">
             <Board

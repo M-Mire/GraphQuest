@@ -46,10 +46,3 @@ export type GridNode = {
 export type Grid = GridNode[][];
 
 export type MousePressedNode = "start" | "end" | "normal";
-
-export type ExploreAlgorithmsType =
-  | "bfs"
-  | "dijkstra"
-  | "dfs"
-  | "greedyBFS"
-  | "aStar";

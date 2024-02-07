@@ -1,6 +1,5 @@
 import { useCallback, useState } from "react";
 import Link from "next/link";
-import ControlButtons from "./ControlButtons";
 import {
   ACTIONS_NODE,
   ActionNode,
@@ -171,9 +170,15 @@ const Navbar: React.FC<NavbarProps> = ({
             </Link>
           </li>
           <li className="ml-2">
-            <Themes />
+            <IconButton
+              color="primary"
+              size="small"
+              style={{ color: theme.background.quaternary }}
+            >
+              <Themes />
+            </IconButton>
           </li>
-          <li className="ml-2">
+          <li className="">
             <IconButton
               color="primary"
               size="small"

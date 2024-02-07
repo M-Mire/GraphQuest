@@ -1,4 +1,4 @@
-import { forwardRef, memo } from "react";
+import { forwardRef, memo, useMemo } from "react";
 import type { GridNode } from "~/app/types";
 import HikingIcon from "@mui/icons-material/Hiking";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -11,20 +11,21 @@ interface NodeProps {
   startNode: GridNode;
   endNode: GridNode;
   isMovedWhilstAnimated: boolean;
-  // forwardedRef: React.MutableRefObject<null>;
 }
 
-const Node = memo(
-  ({
-    node,
-    handleMouseDown,
-    handleMouseMove,
-    handleMouseUp,
-    startNode,
-    endNode,
-    isMovedWhilstAnimated,
-  } // forwardedRef,
-  : NodeProps) => {
+const Node = forwardRef<HTMLElement, NodeProps>(
+  (
+    {
+      node,
+      handleMouseDown,
+      handleMouseMove,
+      handleMouseUp,
+      startNode,
+      endNode,
+      isMovedWhilstAnimated,
+    }: NodeProps,
+    ref,
+  ) => {
     const { type, isBlock, row, col } = node;
     const isStartNode = startNode.row === row && startNode.col === col;
     const isEndNode = endNode.row === row && endNode.col === col;
@@ -47,26 +48,46 @@ const Node = memo(
         : ""
     }`;
 
-    return (
-      <div
-        id={`node-elem-${row}-${col}`}
-        // ref={forwardedRef}
-        className={nodeClassName}
-        onMouseDown={() => handleMouseDown(row, col)}
-        onMouseMove={() => handleMouseMove(row, col)}
-        onMouseUp={handleMouseUp}
-      >
-        {isStartNode && (
-          <HikingIcon style={{ width: iconSize, height: iconSize }} />
-        )}
-        {isEndNode && (
-          <LocationOnIcon style={{ width: iconSize, height: iconSize }} />
-        )}
-      </div>
+    const memoizedNode = useMemo(
+      () => (
+        <div
+          id={`node-elem-${row}-${col}`}
+          ref={ref as React.RefObject<HTMLDivElement>}
+          className={nodeClassName}
+          onMouseDown={() => handleMouseDown(row, col)}
+          onMouseMove={() => handleMouseMove(row, col)}
+          onMouseUp={handleMouseUp}
+        >
+          {isStartNode && (
+            <HikingIcon style={{ width: iconSize, height: iconSize }} />
+          )}
+          {isEndNode && (
+            <LocationOnIcon style={{ width: iconSize, height: iconSize }} />
+          )}
+        </div>
+      ),
+      [
+        nodeClassName,
+        row,
+        col,
+        isStartNode,
+        isEndNode,
+        iconSize,
+        handleMouseDown,
+        handleMouseMove,
+        handleMouseUp,
+      ],
     );
+
+    return memoizedNode;
   },
 );
-
 Node.displayName = "Node";
 
-export default Node;
+export default memo(Node, (prevProps, nextProps) => {
+  return (
+    prevProps.node.type === nextProps.node.type &&
+    prevProps.node.isBlock === nextProps.node.isBlock &&
+    prevProps.isMovedWhilstAnimated === nextProps.isMovedWhilstAnimated
+  );
+});

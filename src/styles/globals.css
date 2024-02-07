@@ -64,6 +64,14 @@ background-size: 25px 25px;
   justify-content: center;
 }
 
+.node-start {
+  background-color: rgba(68, 255, 17, 0.8);
+}
+
+.node-end {
+  background-color: rgba(248, 26, 14, 0.8);
+}
+
 
 .node-visited {
   animation-name: visitedAnimation;

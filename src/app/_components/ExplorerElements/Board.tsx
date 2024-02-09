@@ -4,6 +4,7 @@ import ExplorerGraph from "~/app/ExplorersAlgorithm/ExplorerAlgorithm";
 import Node from "./Node";
 import { useThemeContext } from "~/app/context/ThemeContext";
 import { AlgorithmEnum } from "~/app/_pageConfigs/configExplorer";
+import { generateMaze } from "~/app/utils/generateExplorerMaze";
 
 interface BoardProps {
   isPlay: boolean;
@@ -17,6 +18,9 @@ interface BoardProps {
   isMovedWhilstAnimated: boolean;
   setMovedWhilstAnimated: React.Dispatch<React.SetStateAction<boolean>>;
   selectedAlgorithm: AlgorithmEnum | null;
+  isMaze: boolean;
+  setMaze: React.Dispatch<React.SetStateAction<boolean>>;
+  nodeRef: React.MutableRefObject<HTMLElement[][]>;
 }
 const Board = ({
   isPlay,
@@ -30,18 +34,19 @@ const Board = ({
   isMovedWhilstAnimated,
   setMovedWhilstAnimated,
   selectedAlgorithm,
+  isMaze,
+  setMaze,
+  nodeRef,
 }: BoardProps) => {
   const { theme } = useThemeContext();
   const [isMousePressed, setMousePressed] = useState<MousePressedNode | null>(
     null,
   );
   const [lastBlockEdited, setLastBlockEdited] = useState<GridNode | null>(null);
-  const [isAnimated, setAnimated] = useState<boolean>(false);
-  const nodeRef = useRef<HTMLElement[][]>([]);
 
   const ANIMATION_SPEED = 30;
 
-  const animateDijkstra = async () => {
+  const animateAlgorithm = async () => {
     const newBoard: Grid = board.map((row) =>
       row.map((node) => {
         return {
@@ -121,21 +126,29 @@ const Board = ({
   };
 
   useEffect(() => {
+    if (isMaze) {
+      clearBoard();
+      setBoard(
+        generateMaze(board.length, board[0]!.length, startNode, endNode),
+      );
+      setMaze(false);
+    }
+  }, [isMaze]);
+
+  useEffect(() => {
     const runAnimation = async () => {
       if (isPlay) {
         setMovedWhilstAnimated(false);
-        setAnimated(false);
         clearBoard();
-        await animateDijkstra();
-        setAnimated(true);
+        await animateAlgorithm();
+        setMovedWhilstAnimated(true);
       }
     };
 
     if (
-      isAnimated &&
+      isMovedWhilstAnimated &&
       (isMousePressed === "start" || isMousePressed === "end")
     ) {
-      setMovedWhilstAnimated(true);
       const newBoard: Grid = board.map((row) =>
         row.map((node) => {
           console.log;
@@ -164,6 +177,7 @@ const Board = ({
   }, [isPlay, isMousePressed, startNode, endNode]);
 
   useEffect(() => {
+    setMovedWhilstAnimated(false);
     clearBoard();
   }, [selectedAlgorithm]);
 

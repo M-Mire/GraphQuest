@@ -39,12 +39,12 @@ const Node = forwardRef<HTMLElement, NodeProps>(
         ? "bg-red-300 node-shortest-path"
         : isEndNode && type !== "shortestPath" && type !== "visited"
         ? "bg-red-500"
+        : type === "shortestPath"
+        ? `bg-purple-300 ${!isMovedWhilstAnimated ? "node-shortest-path" : ""}`
         : isBlock
         ? "node-block"
         : type === "visited"
         ? `bg-blue-500 ${!isMovedWhilstAnimated ? "node-visited" : ""}`
-        : type === "shortestPath"
-        ? `bg-purple-300 ${!isMovedWhilstAnimated ? "node-shortest-path" : ""}`
         : ""
     }`;
 

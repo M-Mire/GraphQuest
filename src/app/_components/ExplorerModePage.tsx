@@ -2,12 +2,12 @@ import Navbar from "./SharedUI/Navbar";
 import { pageConfigurationBFS as pageConfiguration } from "../_pageConfigs/config";
 import useThemeBackground from "../hooks/useThemeBackground";
 import Board from "./ExplorerElements/Board";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import InformationBoard from "./SharedUI/InformationBoard";
 import InformationBoardExplorerNode from "./SharedUI/InformationBoardItems/InformationBoardExplorerNode";
 import { Grid, GridNode, NodeType } from "../types";
 import ControlAlgorithmButton from "./ExplorerElements/ControlAlgorithmButton";
-import { AlgorithmEnum, algorithmMap } from "../_pageConfigs/configExplorer";
+import { AlgorithmEnum } from "../_pageConfigs/configExplorer";
 
 const ROWS = 15;
 const COLS = 40;
@@ -48,6 +48,8 @@ const ExplorerModePage = () => {
     useState<boolean>(false);
   const [selectedAlgorithm, setSelectedAlgorithm] =
     useState<AlgorithmEnum | null>(null);
+  const [isMaze, setMaze] = useState<boolean>(false);
+  const nodeRef = useRef<HTMLElement[][]>([]);
 
   return (
     <div className="relative flex h-screen flex-col">
@@ -60,6 +62,10 @@ const ExplorerModePage = () => {
           setPlay={setPlay}
           selectedAlgorithm={selectedAlgorithm}
           setSelectedAlgorithm={setSelectedAlgorithm}
+          isMaze={isMaze}
+          setMaze={setMaze}
+          setBoard={setBoard}
+          nodeRef={nodeRef}
         />
       </Navbar>
       <div className="flex w-full justify-center">
@@ -98,6 +104,9 @@ const ExplorerModePage = () => {
             isMovedWhilstAnimated={isMovedWhilstAnimated}
             setMovedWhilstAnimated={setMovedWhilstAnimated}
             selectedAlgorithm={selectedAlgorithm}
+            isMaze={isMaze}
+            setMaze={setMaze}
+            nodeRef={nodeRef}
           />
           {/* <div className="flex justify-center gap-4">
             <Board

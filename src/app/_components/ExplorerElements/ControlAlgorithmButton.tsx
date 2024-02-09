@@ -1,8 +1,12 @@
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import MazeIcon from "@mui/icons-material/BorderClear";
+
 import { useThemeContext } from "~/app/context/ThemeContext";
 import { AlgorithmEnum, algorithmMap } from "~/app/_pageConfigs/configExplorer";
+import { Grid } from "~/app/types";
 
 const style = { fontSize: "1rem" };
 
@@ -13,6 +17,10 @@ interface ControlButtonsProps {
   setSelectedAlgorithm: React.Dispatch<
     React.SetStateAction<AlgorithmEnum | null>
   >;
+  isMaze: boolean;
+  setMaze: React.Dispatch<React.SetStateAction<boolean>>;
+  setBoard: React.Dispatch<React.SetStateAction<Grid>>;
+  nodeRef: React.MutableRefObject<HTMLElement[][]>;
 }
 
 const ControlAlgorithmButton: React.FC<ControlButtonsProps> = ({
@@ -20,6 +28,9 @@ const ControlAlgorithmButton: React.FC<ControlButtonsProps> = ({
   isPlay,
   selectedAlgorithm,
   setSelectedAlgorithm,
+  setMaze,
+  setBoard,
+  nodeRef,
 }) => {
   const { theme } = useThemeContext();
   const colour = theme.background.quaternary;
@@ -43,6 +54,32 @@ const ControlAlgorithmButton: React.FC<ControlButtonsProps> = ({
     setPlay(true);
   };
 
+  const handleMazeClick = () => {
+    if (!isPlay) setMaze(true);
+  };
+
+  const handleDeleteClick = () => {
+    if (isPlay) return;
+    setBoard((prevBoard) => {
+      const updatedBoard: Grid = prevBoard.map((r) =>
+        r.map((n) => {
+          const nodeElement = nodeRef.current[n.row]?.[n.col];
+          if (nodeElement) {
+            nodeElement.classList.remove("node-visited", "node-shortest-path");
+          }
+          return {
+            ...n,
+            previousNode: null,
+            distance: Infinity,
+            isBlock: false,
+            type: "normal",
+          };
+        }),
+      );
+      return updatedBoard;
+    });
+  };
+
   return (
     <div className="relative ml-5 flex items-center text-sm font-bold">
       <div
@@ -50,13 +87,20 @@ const ControlAlgorithmButton: React.FC<ControlButtonsProps> = ({
  h-8 items-center rounded-l-lg border-2"
         style={themeStyle}
       >
-        <CustomButton onClick={handlePlayClick} colour={colour}>
-          <PlayArrowIcon style={style} />
-        </CustomButton>
+        <div className={`flex items-center rounded-full `}>
+          <IconButton
+            color="primary"
+            size="small"
+            onClick={handlePlayClick}
+            style={{ color: colour }}
+          >
+            <PlayArrowIcon style={style} />
+          </IconButton>
+        </div>
       </div>
       <button
         name="changeView"
-        className="mr-2 h-8 w-28 rounded-r-lg border-y-2 border-r-2 text-sm transition duration-300 ease-in-out hover:bg-gray-400 "
+        className="h-8 w-32 border-y-2 text-sm transition duration-300 ease-in-out hover:bg-gray-400 "
         style={themeStyle}
         onClick={() => {
           if (!isPlay) {
@@ -70,6 +114,38 @@ const ControlAlgorithmButton: React.FC<ControlButtonsProps> = ({
           <p className="text-sm">Pick Algorithm</p>
         )}
       </button>
+      <div
+        className="flex
+ h-8 items-center border-y-2 border-l-2"
+        style={themeStyle}
+      >
+        <div className={`flex items-center rounded-full `}>
+          <IconButton
+            color="primary"
+            size="small"
+            onClick={handleMazeClick}
+            style={{ color: colour }}
+          >
+            <MazeIcon style={style} />
+          </IconButton>
+        </div>
+      </div>
+      <div
+        className="flex
+ h-8 items-center rounded-r-lg border-2"
+        style={themeStyle}
+      >
+        <div className={`flex items-center rounded-full `}>
+          <IconButton
+            color="primary"
+            size="small"
+            onClick={handleDeleteClick}
+            style={{ color: colour }}
+          >
+            <DeleteForeverIcon style={style} />
+          </IconButton>
+        </div>
+      </div>
       {isOpen && (
         <>
           <div
@@ -96,39 +172,6 @@ const ControlAlgorithmButton: React.FC<ControlButtonsProps> = ({
 };
 
 export default ControlAlgorithmButton;
-
-interface CustomButtonProps {
-  onClick: () => void;
-  children: ReactNode;
-  colour: string;
-  mr?: boolean;
-  ml?: boolean;
-}
-
-const CustomButton: React.FC<CustomButtonProps> = ({
-  onClick,
-  children,
-  ml,
-  mr,
-  colour,
-}) => {
-  return (
-    <div
-      className={`flex items-center rounded-full  ${ml ? "ml-2" : ""} ${
-        mr ? "mr-2" : ""
-      }`}
-    >
-      <IconButton
-        color="primary"
-        size="small"
-        onClick={onClick}
-        style={{ color: colour }}
-      >
-        {children}
-      </IconButton>
-    </div>
-  );
-};
 
 interface ExplorerItemsProps {
   themeStyle: {

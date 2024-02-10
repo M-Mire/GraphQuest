@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -19,8 +19,8 @@ interface ControlButtonsProps {
   >;
   isMaze: boolean;
   setMaze: React.Dispatch<React.SetStateAction<boolean>>;
-  setBoard: React.Dispatch<React.SetStateAction<Grid>>;
-  nodeRef: React.MutableRefObject<HTMLElement[][]>;
+  setDeleteClicked: React.Dispatch<React.SetStateAction<boolean>>;
+  isEditMode: boolean;
 }
 
 const ControlAlgorithmButton: React.FC<ControlButtonsProps> = ({
@@ -29,8 +29,8 @@ const ControlAlgorithmButton: React.FC<ControlButtonsProps> = ({
   selectedAlgorithm,
   setSelectedAlgorithm,
   setMaze,
-  setBoard,
-  nodeRef,
+  setDeleteClicked,
+  isEditMode,
 }) => {
   const { theme } = useThemeContext();
   const colour = theme.background.quaternary;
@@ -59,26 +59,14 @@ const ControlAlgorithmButton: React.FC<ControlButtonsProps> = ({
   };
 
   const handleDeleteClick = () => {
-    if (isPlay) return;
-    setBoard((prevBoard) => {
-      const updatedBoard: Grid = prevBoard.map((r) =>
-        r.map((n) => {
-          const nodeElement = nodeRef.current[n.row]?.[n.col];
-          if (nodeElement) {
-            nodeElement.classList.remove("node-visited", "node-shortest-path");
-          }
-          return {
-            ...n,
-            previousNode: null,
-            distance: Infinity,
-            isBlock: false,
-            type: "normal",
-          };
-        }),
-      );
-      return updatedBoard;
-    });
+    setDeleteClicked(true);
   };
+
+  useEffect(() => {
+    if (isEditMode && isOpen) {
+      setDropDown(false);
+    }
+  }, [isEditMode]);
 
   return (
     <div className="relative ml-5 flex items-center text-sm font-bold">
@@ -98,25 +86,28 @@ const ControlAlgorithmButton: React.FC<ControlButtonsProps> = ({
           </IconButton>
         </div>
       </div>
-      <button
-        name="changeView"
-        className="h-8 w-32 border-y-2 text-sm transition duration-300 ease-in-out hover:bg-gray-400 "
-        style={themeStyle}
-        onClick={() => {
-          if (!isPlay) {
-            setDropDown(!isOpen);
-          }
-        }}
-      >
-        {selectedAlgorithm ? (
-          ` ${selectedAlgorithm}`
-        ) : (
-          <p className="text-sm">Pick Algorithm</p>
-        )}
-      </button>
+      {!isEditMode && (
+        <button
+          name="changeView"
+          className="h-8 w-32 border-y-2 text-sm transition duration-300 ease-in-out hover:bg-gray-400 "
+          style={themeStyle}
+          onClick={() => {
+            if (!isPlay) {
+              setDropDown(!isOpen);
+            }
+          }}
+        >
+          {selectedAlgorithm ? (
+            ` ${selectedAlgorithm}`
+          ) : (
+            <p className="text-sm">Pick Algorithm</p>
+          )}
+        </button>
+      )}
+
       <div
-        className="flex
- h-8 items-center border-y-2 border-l-2"
+        className={`flex
+ h-8 items-center border-y-2 ${!isEditMode && "border-l-2"}`}
         style={themeStyle}
       >
         <div className={`flex items-center rounded-full `}>
@@ -127,6 +118,7 @@ const ControlAlgorithmButton: React.FC<ControlButtonsProps> = ({
             style={{ color: colour }}
           >
             <MazeIcon style={style} />
+            <p className="ml-2 mr-2 text-sm"> Maze</p>
           </IconButton>
         </div>
       </div>
@@ -143,13 +135,14 @@ const ControlAlgorithmButton: React.FC<ControlButtonsProps> = ({
             style={{ color: colour }}
           >
             <DeleteForeverIcon style={style} />
+            <p className="ml-2 mr-2 text-sm"> Clear </p>
           </IconButton>
         </div>
       </div>
       {isOpen && (
         <>
           <div
-            className="absolute right-0 top-full z-10 mt-2 w-48 rounded-lg border-2 border-solid border-slate-700"
+            className="absolute right-20 top-full z-10 mt-2 w-48 rounded-lg border-2 border-solid border-slate-700"
             style={themeStyle}
           >
             {algorithmObjects.map(({ name, algorithm: algorithm }, index) => (

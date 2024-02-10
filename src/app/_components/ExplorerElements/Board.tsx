@@ -9,6 +9,8 @@ import { generateMaze } from "~/app/utils/generateExplorerMaze";
 interface BoardProps {
   isPlay: boolean;
   setPlay: React.Dispatch<React.SetStateAction<boolean>>;
+  isOtherPlay?: boolean;
+  setOtherBoard?: React.Dispatch<React.SetStateAction<Grid>>;
   startNode: GridNode;
   setStartNode: React.Dispatch<React.SetStateAction<GridNode>>;
   endNode: GridNode;
@@ -21,6 +23,11 @@ interface BoardProps {
   isMaze: boolean;
   setMaze: React.Dispatch<React.SetStateAction<boolean>>;
   nodeRef: React.MutableRefObject<HTMLElement[][]>;
+  testName?: string;
+  isMousePressed: MousePressedNode | null;
+  setMousePressed: React.Dispatch<
+    React.SetStateAction<MousePressedNode | null>
+  >;
 }
 const Board = ({
   isPlay,
@@ -34,14 +41,15 @@ const Board = ({
   isMovedWhilstAnimated,
   setMovedWhilstAnimated,
   selectedAlgorithm,
-  isMaze,
-  setMaze,
   nodeRef,
+  testName,
+  isMousePressed,
+  setMousePressed,
+  isOtherPlay,
+  setOtherBoard,
 }: BoardProps) => {
   const { theme } = useThemeContext();
-  const [isMousePressed, setMousePressed] = useState<MousePressedNode | null>(
-    null,
-  );
+
   const [lastBlockEdited, setLastBlockEdited] = useState<GridNode | null>(null);
 
   const ANIMATION_SPEED = 30;
@@ -67,7 +75,6 @@ const Board = ({
           endNode.col,
           newBoard,
         );
-
       // Animate visited nodes
       for (let i = 0; i < visitedNodesInOrder.length; i++) {
         const node = visitedNodesInOrder[i]!;
@@ -126,16 +133,6 @@ const Board = ({
   };
 
   useEffect(() => {
-    if (isMaze) {
-      clearBoard();
-      setBoard(
-        generateMaze(board.length, board[0]!.length, startNode, endNode),
-      );
-      setMaze(false);
-    }
-  }, [isMaze]);
-
-  useEffect(() => {
     const runAnimation = async () => {
       if (isPlay) {
         setMovedWhilstAnimated(false);
@@ -149,9 +146,9 @@ const Board = ({
       isMovedWhilstAnimated &&
       (isMousePressed === "start" || isMousePressed === "end")
     ) {
+      clearBoard();
       const newBoard: Grid = board.map((row) =>
         row.map((node) => {
-          console.log;
           return {
             ...node,
             previousNode: null,
@@ -182,7 +179,7 @@ const Board = ({
   }, [selectedAlgorithm]);
 
   const handleMouseDown = (row: number, col: number) => {
-    if (isPlay) return;
+    if (isPlay || isOtherPlay) return;
     const currentNode = board[row]![col]!;
     const isStartNode = startNode.row === row && startNode.col === col;
     const isEndNode = endNode.row === row && endNode.col === col;
@@ -203,13 +200,23 @@ const Board = ({
       if (row !== startNode.row || col !== startNode.col) {
         newBoard[startNode.row]![startNode.col]!.isStart = false;
         newBoard[row]![col]!.isStart = true;
-        setStartNode({ ...startNode, row, col });
+        setStartNode({
+          ...startNode,
+          row,
+          col,
+          isBlock: newBoard[row]![col]!.isBlock,
+        });
       }
     } else if (isMousePressed === "end") {
       if (row !== endNode.row || col !== endNode.col) {
         newBoard[endNode.row]![endNode.col]!.isEnd = false;
         newBoard[row]![col]!.isEnd = true;
-        setEndNode({ ...endNode, row, col });
+        setEndNode({
+          ...endNode,
+          row,
+          col,
+          isBlock: newBoard[row]![col]!.isBlock,
+        });
       }
     } else {
       if (
@@ -234,6 +241,8 @@ const Board = ({
       }
     }
     setBoard(newBoard);
+    if (setOtherBoard && isMousePressed !== "start" && isMousePressed !== "end")
+      setOtherBoard(newBoard);
   };
 
   const handleMouseUp = () => {

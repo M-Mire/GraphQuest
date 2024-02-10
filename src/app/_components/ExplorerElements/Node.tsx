@@ -35,14 +35,14 @@ const Node = forwardRef<HTMLElement, NodeProps>(
     const nodeClassName = `h-6 w-6 border-2 border-zinc-50 flex items-center justify-center ${
       isStartNode && type !== "shortestPath" && type !== "visited"
         ? "bg-green-500 node-start"
-        : isStartNode && type === "shortestPath"
-        ? "bg-red-300 node-shortest-path"
         : isEndNode && type !== "shortestPath" && type !== "visited"
         ? "bg-red-500"
-        : type === "shortestPath"
-        ? `bg-purple-300 ${!isMovedWhilstAnimated ? "node-shortest-path" : ""}`
         : isBlock
         ? "node-block"
+        : isStartNode && type === "shortestPath"
+        ? "bg-red-300 node-shortest-path"
+        : type === "shortestPath"
+        ? `bg-purple-300 ${!isMovedWhilstAnimated ? "node-shortest-path" : ""}`
         : type === "visited"
         ? `bg-blue-500 ${!isMovedWhilstAnimated ? "node-visited" : ""}`
         : ""

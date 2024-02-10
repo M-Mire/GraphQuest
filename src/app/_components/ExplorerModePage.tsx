@@ -1,13 +1,16 @@
 import Navbar from "./SharedUI/Navbar";
 import { pageConfigurationBFS as pageConfiguration } from "../_pageConfigs/config";
 import useThemeBackground from "../hooks/useThemeBackground";
-import Board from "./ExplorerElements/Board";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import InformationBoard from "./SharedUI/InformationBoard";
 import InformationBoardExplorerNode from "./SharedUI/InformationBoardItems/InformationBoardExplorerNode";
-import { Grid, GridNode, NodeType } from "../types";
+import { Grid, GridNode } from "../types";
 import ControlAlgorithmButton from "./ExplorerElements/ControlAlgorithmButton";
 import { AlgorithmEnum } from "../_pageConfigs/configExplorer";
+import { useSearchParams } from "next/navigation";
+import CompareBoard from "./ExplorerElements/CompareBoard";
+import { renderBoard } from "../utils/renderGridBoard";
+import SingleBoard from "./ExplorerElements/SingleBoard";
 
 const ROWS = 15;
 const COLS = 40;
@@ -24,8 +27,8 @@ const START_NODE: GridNode = {
   previousNode: null,
 };
 const END_NODE: GridNode = {
-  row: 5,
-  col: 10,
+  row: 2,
+  col: 2,
   type: "normal",
   isStart: false,
   isEnd: true,
@@ -43,13 +46,40 @@ const ExplorerModePage = () => {
   const [isPlay, setPlay] = useState<boolean>(false);
   const [startNode, setStartNode] = useState(START_NODE);
   const [endNode, setEndNode] = useState(END_NODE);
-  const [board, setBoard] = useState<Grid>(renderBoard(startNode, endNode));
-  const [isMovedWhilstAnimated, setMovedWhilstAnimated] =
-    useState<boolean>(false);
+  const [board, setBoard] = useState<Grid>(
+    renderBoard(startNode, endNode, ROWS, COLS),
+  );
+
   const [selectedAlgorithm, setSelectedAlgorithm] =
     useState<AlgorithmEnum | null>(null);
   const [isMaze, setMaze] = useState<boolean>(false);
   const nodeRef = useRef<HTMLElement[][]>([]);
+  const nodeRef2 = useRef<HTMLElement[][]>([]);
+  const searchParams = useSearchParams();
+
+  const isEditMode = searchParams && searchParams.get("edit") === "true";
+  const [isDeleteClicked, setDeleteClicked] = useState<boolean>(false);
+
+  useEffect(() => {
+    setBoard((prevBoard) => {
+      const updatedBoard: Grid = prevBoard.map((r) =>
+        r.map((n) => {
+          const nodeElement = nodeRef.current[n.row]?.[n.col];
+          if (nodeElement) {
+            nodeElement.classList.remove("node-visited", "node-shortest-path");
+          }
+          return {
+            ...n,
+            previousNode: null,
+            distance: Infinity,
+            isBlock: false,
+            type: "normal",
+          };
+        }),
+      );
+      return updatedBoard;
+    });
+  }, [isEditMode]);
 
   return (
     <div className="relative flex h-screen flex-col">
@@ -64,8 +94,8 @@ const ExplorerModePage = () => {
           setSelectedAlgorithm={setSelectedAlgorithm}
           isMaze={isMaze}
           setMaze={setMaze}
-          setBoard={setBoard}
-          nodeRef={nodeRef}
+          setDeleteClicked={setDeleteClicked}
+          isEditMode={isEditMode}
         />
       </Navbar>
       <div className="flex w-full justify-center">
@@ -92,83 +122,45 @@ const ExplorerModePage = () => {
               nodeClassName="node-block"
             />
           </InformationBoard>
-          <Board
-            isPlay={isPlay}
-            setPlay={setPlay}
-            startNode={startNode}
-            setStartNode={setStartNode}
-            endNode={endNode}
-            setEndNode={setEndNode}
-            board={board}
-            setBoard={setBoard}
-            isMovedWhilstAnimated={isMovedWhilstAnimated}
-            setMovedWhilstAnimated={setMovedWhilstAnimated}
-            selectedAlgorithm={selectedAlgorithm}
-            isMaze={isMaze}
-            setMaze={setMaze}
-            nodeRef={nodeRef}
-          />
-          {/* <div className="flex justify-center gap-4">
-            <Board
+          {!isEditMode ? (
+            <SingleBoard
               isPlay={isPlay}
               setPlay={setPlay}
               startNode={startNode}
               setStartNode={setStartNode}
               endNode={endNode}
               setEndNode={setEndNode}
+              isMaze={isMaze}
+              setMaze={setMaze}
+              nodeRef={nodeRef}
+              selectedAlgorithm={selectedAlgorithm}
+              isDeleteClicked={isDeleteClicked}
+              setDeleteClicked={setDeleteClicked}
               board={board}
               setBoard={setBoard}
-              isMovedWhilstAnimated={isMovedWhilstAnimated}
-              setMovedWhilstAnimated={setMovedWhilstAnimated}
             />
-            <div className="h-full border-l border-gray-500"></div>
-            <Board
+          ) : (
+            <CompareBoard
               isPlay={isPlay}
               setPlay={setPlay}
               startNode={startNode}
               setStartNode={setStartNode}
               endNode={endNode}
               setEndNode={setEndNode}
-              board={board}
-              setBoard={setBoard}
-              isMovedWhilstAnimated={isMovedWhilstAnimated}
-              setMovedWhilstAnimated={setMovedWhilstAnimated}
+              isMaze={isMaze}
+              setMaze={setMaze}
+              nodeRef={nodeRef}
+              nodeRef2={nodeRef2}
+              ROWS={ROWS}
+              COLS={COLS}
+              isDeleteClicked={isDeleteClicked}
+              setDeleteClicked={setDeleteClicked}
             />
-          </div> */}
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-const renderBoard = (
-  startNode: { row: number; col: number },
-  endNode: { row: number; col: number },
-): Grid => {
-  const grid: Grid = [];
-  for (let i = 0; i < ROWS; i++) {
-    const row: GridNode[] = [];
-    for (let j = 0; j < COLS; j++) {
-      const isStartNode = startNode.row === i && startNode.col === j;
-      const isEndNode = endNode.row === i && endNode.col === j;
-
-      const nodeType: NodeType = "normal";
-
-      row.push({
-        row: i,
-        col: j,
-        type: nodeType,
-        isStart: isStartNode,
-        isEnd: isEndNode,
-        distance: Infinity,
-        gScore: Infinity,
-        fScore: Infinity,
-        isBlock: false,
-        previousNode: null,
-      });
-    }
-    grid.push(row);
-  }
-  return grid;
-};
 export default ExplorerModePage;

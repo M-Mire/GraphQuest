@@ -5,6 +5,8 @@ import Node from "./Node";
 import { useThemeContext } from "~/app/context/ThemeContext";
 import { AlgorithmEnum } from "~/app/_pageConfigs/configExplorer";
 import { generateMaze } from "~/app/utils/generateExplorerMaze";
+import SelectAlgorithm from "./SelectAlgorithm";
+import StatsCompareBoard from "./StatsCompareBoard";
 
 interface BoardProps {
   isPlay: boolean;
@@ -28,6 +30,9 @@ interface BoardProps {
   setMousePressed: React.Dispatch<
     React.SetStateAction<MousePressedNode | null>
   >;
+  setSelectedAlgorithm?: React.Dispatch<
+    React.SetStateAction<AlgorithmEnum | null>
+  >;
 }
 const Board = ({
   isPlay,
@@ -47,10 +52,18 @@ const Board = ({
   setMousePressed,
   isOtherPlay,
   setOtherBoard,
+  setSelectedAlgorithm,
 }: BoardProps) => {
   const { theme } = useThemeContext();
 
   const [lastBlockEdited, setLastBlockEdited] = useState<GridNode | null>(null);
+  const [isSelectedAlgorithmInterface, setSelectedAlgorithmInterface] =
+    useState<boolean>(true);
+
+  const [stats, setStats] = useState<
+    { name: string; value: number | string }[] | null
+  >(null);
+  const [isStatisticButtonOpen, setStatisticButton] = useState<boolean>(false);
 
   const ANIMATION_SPEED = 30;
 
@@ -75,6 +88,25 @@ const Board = ({
           endNode.col,
           newBoard,
         );
+
+      // Calculate statistics
+      const short = shortestPath.length;
+      const visOrder =
+        visitedNodesInOrder.length + 1 < short
+          ? short
+          : visitedNodesInOrder.length + 1;
+      const time = (visOrder + short) * ANIMATION_SPEED;
+      const accuracy = (short / visOrder) * 100;
+      const gridSize = board[0]!.length * board.length;
+      // Update stats state
+      setStats([
+        { name: "# Visited Node", value: visOrder },
+        { name: "# Shortest Path", value: short },
+        { name: "Time", value: `${time}ms` },
+        { name: "Accuracy", value: `${accuracy.toFixed(2)}%` },
+        { name: "Grid Size", value: gridSize },
+      ]);
+
       // Animate visited nodes
       for (let i = 0; i < visitedNodesInOrder.length; i++) {
         const node = visitedNodesInOrder[i]!;
@@ -96,6 +128,7 @@ const Board = ({
     } catch {
     } finally {
       setPlay(false);
+      setStatisticButton(true);
     }
   };
   const animateShortestPath = async (shortestPath: GridNode[]) => {
@@ -143,6 +176,7 @@ const Board = ({
     };
 
     if (
+      !setOtherBoard &&
       isMovedWhilstAnimated &&
       (isMousePressed === "start" || isMousePressed === "end")
     ) {
@@ -166,6 +200,14 @@ const Board = ({
         newBoard,
       );
       setBoard(updatedBoard);
+    }
+
+    if (
+      setOtherBoard &&
+      isMovedWhilstAnimated &&
+      (isMousePressed === "start" || isMousePressed === "end")
+    ) {
+      clearBoard();
     }
 
     runAnimation().catch((error) => {
@@ -241,6 +283,7 @@ const Board = ({
       }
     }
     setBoard(newBoard);
+    // Will copy the blocks creation for both boards in compareBoard
     if (setOtherBoard && isMousePressed !== "start" && isMousePressed !== "end")
       setOtherBoard(newBoard);
   };
@@ -251,7 +294,7 @@ const Board = ({
 
   return (
     <div
-      className="overflow-hidden"
+      className="relative overflow-hidden"
       style={{
         background: theme.background.secondary,
         borderColor: theme.background.quaternary,
@@ -285,6 +328,21 @@ const Board = ({
           </div>
         );
       })}
+
+      {setSelectedAlgorithm && selectedAlgorithm === null && (
+        <SelectAlgorithm
+          setSelectedAlgorithm={setSelectedAlgorithm}
+          selectedAlgorithm={selectedAlgorithm}
+        />
+      )}
+      {stats && selectedAlgorithm && !isPlay && isStatisticButtonOpen && (
+        <StatsCompareBoard
+          stats={stats}
+          selectedAlgorithm={selectedAlgorithm}
+          setStatisticButton={setStatisticButton}
+          setSelectedAlgorithm={setSelectedAlgorithm}
+        />
+      )}
     </div>
   );
 };

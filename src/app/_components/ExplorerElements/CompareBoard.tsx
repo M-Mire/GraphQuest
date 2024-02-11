@@ -38,8 +38,12 @@ const CompareBoard = ({
   isDeleteClicked,
   setDeleteClicked,
 }: CompareBoardProps) => {
-  const selectedAlg1: AlgorithmEnum = AlgorithmEnum.DFS;
-  const selectedAlg2: AlgorithmEnum = AlgorithmEnum.GreedyBFS;
+  const [selectedAlg1, setSelectedAlgorithm1] = useState<AlgorithmEnum | null>(
+    null,
+  );
+  const [selectedAlg2, setSelectedAlgorithm2] = useState<AlgorithmEnum | null>(
+    null,
+  );
   const [board1, setBoard1] = useState<Grid>(
     renderBoard(startNode, endNode, ROWS, COLS),
   );
@@ -182,6 +186,7 @@ const CompareBoard = ({
         nodeRef={nodeRef}
         isMousePressed={isMousePressed}
         setMousePressed={setMousePressed}
+        setSelectedAlgorithm={setSelectedAlgorithm1}
       />
       <div className="h-full border-l border-gray-500"></div>
       <Board
@@ -204,6 +209,7 @@ const CompareBoard = ({
         nodeRef={nodeRef2}
         isMousePressed={isMousePressed}
         setMousePressed={setMousePressed}
+        setSelectedAlgorithm={setSelectedAlgorithm2}
       />
     </div>
   );

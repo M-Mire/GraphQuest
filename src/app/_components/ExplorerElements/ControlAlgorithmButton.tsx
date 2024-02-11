@@ -68,6 +68,11 @@ const ControlAlgorithmButton: React.FC<ControlButtonsProps> = ({
     }
   }, [isEditMode]);
 
+  useEffect(() => {
+    if (isPlay) {
+      setDropDown(false);
+    }
+  }, [isPlay]);
   return (
     <div className="relative ml-5 flex items-center text-sm font-bold">
       <div

@@ -19,6 +19,7 @@ const themes: Record<string, Theme> = {
       title: "#131A24",
       primary: "#cdcecf",
       secondary: "#131A24",
+      tertiary: "#3B4252",
     },
     node: {
       unvisited: "#ffffff",
@@ -48,6 +49,7 @@ const themes: Record<string, Theme> = {
       title: "#16161D",
       primary: "#957FB8",
       secondary: "#131A24",
+      tertiary: "#3B4252",
     },
     node: {
       unvisited: "#ffffff",
@@ -77,6 +79,7 @@ const themes: Record<string, Theme> = {
       title: "#98BB6C",
       primary: "#98BB6C",
       secondary: "#C6BE92",
+      tertiary: "#CF8670",
     },
     node: {
       unvisited: "#ffffff",

@@ -1,5 +1,5 @@
 import Navbar from "./SharedUI/Navbar";
-import { pageConfigurationBFS as pageConfiguration } from "../_pageConfigs/config";
+import { pageConfigurationEXPLORER as pageConfiguration } from "../_pageConfigs/config";
 import useThemeBackground from "../hooks/useThemeBackground";
 import { useEffect, useRef, useState } from "react";
 import InformationBoard from "./SharedUI/InformationBoard";
@@ -57,8 +57,10 @@ const ExplorerModePage = () => {
   const nodeRef2 = useRef<HTMLElement[][]>([]);
   const searchParams = useSearchParams();
 
-  const isEditMode = searchParams && searchParams.get("edit") === "true";
+  const mode = searchParams && searchParams.get("compareMode") === "true";
   const [isDeleteClicked, setDeleteClicked] = useState<boolean>(false);
+
+  const [isStatisticButtonOpen, setStatisticButton] = useState<boolean>(false);
 
   useEffect(() => {
     setBoard((prevBoard) => {
@@ -79,7 +81,7 @@ const ExplorerModePage = () => {
       );
       return updatedBoard;
     });
-  }, [isEditMode]);
+  }, [mode]);
 
   return (
     <div className="relative flex h-screen flex-col">
@@ -95,7 +97,7 @@ const ExplorerModePage = () => {
           isMaze={isMaze}
           setMaze={setMaze}
           setDeleteClicked={setDeleteClicked}
-          isEditMode={isEditMode}
+          isEditMode={mode}
         />
       </Navbar>
       <div className="flex w-full justify-center">
@@ -122,7 +124,7 @@ const ExplorerModePage = () => {
               nodeClassName="node-block"
             />
           </InformationBoard>
-          {!isEditMode ? (
+          {!mode ? (
             <SingleBoard
               isPlay={isPlay}
               setPlay={setPlay}

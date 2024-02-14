@@ -139,7 +139,6 @@ const CompareBoard = ({
         r.map((n) => {
           const nodeElement = nodeRef2.current[n.row]?.[n.col];
           if (nodeElement) {
-            // Reset classes
             nodeElement.classList.remove("node-visited", "node-shortest-path");
           }
           return {
@@ -187,6 +186,7 @@ const CompareBoard = ({
         isMousePressed={isMousePressed}
         setMousePressed={setMousePressed}
         setSelectedAlgorithm={setSelectedAlgorithm1}
+        otherSelectedAlgorithm={selectedAlg2}
       />
       <div className="h-full border-l border-gray-500"></div>
       <Board
@@ -210,6 +210,7 @@ const CompareBoard = ({
         isMousePressed={isMousePressed}
         setMousePressed={setMousePressed}
         setSelectedAlgorithm={setSelectedAlgorithm2}
+        otherSelectedAlgorithm={selectedAlg1}
       />
     </div>
   );

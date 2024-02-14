@@ -1,73 +1,46 @@
-import { useCallback, useState } from "react";
-import Link from "next/link";
-import {
-  ACTIONS_NODE,
-  ActionNode,
-} from "~/app/_components/GraphUI/NodeElement";
-import type { ActionLine } from "../CanvasElements/Animation";
-import { useSearchParams, usePathname } from "next/navigation";
+import { useState } from "react";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import IconButton from "@mui/material/IconButton";
 import { useThemeContext } from "~/app/context/ThemeContext";
 import Themes from "./NavItems/Themes";
-import MultiSwitcher from "./MultiSwitcher";
+import PageMenu from "./PageMenu";
 import pageConfigurationType from "~/app/_pageConfigs/config";
+import ToggleMode from "./NavItems/ToggleMode";
+import ShowMenuItems from "./NavItems/ShowMenuItems";
+import Link from "next/link";
 
 export interface NavbarProps {
-  dispatch?: React.Dispatch<ActionNode>;
-  algorithmName: string;
-  pageConfiguration: pageConfigurationType;
+  algorithmName?: string;
+  pageConfiguration?: pageConfigurationType;
   children?: React.ReactNode;
+  explorersMode?: boolean;
 }
 const Navbar: React.FC<NavbarProps> = ({
-  dispatch,
   algorithmName,
   children,
   pageConfiguration,
 }) => {
   const { theme } = useThemeContext();
-  const pathname = usePathname();
-  const searchParams = useSearchParams()!;
-  const isEditMode = searchParams?.get("edit");
+
   const [showMenu, setShowMenu] = useState(false);
 
   const toggleMenu = () => {
     setShowMenu(!showMenu);
   };
 
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams);
-      params.append(name, value);
-      return params.toString();
-    },
-    [searchParams],
-  );
-
-  const deleteQueryString = useCallback(
-    (name: string) => {
-      const params = new URLSearchParams(searchParams);
-      params.delete(name);
-      return params.toString();
-    },
-    [searchParams],
-  );
-  const [isMultiSwitcherActive, setMultiSwitcher] = useState(false);
+  const [isPageMenuActive, setPageMenu] = useState(false);
   const handleSVGClick = () => {
-    setMultiSwitcher(!isMultiSwitcherActive);
+    setPageMenu(!isPageMenuActive);
   };
 
   return (
     <>
-      {isMultiSwitcherActive && (
+      {isPageMenuActive && (
         <>
-          <MultiSwitcher
+          <PageMenu
             pageConfiguration={pageConfiguration}
-            isEditMode={isEditMode === "true"}
-            setMultiSwitcher={setMultiSwitcher}
-            createQueryString={createQueryString}
-            deleteQueryString={deleteQueryString}
+            setPageMenu={setPageMenu}
           />
         </>
       )}
@@ -79,21 +52,17 @@ const Navbar: React.FC<NavbarProps> = ({
           <div
             className="text-sm font-bold "
             style={{ color: theme.text.title }}
-            onClick={() => {
-              if (dispatch === undefined) return;
-              dispatch({
-                type: ACTIONS_NODE.TEST_NODE_DIAGNOSTIC,
-                payload: NaN,
-              });
-            }}
           >
-            <AccountTreeIcon fontSize="medium" />
+            <Link href="/">
+              <AccountTreeIcon fontSize="medium" />
+            </Link>
           </div>
           <div
             className="ml-2 flex items-center text-sm font-bold "
             style={{ color: theme.text.title }}
           >
-            GraphQuest: {algorithmName}
+            GraphQuest
+            {pageConfiguration && algorithmName && `:${algorithmName}`}
           </div>
           <div
             className="ml-1 flex items-center text-sm font-bold "
@@ -148,27 +117,12 @@ const Navbar: React.FC<NavbarProps> = ({
           id="menu"
         >
           {/* Nav items */}
-          <li>
-            <Link
-              href={
-                isEditMode === "true"
-                  ? pathname + "?" + deleteQueryString("edit")
-                  : pathname + "?" + createQueryString("edit", "true")
-              }
-            >
-              <button
-                name="changeView"
-                className="rounded border-2 px-4 py-1  text-sm transition duration-300 ease-in-out hover:bg-gray-400"
-                style={{
-                  background: theme.background.primary,
-                  color: theme.text.primary,
-                  borderColor: theme.background.quaternary,
-                }}
-              >
-                {isEditMode ? "View Graph" : "Edit"}
-              </button>
-            </Link>
-          </li>
+          {pageConfiguration && (
+            <li>
+              <ToggleMode />
+            </li>
+          )}
+
           <li className="ml-2">
             <IconButton
               color="primary"
@@ -194,20 +148,3 @@ const Navbar: React.FC<NavbarProps> = ({
 };
 
 export default Navbar;
-
-const ShowMenuItems = () => {
-  const { theme } = useThemeContext();
-  return (
-    <div
-      className="absolute inset-0 z-20 px-4 text-white lg:hidden"
-      style={{
-        background: theme.background.quaternary,
-        color: theme.background.secondary,
-      }}
-    >
-      <div className=" border-b border-white py-3">
-        <p>Menu Content Here</p>
-      </div>
-    </div>
-  );
-};

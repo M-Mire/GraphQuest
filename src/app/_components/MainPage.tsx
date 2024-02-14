@@ -1,23 +1,17 @@
-import { useEffect, useCallback } from "react";
+import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Navbar from "~/app/_components/SharedUI/Navbar";
 import EditMode from "~/app/_components/CanvasElements/EditMode";
-import MultiSwitcher from "./SharedUI/MultiSwitcher";
 import { ACTIONS_NODE } from "~/app/_components/GraphUI/NodeElement";
-import type { ActionNode } from "~/app/_components/GraphUI/NodeElement";
-import Animation, {
-  type ActionLine,
-} from "~/app/_components/CanvasElements/Animation";
+import Animation from "~/app/_components/CanvasElements/Animation";
 import { Line } from "~/app/_GraphAlgorithm/Graph";
-import { useState, useReducer } from "react";
+import { useState } from "react";
 import type pageConfigurationType from "~/app/_pageConfigs/config";
-import type Node from "~/app/model/Node";
 import Alert from "~/app/_components/SharedUI/Alert";
 import type { Alerts } from "~/app/_components/SharedUI/Alert";
 import { useThemeContext } from "../context/ThemeContext";
 import useMinCanvas from "../hooks/useMinCanvas";
 import useNodeManagement from "../hooks/useNodeManagement";
-import useQueryString from "../hooks/useQueryString";
 import useAnimationManagement from "../hooks/useAnimationManagement";
 import ControlButtons from "./SharedUI/ControlButtons";
 import useThemeBackground from "../hooks/useThemeBackground";
@@ -48,11 +42,8 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
 
   const isEditMode = searchParams && searchParams.get("edit") === "true";
 
-  const [isMultiSwitcherActive, setMultiSwitcher] = useState(false);
   const [alert, setAlert] = useState<Alerts | null>(null);
   const minCanvas = useMinCanvas(nodes, urlNodes);
-
-  const { createQueryString, deleteQueryString } = useQueryString();
 
   useThemeBackground();
 
@@ -100,7 +91,6 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
     <>
       <div className="relative flex h-screen flex-col">
         <Navbar
-          dispatch={dispatch}
           algorithmName={pageConfiguration.algorithmName}
           pageConfiguration={pageConfiguration}
         >

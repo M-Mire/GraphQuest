@@ -33,6 +33,7 @@ interface BoardProps {
   setSelectedAlgorithm?: React.Dispatch<
     React.SetStateAction<AlgorithmEnum | null>
   >;
+  otherSelectedAlgorithm?: AlgorithmEnum | null;
 }
 const Board = ({
   isPlay,
@@ -53,13 +54,11 @@ const Board = ({
   isOtherPlay,
   setOtherBoard,
   setSelectedAlgorithm,
+  otherSelectedAlgorithm,
 }: BoardProps) => {
   const { theme } = useThemeContext();
 
   const [lastBlockEdited, setLastBlockEdited] = useState<GridNode | null>(null);
-  const [isSelectedAlgorithmInterface, setSelectedAlgorithmInterface] =
-    useState<boolean>(true);
-
   const [stats, setStats] = useState<
     { name: string; value: number | string }[] | null
   >(null);
@@ -100,8 +99,8 @@ const Board = ({
       const gridSize = board[0]!.length * board.length;
       // Update stats state
       setStats([
-        { name: "# Visited Node", value: visOrder },
-        { name: "# Shortest Path", value: short },
+        { name: "Visited Node", value: visOrder },
+        { name: "Shortest Path", value: short },
         { name: "Time", value: `${time}ms` },
         { name: "Accuracy", value: `${accuracy.toFixed(2)}%` },
         { name: "Grid Size", value: gridSize },
@@ -168,6 +167,11 @@ const Board = ({
   useEffect(() => {
     const runAnimation = async () => {
       if (isPlay) {
+        // For compareMode if otherAlgorithm is null. Don't animate
+        if (otherSelectedAlgorithm === null) {
+          setPlay(false);
+          return;
+        }
         setMovedWhilstAnimated(false);
         clearBoard();
         await animateAlgorithm();
@@ -218,6 +222,7 @@ const Board = ({
   useEffect(() => {
     setMovedWhilstAnimated(false);
     clearBoard();
+    setStatisticButton(false);
   }, [selectedAlgorithm]);
 
   const handleMouseDown = (row: number, col: number) => {

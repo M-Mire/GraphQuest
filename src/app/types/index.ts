@@ -10,6 +10,7 @@ export interface Theme {
     title: string;
     primary: string;
     secondary: string;
+    tertiary: string;
   };
   node: {
     unvisited: string;

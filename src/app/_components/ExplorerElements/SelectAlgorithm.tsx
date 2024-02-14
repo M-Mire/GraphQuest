@@ -40,17 +40,6 @@ const SelectAlgorithm = ({ setSelectedAlgorithm }: SelectAlgorithmProps) => {
           ))}
         </div>
       </div>
-      {/* <div className="z-5 absolute top-0 flex h-full w-full bg-inherit opacity-100">
-  <div className="h-14 w-1/3 bg-lime-500"> hello</div>
-  <div className="h-14 w-1/3 bg-yellow-500"> hello</div>
-   <div className="m-auto ">
-    <IconButton color="primary" onClick={() => {}}>
-      <AddIcon
-        style={{ fontSize: "4rem", color: theme.background.quaternary }}
-      />
-    </IconButton>
-  </div> 
-</div> */}
     </div>
   );
 };

@@ -6,6 +6,7 @@ export enum pageEnum {
   DFS = "DFS",
   DIJKSTRA = "DIJKSTRA",
   PRIMS_JARNIK = "PRIMS_JARNIK",
+  EXPLORERS = "EXPLORERS",
 }
 
 export interface pageConfigurationType {
@@ -26,7 +27,7 @@ export interface pageConfigurationType {
 export const pageConfigurationBFS: pageConfigurationType = {
   id: pageEnum.BFS,
   algorithmName: "Breadth-First Search",
-  urlName: "/",
+  urlName: "/bfs",
   isWeighted: false,
   isUndirectedGraph: false,
   runAlgorithm: (g: Graph, rootValue: number) => {
@@ -179,12 +180,28 @@ export const pageConfigurationPrimJarnik: pageConfigurationType = {
 }`,
 };
 
+export const pageConfigurationEXPLORER: pageConfigurationType = {
+  id: pageEnum.EXPLORERS,
+  algorithmName: "Explorers Mode",
+  urlName: "/explorersMode",
+  isWeighted: false,
+  isUndirectedGraph: false,
+  runAlgorithm: (g: Graph, rootValue: number) => {
+    g.BFS(rootValue);
+  },
+  addEdge: (g: Graph | GraphDistance, from: number, to: number) => {
+    g.addEdge(from, to);
+  },
+  code: ``,
+};
+
 export const pageConfigurationMap: Map<pageEnum, pageConfigurationType> =
   new Map<pageEnum, pageConfigurationType>([
     [pageEnum.BFS, pageConfigurationBFS],
     [pageEnum.DFS, pageConfigurationDFS],
     [pageEnum.DIJKSTRA, pageConfigurationDijkstra],
     [pageEnum.PRIMS_JARNIK, pageConfigurationPrimJarnik],
+    [pageEnum.EXPLORERS, pageConfigurationEXPLORER],
   ]);
 
 export default pageConfigurationType;

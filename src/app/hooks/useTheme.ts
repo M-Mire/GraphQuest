@@ -1,24 +1,18 @@
 import { useState, useCallback } from "react";
-import useLocalStorage from "./useLocalStorage";
 import { Theme } from "../types";
 import themes from "../themes/themes";
 
 export const useTheme = () => {
-  const [getThemeStorageValue, setThemeStorageValue] = useLocalStorage<Theme>(
-    "theme",
-    themes.nordic!,
-  );
-  const [theme, setSystemTheme] = useState<Theme>(getThemeStorageValue);
+  const [theme, setTheme] = useState<Theme>(themes.nordic!);
 
-  const setTheme = useCallback(
+  const setThemeCallback = useCallback(
     (value: React.SetStateAction<Theme>) => {
-      setSystemTheme((prevTheme) =>
+      setTheme((prevTheme) =>
         typeof value === "function" ? value(prevTheme) : value,
       );
-      setThemeStorageValue(value);
     },
-    [setSystemTheme, setThemeStorageValue],
+    [setTheme],
   );
 
-  return { theme: theme, setTheme };
+  return { theme: theme, setTheme: setThemeCallback };
 };

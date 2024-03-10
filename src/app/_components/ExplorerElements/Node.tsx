@@ -2,6 +2,7 @@ import { forwardRef, memo, useMemo } from "react";
 import type { GridNode } from "~/app/types";
 import HikingIcon from "@mui/icons-material/Hiking";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 
 interface NodeProps {
   node: GridNode;
@@ -26,7 +27,7 @@ const Node = forwardRef<HTMLElement, NodeProps>(
     }: NodeProps,
     ref,
   ) => {
-    const { type, isBlock, row, col } = node;
+    const { type, isBlock, row, col, isCost } = node;
     const isStartNode = startNode.row === row && startNode.col === col;
     const isEndNode = endNode.row === row && endNode.col === col;
 
@@ -39,12 +40,14 @@ const Node = forwardRef<HTMLElement, NodeProps>(
         ? "bg-red-500"
         : isBlock
         ? "node-block"
-        : isStartNode && type === "shortestPath"
-        ? "bg-red-300 node-shortest-path"
+        : (isStartNode || isEndNode) && type === "shortestPath"
+        ? "bg-red-300 node-shortest-path" // Lighter shade different from the shortestPath
         : type === "shortestPath"
         ? `bg-purple-300 ${!isMovedWhilstAnimated ? "node-shortest-path" : ""}`
         : type === "visited"
         ? `bg-blue-500 ${!isMovedWhilstAnimated ? "node-visited" : ""}`
+        : isCost
+        ? "bg-yellow-500"
         : ""
     }`;
 
@@ -63,6 +66,9 @@ const Node = forwardRef<HTMLElement, NodeProps>(
           )}
           {isEndNode && (
             <LocationOnIcon style={{ width: iconSize, height: iconSize }} />
+          )}
+          {isCost && !isStartNode && !isEndNode && !isBlock && (
+            <FitnessCenterIcon style={{ width: iconSize, height: iconSize }} />
           )}
         </div>
       ),

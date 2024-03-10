@@ -23,6 +23,7 @@ export const generateMaze = (
         gScore: Infinity,
         fScore: Infinity,
         previousNode: null,
+        isCost: false,
       });
     }
     grid.push(row);

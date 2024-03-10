@@ -26,6 +26,7 @@ export const renderBoard = (
         fScore: Infinity,
         isBlock: false,
         previousNode: null,
+        isCost: false,
       });
     }
     grid.push(row);

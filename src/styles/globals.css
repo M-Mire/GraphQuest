@@ -72,6 +72,9 @@ background-size: 25px 25px;
   background-color: rgba(248, 26, 14, 0.8);
 }
 
+.node-weight {
+  background-color: rgb(234 179 8);
+}
 
 .node-visited {
   animation-name: visitedAnimation;

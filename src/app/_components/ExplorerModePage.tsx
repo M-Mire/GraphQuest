@@ -25,6 +25,7 @@ const START_NODE: GridNode = {
   gScore: Infinity,
   fScore: Infinity,
   previousNode: null,
+  isCost: false,
 };
 const END_NODE: GridNode = {
   row: 2,
@@ -37,6 +38,7 @@ const END_NODE: GridNode = {
   gScore: Infinity,
   fScore: Infinity,
   previousNode: null,
+  isCost: false,
 };
 
 const ExplorerModePage = () => {
@@ -122,6 +124,10 @@ const ExplorerModePage = () => {
             <InformationBoardExplorerNode
               name="Block"
               nodeClassName="node-block"
+            />
+            <InformationBoardExplorerNode
+              name="Weight"
+              nodeClassName="node-weight"
             />
           </InformationBoard>
           {!mode ? (

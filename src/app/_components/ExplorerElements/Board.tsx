@@ -4,7 +4,6 @@ import ExplorerGraph from "~/app/ExplorersAlgorithm/ExplorerAlgorithm";
 import Node from "./Node";
 import { useThemeContext } from "~/app/context/ThemeContext";
 import { AlgorithmEnum } from "~/app/_pageConfigs/configExplorer";
-import { generateMaze } from "~/app/utils/generateExplorerMaze";
 import SelectAlgorithm from "./SelectAlgorithm";
 import StatsCompareBoard from "./StatsCompareBoard";
 
@@ -59,10 +58,15 @@ const Board = ({
   const { theme } = useThemeContext();
 
   const [lastBlockEdited, setLastBlockEdited] = useState<GridNode | null>(null);
+  const [lastWeightEdited, setLastWeightEdited] = useState<GridNode | null>(
+    null,
+  );
   const [stats, setStats] = useState<
     { name: string; value: number | string }[] | null
   >(null);
   const [isStatisticButtonOpen, setStatisticButton] = useState<boolean>(false);
+
+  const [isCostKeyPressed, setIsCostKeyPressed] = useState(false);
 
   const ANIMATION_SPEED = 30;
 
@@ -225,6 +229,28 @@ const Board = ({
     setStatisticButton(false);
   }, [selectedAlgorithm]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "w" && isMousePressed === "normal") {
+        setIsCostKeyPressed(true);
+      }
+    };
+
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.key === "w") {
+        setIsCostKeyPressed(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [isMousePressed]);
+
   const handleMouseDown = (row: number, col: number) => {
     if (isPlay || isOtherPlay) return;
     const currentNode = board[row]![col]!;
@@ -242,6 +268,8 @@ const Board = ({
     if (!isMousePressed || isPlay) return;
 
     const newBoard = [...board];
+    const isBlock = newBoard[row]![col]!.isBlock;
+    const isCost = newBoard[row]![col]!.isCost;
 
     if (isMousePressed === "start") {
       if (row !== startNode.row || col !== startNode.col) {
@@ -265,13 +293,13 @@ const Board = ({
           isBlock: newBoard[row]![col]!.isBlock,
         });
       }
-    } else {
+    } else if (isMousePressed === "normal") {
       if (
-        !lastBlockEdited ||
-        lastBlockEdited.row !== row ||
-        lastBlockEdited.col !== col
+        (!lastBlockEdited ||
+          lastBlockEdited.row !== row ||
+          lastBlockEdited.col !== col) &&
+        !isCostKeyPressed
       ) {
-        const isBlock = newBoard[row]![col]!.isBlock;
         newBoard[row]![col]!.isBlock = !isBlock;
         setLastBlockEdited({
           row,
@@ -284,9 +312,32 @@ const Board = ({
           distance: Infinity,
           gScore: Infinity,
           fScore: Infinity,
+          isCost: false,
+        });
+      } else if (
+        (!lastWeightEdited ||
+          lastWeightEdited.row !== row ||
+          lastWeightEdited.col !== col) &&
+        isCostKeyPressed &&
+        !isBlock
+      ) {
+        newBoard[row]![col]!.isCost = !isCost;
+        setLastWeightEdited({
+          row,
+          col,
+          isBlock: isBlock,
+          type: "normal",
+          isStart: startNode.row === row && startNode.col === col,
+          isEnd: endNode.row === row && endNode.col === col,
+          previousNode: null,
+          distance: Infinity,
+          gScore: Infinity,
+          fScore: Infinity,
+          isCost: !isCost,
         });
       }
     }
+
     setBoard(newBoard);
     // Will copy the blocks creation for both boards in compareBoard
     if (setOtherBoard && isMousePressed !== "start" && isMousePressed !== "end")

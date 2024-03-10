@@ -42,6 +42,7 @@ export type GridNode = {
   distance: number;
   gScore: number;
   fScore: number;
+  isCost: boolean;
 };
 
 export type Grid = GridNode[][];

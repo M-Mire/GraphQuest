@@ -72,7 +72,7 @@ export default class ExplorerGraph {
   }
 
   private updateDistance(node: GridNode, neighbor: GridNode) {
-    const newDistance = node.distance + 1;
+    const newDistance = node.distance + (!node.isCost ? 1 : 6);
 
     if (newDistance < neighbor.distance) {
       neighbor.distance = newDistance;

@@ -9,6 +9,7 @@ import {
   SingleInstruction,
   TrackerElementType,
 } from "~/app/_GraphAlgorithm/Graph";
+import { useThemeContext } from "~/app/context/ThemeContext";
 
 interface TraverseAnimationProps {
   tracker: TrackerArray;
@@ -29,13 +30,14 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
   const padding = 20;
 
   const totalWidth =
-    (rectWidth + rectMargin + padding) * (nodes.length + 1) + 4 * padding;
+    (rectWidth + rectMargin + padding) * (nodes.length + 1) + 6 * padding;
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [visitedNodes, setVisitedNodes] = useState<Node[]>([]);
   const [currentWeight, setCurrentWeight] = useState<number>(0);
   const [previousCost, setPrevCost] = useState<number | null>(null);
   const [containerHeight, setContainerHeight] = useState<number>(400);
+  const { theme } = useThemeContext();
 
   useEffect(() => {
     if (currentIndex === -1) {
@@ -129,7 +131,7 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
             y={26}
             textAnchor="middle"
             alignmentBaseline="middle"
-            fill="black"
+            fill={theme.text.title}
             fontSize={20}
           >
             Total Weight
@@ -139,7 +141,7 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
             y={rectHeight / 2 + 5}
             width={rectWidth}
             height={rectHeight}
-            fill="green"
+            fill={theme.node.completed}
             stroke="white"
             strokeWidth={3}
           />
@@ -148,7 +150,7 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
             y={rectHeight + 5}
             textAnchor="middle"
             alignmentBaseline="middle"
-            fill="white"
+            fill={theme.node.text}
             key={`text-none`}
           >
             {currentWeight}
@@ -160,7 +162,7 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
           x2={lineX}
           y2={containerHeight * 5}
           strokeWidth={4}
-          stroke="black"
+          stroke={theme.background.quaternary}
         />
 
         <text
@@ -168,7 +170,7 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
           y={26}
           textAnchor="middle"
           alignmentBaseline="middle"
-          fill="black"
+          fill={theme.text.title}
           fontSize={20}
         >
           Visited
@@ -186,11 +188,7 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
                     y={y + 5}
                     width={rectWidth}
                     height={rectHeight}
-                    fill={getNodeColour(
-                      false,
-                      node.visited,
-                      node.visitedChildrens,
-                    )}
+                    fill={theme.node.visited}
                     stroke="white"
                     strokeWidth={3}
                   />
@@ -199,7 +197,7 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
                     y={y + 5 + rectHeight / 2}
                     textAnchor="middle"
                     alignmentBaseline="middle"
-                    fill="white"
+                    fill={theme.node.defaultStroke}
                     key={`text-${node.val}-${i}`}
                   >
                     {node.val}

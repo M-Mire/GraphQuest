@@ -36,21 +36,17 @@ export const pageConfigurationBFS: pageConfigurationType = {
   addEdge: (g: Graph | GraphDistance, from: number, to: number) => {
     g.addEdge(from, to);
   },
-  code: `BFS(root: number):
-  const queue = [root];
-  const visited = new Set();
-  visited.add(root);
+  code: `BFS(root: number)
+  const queue = [root]
+  const visited = new Set()
+  visited.add(root)
 
-  while (queue.length) {
-    const vertex = queue.shift();
-    for (const neighbor of graph[vertex]) {
-      if (!visited.has(neighbor)) {
-        visited.add(neighbor);
-        queue.push(neighbor);
-      }
-    }
-  }
-}`,
+  while (queue.length) 
+    const vertex = queue.shift()
+    for (const neighbor of graph[vertex])
+      if (!visited.has(neighbor))
+        visited.add(neighbor)
+        queue.push(neighbor)`,
 };
 
 export const pageConfigurationDFS: pageConfigurationType = {
@@ -66,20 +62,16 @@ export const pageConfigurationDFS: pageConfigurationType = {
     g.addEdge(from, to);
   },
   code: `DFS(root: number) {
-    const stack = [root];
-    const visited = new Set();
+    const visited = new Set<number>()
+    recursiveDFS(root, visited)
 
-    while (stack.length) {
-      const vertex = stack.pop();
-      if (!visited.has(vertex)) {
-        visited.add(vertex);
-
-      for (const neighbor of graph[vertex]) {
-        stack.push(neighbor);
-        }
-      }
-    }
-  }`,
+recursiveDFS(vertex: number, visited: Set<number>) 
+  if (!visited.has(vertex)) 
+    visited.add(vertex)
+    const neighbors = graph.get(vertex)
+    if (neighbors) 
+      for (const neighbor of neighbors) 
+        recursiveDFS(neighbor, visited)`,
 };
 
 export const pageConfigurationDijkstra: pageConfigurationType = {

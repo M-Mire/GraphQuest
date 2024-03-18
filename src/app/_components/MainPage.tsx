@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Navbar from "~/app/_components/SharedUI/Navbar";
-import EditMode from "~/app/_components/CanvasElements/EditMode";
+import EditMode from "~/app/_components/CanvasElements/Edit/EditMode";
 import { ACTIONS_NODE } from "~/app/_components/GraphUI/NodeElement";
 import Animation from "~/app/_components/CanvasElements/Animation";
 import { Line } from "~/app/_GraphAlgorithm/Graph";
@@ -108,9 +108,9 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
           className="relative h-full"
           style={{ background: theme.background.primary }}
         >
+          <Alert alert={alert} setAlert={setAlert} />
           {isEditMode ? (
             <>
-              <Alert alert={alert} setAlert={setAlert} />
               <EditMode
                 dispatch={dispatch}
                 nodes={nodes}
@@ -142,6 +142,7 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
               isUndirectedGraph={pageConfiguration.isUndirectedGraph}
               setPlay={setPlay}
               handleNodeReset={handleNodeReset}
+              setAlert={setAlert}
             />
           )}
         </div>

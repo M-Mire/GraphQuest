@@ -19,6 +19,8 @@ export interface Theme {
     active: string;
     root: string;
     rootStroke: string;
+    text: string;
+    defaultStroke: string;
   };
   edge: {
     color: string;

@@ -1,11 +1,8 @@
 import { useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import isStringNumber from "~/app/utils/isStringNumber";
 import { ACTIONS_NODE } from "~/app/_components/GraphUI/NodeElement";
 import type { ActionNode } from "~/app/_components/GraphUI/NodeElement";
 import type Node from "../../model/Node";
-import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
-import updateNodeEncoded from "~/app/utils/EncodeNode/updateNodeEncoded";
 
 const InputWeightWidth = 250;
 const InputWeightHeight = 150;
@@ -28,9 +25,6 @@ const InputWeight: React.FC<InputWeightProps> = ({
   const [parent, child] = nums;
   const [hoveredText, setHoveredText] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
-  const router = useRouter();
-  const updateNodeQueryString = useUpdateNodeQueryString(router);
-  const searchParams = useSearchParams();
 
   const dispatchAndClear = () => {
     const weight = parseInt(inputValue);
@@ -42,12 +36,6 @@ const InputWeight: React.FC<InputWeightProps> = ({
         weight: weight,
       },
     });
-    const parentNode = nodes.find((node) => node.val === parent)!;
-    updateNodeQueryString(
-      searchParams.toString(),
-      parentNode,
-      updateNodeEncoded(parentNode, child!, weight),
-    );
 
     setInputValue("");
     setInputWeight(false);

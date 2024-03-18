@@ -8,12 +8,16 @@ import {
   SingleInstruction,
   TrackerElementType,
 } from "~/app/_GraphAlgorithm/Graph";
+import { useThemeContext } from "~/app/context/ThemeContext";
+import { useSearchParams } from "next/navigation";
+import convertToLetter from "~/app/utils/convertToLetter";
 
 interface TraverseAnimationProps {
   tracker: TrackerArray;
   currentIndex: number;
   nodes: Node[];
   isPlay: boolean;
+  rootValue: number | null;
 }
 
 const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
@@ -21,13 +25,13 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
   currentIndex,
   nodes,
   isPlay,
+  rootValue,
 }) => {
   const rectHeight = 80;
   const rectWidth = 70;
   const rectMargin = 20;
   const arrowSize = 20;
   const padding = 20;
-
   const totalWidth =
     nodes.length * rectWidth + (nodes.length - 1) * rectMargin + 2 * padding;
 
@@ -35,6 +39,11 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
   const [visitedNodes, setVisitedNodes] = useState<Node[]>([]);
   const [arrowPoint, setArrowPoint] = useState<[number, string] | null>(null);
   const [mapDetail, setMapDetail] = useState<Map<number, number>>(new Map());
+
+  const { theme } = useThemeContext();
+
+  const searchParams = useSearchParams();
+  const isLetter = searchParams?.get("lettered") === "true";
 
   useEffect(() => {
     if (containerRef.current && arrowPoint !== null) {
@@ -55,7 +64,7 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
     const newMapDetail = updatedVisitedNodes.reduce((map, node) => {
       map.set(node.val, Infinity);
       return map;
-    }, new Map<number, number>());
+    }, new Map());
     setMapDetail(newMapDetail);
   };
 
@@ -88,6 +97,11 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
       setMapDetail(val as Map<number, number>);
     }
   };
+
+  const filteredVisitedNodes = visitedNodes.filter(
+    (node) => node.val !== rootValue,
+  );
+
   return (
     <div
       ref={containerRef}
@@ -95,7 +109,7 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
       style={{ overflowX: "auto" }}
     >
       <svg width={totalWidth} className="relative h-full">
-        {visitedNodes.map((node, i) => {
+        {filteredVisitedNodes.map((node, i) => {
           const x = i * (rectWidth + rectMargin) + padding;
           const y = rectHeight / 2;
           return (
@@ -105,8 +119,8 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
                 y={y + 5}
                 width={rectWidth}
                 height={rectHeight}
-                fill="none"
-                stroke="white"
+                fill={theme.node.visited}
+                stroke={theme.node.defaultStroke}
                 strokeWidth={3}
               />
               <text
@@ -114,10 +128,12 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
                 y={y + 5 + rectHeight / 2}
                 textAnchor="middle"
                 alignmentBaseline="middle"
-                fill="white"
+                fill={theme.node.text}
                 key={`text-${node.val}-${i}`}
               >
-                {mapDetail.get(node.val)}
+                {mapDetail.get(node.val) === undefined
+                  ? Infinity
+                  : mapDetail.get(node.val)}
               </text>
               <text
                 x={x + rectWidth / 2}
@@ -125,10 +141,10 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
                 textAnchor="middle"
                 alignmentBaseline="middle"
                 fontSize={32}
-                fill="#FF7676"
+                fill={theme.text.title}
                 key={`arrow-text-${i}`}
               >
-                {node.val}
+                {isLetter ? convertToLetter(node.val) : node.val}
               </text>
             </g>
           );

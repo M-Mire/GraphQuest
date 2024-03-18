@@ -1,5 +1,5 @@
 // useNodeManagement.tsx
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { ACTIONS_NODE } from "~/app/_components/GraphUI/NodeElement";
 import type { ActionNode } from "~/app/_components/GraphUI/NodeElement";
@@ -9,6 +9,7 @@ import type Node from "~/app/model/Node";
 const useNodeManagement = () => {
   const searchParams = useSearchParams();
   const urlNodes = searchParams?.getAll("node") || [];
+  const hasAddedNodesFromURL = useRef(false);
 
   const nodeReducer: React.Reducer<Node[], ActionNode> = (nodes, action) => {
     switch (action.type) {
@@ -38,9 +39,40 @@ const useNodeManagement = () => {
           }
           return node;
         });
+
+      case ACTIONS_NODE.REMOVE_CHILD_NODE:
+        const { childRemove } = action.payload as {
+          childRemove: number;
+        };
+        return nodes.map((node) => {
+          if (node.childNodes.includes(childRemove)) {
+            const childNodes = node.childNodes.filter(
+              (val) => val !== childRemove,
+            );
+            const distances = node.distances.filter(
+              (_, index) => node.childNodes[index] !== childRemove,
+            );
+            return { ...node, childNodes, distances };
+          }
+          return node;
+        });
+
       case ACTIONS_NODE.DELETE_NODE:
-        const deleteNode = action.payload as Node;
-        return nodes.filter((node) => node !== deleteNode);
+        const { deleteId } = action.payload as {
+          deleteId: string;
+        };
+        const nodeToDelete = nodes.find((node) => node.id === deleteId);
+        if (!nodeToDelete) return nodes;
+        const deleteVal = nodeToDelete.val;
+        const filteredNodes = nodes.filter((node) => node.id !== deleteId);
+        const updatedNodes = filteredNodes.map((parentNode) => ({
+          ...parentNode,
+          childNodes: parentNode.childNodes.filter(
+            (childNode) => childNode !== deleteVal,
+          ),
+        }));
+        return updatedNodes;
+
       case ACTIONS_NODE.NODE_ANIMATE:
         const { value, command } = action.payload as {
           value: number | number[];
@@ -159,7 +191,7 @@ const useNodeManagement = () => {
   const [nodes, dispatch] = useReducer(nodeReducer, [] as Node[]);
 
   const addNodesFromURL = (urlNodes: string[]) => {
-    if (nodes.length === 0 && urlNodes.length > 0) {
+    if (!hasAddedNodesFromURL.current && urlNodes.length > 0) {
       urlNodes.forEach((urlNode) => {
         const deserializedObj = JSON.parse(decodeURIComponent(urlNode)) as Node;
         const newNode = deserializedObj;
@@ -170,8 +202,10 @@ const useNodeManagement = () => {
           payload: newNode,
         });
       });
+      hasAddedNodesFromURL.current = true;
     }
   };
+
   useEffect(() => {
     addNodesFromURL(urlNodes);
   }, [urlNodes]);

@@ -51,7 +51,7 @@ const PageMenu = ({ pageConfiguration, setPageMenu }: PageMenuProps) => {
         color: theme.text.primary,
       }}
     >
-      <div className="absolute z-10 mt-16 h-48 w-64 rounded-l-lg border-2 border-solid border-inherit bg-inherit">
+      <div className="absolute z-10 mt-16 h-48 w-64 rounded-l-lg rounded-r-lg border-2 border-solid border-inherit bg-inherit md:rounded-r-none">
         {/* Search Input to filter Options */}
         <SearchInput setQuery={setQuery} query={query} />
         {/* Display filtered Options */}

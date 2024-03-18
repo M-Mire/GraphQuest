@@ -106,7 +106,7 @@ const Board = ({
         { name: "Visited Node", value: visOrder },
         { name: "Shortest Path", value: short },
         { name: "Time", value: `${time}ms` },
-        { name: "Accuracy", value: `${accuracy.toFixed(2)}%` },
+        { name: "Path Efficiency", value: `${accuracy.toFixed(2)}%` },
         { name: "Grid Size", value: gridSize },
       ]);
 

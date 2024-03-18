@@ -3,6 +3,9 @@ import { getNodeColour } from "~/app/utils/getNodeColour";
 import type Node from "~/app/model/Node";
 import { Command } from "~/app/_GraphAlgorithm/Graph";
 import type { Line, TrackerArray } from "~/app/_GraphAlgorithm/Graph";
+import { useThemeContext } from "~/app/context/ThemeContext";
+import { useSearchParams } from "next/navigation";
+import convertToLetter from "~/app/utils/convertToLetter";
 
 interface TraverseAnimationProps {
   tracker: TrackerArray;
@@ -29,6 +32,10 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
 
   const [containerHeight, setContainerHeight] = useState<number>(400);
 
+  const { theme } = useThemeContext();
+  const searchParams = useSearchParams();
+  const isLetter = searchParams?.get("lettered") === "true";
+
   useEffect(() => {
     if (
       currentIndex >= 0 &&
@@ -43,8 +50,11 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
         const getNode = nodes.find((node) => node.val === val)!;
         if (command === Command.Visited) {
           // If Command.Visited add to the stack
-          const copyNode = { ...getNode, visited: true };
-          setVisitedNodes([...visitedNodes, copyNode]);
+          if (!visitedNodes.some((node) => node.val === getNode.val)) {
+            // If not, add to the stack
+            const copyNode = { ...getNode, visited: true };
+            setVisitedNodes([...visitedNodes, copyNode]);
+          }
         } else if (command === Command.PoppedStack) {
           //If Command.PoppedStack add to the popped stack
 
@@ -60,7 +70,15 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
         }
       }
     }
+    if (currentIndex === -1) {
+      resetAnimation();
+    }
   }, [currentIndex, tracker]);
+
+  const resetAnimation = () => {
+    setVisitedNodes([]);
+    setPoppedStack(null);
+  };
 
   useEffect(() => {
     const updateContainerHeight = () => {
@@ -113,7 +131,7 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
               alignmentBaseline="middle"
               fill="white"
             >
-              {poppedStack.val}
+              {isLetter ? convertToLetter(poppedStack.val) : poppedStack.val}
             </text>
           </g>
         ) : (
@@ -124,8 +142,8 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
               y={midpointY}
               width={rectWidth}
               height={rectHeight}
-              fill="white"
-              stroke="white"
+              fill={theme.node.unvisited}
+              stroke={theme.node.defaultStroke}
               strokeWidth={3}
             />
             <text
@@ -134,7 +152,7 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
               y={midpointY + rectHeight / 2}
               textAnchor="middle"
               alignmentBaseline="middle"
-              fill="black"
+              fill={theme.node.text}
             >
               None
             </text>
@@ -146,14 +164,14 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
           x2={padding / 2 + rectWidth + rectMargin}
           y2={containerHeight * 5}
           strokeWidth={4}
-          stroke="black"
+          stroke={theme.background.quaternary}
         />
         <text
           x={padding + rectWidth / 2}
           y={32}
           textAnchor="middle"
           alignmentBaseline="middle"
-          fill="black"
+          fill={theme.text.primary}
           fontSize={20}
         >
           Popped
@@ -163,7 +181,7 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
           y={32}
           textAnchor="middle"
           alignmentBaseline="middle"
-          fill="black"
+          fill={theme.text.primary}
           fontSize={20}
         >
           Stack
@@ -179,7 +197,7 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
                 y={y}
                 width={rectWidth}
                 height={rectHeight}
-                fill={getNodeColour(false, node.visited, node.visitedChildrens)}
+                fill={theme.node.visited}
                 stroke="white"
                 strokeWidth={3}
               />
@@ -189,9 +207,9 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
                 y={y + rectHeight / 2}
                 textAnchor="middle"
                 alignmentBaseline="middle"
-                fill="black"
+                fill={theme.text.title}
               >
-                {node.val}
+                {isLetter ? convertToLetter(node.val) : node.val}
               </text>
             </g>
           );
@@ -199,7 +217,7 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
         {!!visitedNodes.length && (
           <>
             <svg
-              fill="#000000"
+              fill={theme.text.tertiary}
               height="40px"
               width="200px"
               version="1.1"
@@ -235,7 +253,7 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
               y={midpointY + rectHeight / 2}
               textAnchor="middle"
               alignmentBaseline="middle"
-              fill="black"
+              fill={theme.text.primary}
               fontSize={20}
             >
               top

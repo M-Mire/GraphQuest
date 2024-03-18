@@ -79,12 +79,67 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
   const colour = theme.background.quaternary;
 
   return (
-    <div className="relative ml-5 flex items-center text-sm font-bold">
+    <div className="relative flex items-center text-sm font-bold md:ml-5">
       <div
         className="ml-3 mr-2 flex items-center rounded-full
- border-2  p-[0.2rem]"
+border-2  p-[0.2rem]"
         style={{ background: theme.background.primary, borderColor: colour }}
       >
+        <div className={`flex items-center rounded-full`}>
+          <IconButton
+            size="small"
+            color="primary"
+            onClick={handleRewindClick}
+            style={{ color: colour }}
+          >
+            <FastRewindIcon style={style} />
+          </IconButton>
+        </div>
+
+        <div className={`flex items-center rounded-full`}>
+          {!isPlay ? (
+            <IconButton
+              size="small"
+              color="primary"
+              onClick={handlePlayClick}
+              style={{ color: colour }}
+            >
+              <PlayArrowIcon style={style} />
+            </IconButton>
+          ) : (
+            <IconButton
+              size="small"
+              color="primary"
+              onClick={handlePauseClick}
+              style={{ color: colour }}
+            >
+              <PauseIcon style={style} />
+            </IconButton>
+          )}
+        </div>
+
+        <div className={`flex items-center rounded-full`}>
+          <IconButton
+            size="small"
+            color="primary"
+            onClick={handleFastForwardClick}
+            style={{ color: colour }}
+          >
+            <FastForwardIcon style={style} />
+          </IconButton>
+        </div>
+        <div className={`flex items-center rounded-full`}>
+          <IconButton
+            size="small"
+            color="primary"
+            onClick={handleResetClick}
+            style={{ color: colour }}
+          >
+            <ReplayIcon style={style} />
+          </IconButton>
+        </div>
+      </div>
+      {/*
         <CustomButton onClick={handleRewindClick} colour={colour} ml={true}>
           <FastRewindIcon style={style} />
         </CustomButton>
@@ -114,7 +169,7 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
         >
           <ReplayIcon style={style} />
         </CustomButton>
-      </div>
+      </div> */}
     </div>
   );
 };

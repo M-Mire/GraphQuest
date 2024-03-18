@@ -24,7 +24,7 @@ const ToggleMode = () => {
       searchParams?.get(targetQueryName) === "true" ? "Solo Mode" : "Dual Mode";
   } else {
     mode =
-      searchParams?.get(targetQueryName) === "true" ? "Edit" : "View Graph";
+      searchParams?.get(targetQueryName) === "true" ? "View Graph" : "Edit";
   }
 
   const toggle = () => {

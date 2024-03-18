@@ -137,47 +137,51 @@ export default class Graph {
   DFS(root: number) {
     this.TRACKER.push([Line.EntryLine, 1]);
     this.TRACKER.push([Line.EntryLine, 2]);
-    const stack = [root];
-    this.TRACKER.push([Command.Visited, root]);
-    this.TRACKER.push([Line.FinishedLine, 2]);
-
-    this.TRACKER.push([Line.EntryLine, 3]);
     const visited = new Set<number>();
-    this.TRACKER.push([Line.FinishedLine, 3]);
-
+    this.TRACKER.push([Line.FinishedLine, 2]);
+    this.TRACKER.push([Line.EntryLine, 3]);
     this.TRACKER.push([Line.EntryLine, 5]);
-    while (stack.length) {
-      this.TRACKER.push([Line.EntryLine, 6]);
-      const vertex = stack.pop()!;
-      this.TRACKER.push([Command.PoppedStack, vertex]);
-      this.TRACKER.push([Line.FinishedLine, 6]);
-      this.TRACKER.push([Line.EntryLine, 7]);
-      if (vertex !== undefined && !visited.has(vertex)) {
-        this.TRACKER.push([Line.EntryLine, 8]);
-        visited.add(vertex);
-        this.TRACKER.push([Line.FinishedLine, 8]);
+    this.recursiveDFS(root, visited);
+    this.TRACKER.push([Line.FinishedLine, 5]);
+    this.TRACKER.push([Line.FinishedLine, 3]);
+    this.TRACKER.push([Line.FinishedLine, 1]);
+  }
 
-        const neighbors = this.graph.get(vertex);
-        if (neighbors) {
+  recursiveDFS(vertex: number, visited: Set<number>) {
+    this.TRACKER.push([Line.EntryLine, 6]);
+    if (!visited.has(vertex)) {
+      this.TRACKER.push([Line.EntryLine, 7]);
+      visited.add(vertex);
+      this.TRACKER.push([Command.Visited, vertex]);
+      this.TRACKER.push([Line.FinishedLine, 7]);
+      this.TRACKER.push([Line.EntryLine, 8]);
+      const neighbors = this.graph.get(vertex);
+      this.TRACKER.push([Line.FinishedLine, 8]);
+
+      if (neighbors) {
+        this.TRACKER.push([Line.EntryLine, 9]);
+        for (const neighbor of neighbors) {
           this.TRACKER.push([Line.EntryLine, 10]);
-          for (let i = neighbors.length - 1; i >= 0; i--) {
-            const neighbor = neighbors[i]!;
-            this.TRACKER.push([Line.EntryLine, 11]);
-            stack.push(neighbor);
-            this.TRACKER.push([Command.VisitPairs, [vertex, neighbor]]);
-            this.TRACKER.push([Command.Visited, neighbor]);
-            this.TRACKER.push([Line.FinishedLine, 11]);
-            this.TRACKER.push([Command.UnvisitPairs, [vertex, neighbor]]);
-          }
-          this.TRACKER.push([Line.FinishedLine, 10]);
+
+          this.TRACKER.push([Command.VisitPairs, [vertex, neighbor]]);
+          this.TRACKER.push([Line.EntryLine, 11]);
+          this.addInstruction([
+            Order.Entry,
+            [
+              [Line.FinishedLine, 6],
+              [Line.FinishedLine, 9],
+              [Line.FinishedLine, 10],
+              [Line.FinishedLine, 11],
+            ],
+          ]);
+          this.recursiveDFS(neighbor, visited);
+          this.TRACKER.push([Command.UnvisitPairs, [vertex, neighbor]]);
         }
       }
-      this.TRACKER.push([Line.FinishedLine, 7]);
-
+      this.TRACKER.push([Line.FinishedLine, 6]);
       this.TRACKER.push([Command.Popped, vertex]);
+      this.TRACKER.push([Command.PoppedStack, vertex]); // With this addition it makes it slower but users can see more clearly how it works.
     }
-    this.TRACKER.push([Line.FinishedLine, 5]);
-    this.TRACKER.push([Line.FinishedLine, 1]);
   }
 }
 

@@ -3,9 +3,7 @@ import type { ActionNode } from "~/app/_components/GraphUI/NodeElement";
 import type Node from "~/app/model/Node";
 import { useState } from "react";
 import isStringNumber from "~/app/utils/isStringNumber";
-import { useSearchParams, useRouter } from "next/navigation";
-import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
-import updateNodeWeightEncoded from "~/app/utils/EncodeNode/updateNodeWeightEncoded";
+import { useSearchParams } from "next/navigation";
 import { useThemeContext } from "~/app/context/ThemeContext";
 
 interface EdgeProps {
@@ -48,8 +46,6 @@ const Edge: React.FC<EdgeProps> = ({
   const [inputValue, setInputValue] = useState<string>(getNodeDistance());
   const searchParams = useSearchParams()!;
   const isEditMode = searchParams.get("edit");
-  const router = useRouter();
-  const updateNodeQueryString = useUpdateNodeQueryString(router);
 
   const dispatchAndClear = () => {
     if (dispatch === undefined) return;
@@ -63,11 +59,6 @@ const Edge: React.FC<EdgeProps> = ({
       },
     });
     setEditable(false);
-    updateNodeQueryString(
-      searchParams.toString(),
-      node,
-      updateNodeWeightEncoded(node, childNode.val, weight),
-    );
   };
 
   const handleTextClick = () => {

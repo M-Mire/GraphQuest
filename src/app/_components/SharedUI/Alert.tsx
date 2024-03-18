@@ -4,6 +4,7 @@ import CloseIcon from "@mui/icons-material/Close";
 export enum Alerts {
   Warning,
   Amber,
+  SelectRoot,
 }
 interface AlertProps {
   alert: Alerts | null;
@@ -22,6 +23,7 @@ const CustomAlert: React.FC<AlertProps> = ({ alert, setAlert }) => {
         });
       }, 500);
     }
+
     return () => clearTimeout(fadeOut);
   }, [alert, opacity]);
 
@@ -46,6 +48,8 @@ const CustomAlert: React.FC<AlertProps> = ({ alert, setAlert }) => {
               <Warning handleClick={handleWarningClose} />
             ) : alert === Alerts.Amber ? (
               <Amber />
+            ) : alert === Alerts.SelectRoot ? (
+              <SelectRoot handleClick={handleWarningClose} />
             ) : null}
           </div>
         </div>
@@ -56,11 +60,11 @@ const CustomAlert: React.FC<AlertProps> = ({ alert, setAlert }) => {
 
 export default CustomAlert;
 
-interface WarningProps {
+interface AlertWarningProps {
   handleClick: () => void;
 }
 
-const Warning: React.FC<WarningProps> = ({ handleClick }) => {
+const Warning: React.FC<AlertWarningProps> = ({ handleClick }) => {
   return (
     <div
       className="relative rounded border border-red-400 bg-red-100 p-4 py-3 text-red-700"
@@ -111,6 +115,34 @@ const Amber = () => {
           <p className="text-sm">
             You can have up to 20 nodes. Ensure you manage them effectively.
           </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SelectRoot: React.FC<AlertWarningProps> = ({ handleClick }) => {
+  return (
+    <div
+      className="relative rounded border border-green-400 bg-green-100 p-4 py-3 text-green-700"
+      role="alert"
+    >
+      <div className="flex items-center justify-center">
+        <div>
+          <strong className="font-bold">Warning! </strong>
+          <span className="block sm:inline">Please Select a Root node</span>
+        </div>
+        <div className="ml-2">
+          <IconButton color="primary" size="small" onClick={handleClick}>
+            <CloseIcon
+              fontSize="medium"
+              style={{
+                fill: "#4CCD99",
+                position: "absolute",
+                fontSize: "1.7rem",
+              }}
+            />
+          </IconButton>
         </div>
       </div>
     </div>

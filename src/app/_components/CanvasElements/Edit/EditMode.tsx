@@ -10,13 +10,14 @@ import type { ActionNode } from "~/app/_components/GraphUI/NodeElement";
 import Edge from "~/app/_components/GraphUI/Edge";
 import ContextMenu from "~/app/_components/SharedUI/ContextMenu";
 import InputWeight from "~/app/_components/GraphUI/InputWeight";
-import { calculateNewNodePosition } from "../../utils/calculateNewNodePosition";
+import { calculateNewNodePosition } from "../../../utils/calculateNewNodePosition";
 import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
 import updateNodeEncoded from "~/app/utils/EncodeNode/updateNodeEncoded";
 import { Alerts } from "~/app/_components/SharedUI/Alert";
-import InformationBoardGraphNode from "../SharedUI/InformationBoardItems/InformationBoardGraphNode";
-import InformationBoard from "../SharedUI/InformationBoard";
+import InformationBoardGraphNode from "../../SharedUI/InformationBoardItems/InformationBoardGraphNode";
+import InformationBoard from "../../SharedUI/InformationBoard";
 import { useThemeContext } from "~/app/context/ThemeContext";
+import NodeCreator from "./NodeCreator";
 
 interface EditModeProps {
   dispatch: React.Dispatch<ActionNode>;
@@ -53,20 +54,9 @@ const EditMode: React.FC<EditModeProps> = ({
   const [isCtxMenu, setCtxMenu] = useState<number>(-1);
   const [isInputWeight, setInputWeight] = useState<boolean>(false);
   const [inputWeightNums, setInputWeightNums] = useState<number[]>([]);
-  const updateNodeQueryString = useUpdateNodeQueryString(router);
 
   //move
   const [isMoveNode, setMoveNode] = useState<boolean>(false);
-
-  const createNodeQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams);
-      params.append(name, value);
-      return params.toString();
-    },
-    [searchParams],
-  );
-
   const handleClick = (e: React.MouseEvent) => {
     const { pageX: x, pageY: y, target } = e;
     const targetAsElem = target as HTMLElement;
@@ -101,12 +91,6 @@ const EditMode: React.FC<EditModeProps> = ({
                 weight: 0,
               },
             });
-            const currentNode = nodes.find((node) => node.val === activeNode)!;
-            updateNodeQueryString(
-              searchParams.toString(),
-              currentNode,
-              updateNodeEncoded(currentNode, clickedNode, 0),
-            );
           }
         }
       }
@@ -122,9 +106,10 @@ const EditMode: React.FC<EditModeProps> = ({
         node_x: number;
         node_y: number;
       };
-      const addNode = createNewNode(node_x, node_y, nodes.length);
-      const serializedObj = encodeURIComponent(JSON.stringify(addNode));
-      router.push(`?${createNodeQueryString("node", serializedObj)}`);
+      const maxNodeValue = nodes.length
+        ? Math.max(...nodes.map((node) => node.val))
+        : 0;
+      const addNode = createNewNode(node_x, node_y, maxNodeValue + 1);
 
       dispatch({
         type: ACTIONS_NODE.ADD_NODE,
@@ -141,7 +126,7 @@ const EditMode: React.FC<EditModeProps> = ({
   return (
     <div className="absolute h-full w-full p-4">
       <div
-        className="mx-auto my-14 h-2/3 overflow-auto rounded-2xl  md:relative md:left-0 md:top-0 md:w-[65%] lg:w-[70%]"
+        className="h-2/3 overflow-auto rounded-2xl border-2 sm:mb-2 md:relative md:left-0 md:top-0 md:w-[65%] lg:w-[70%]"
         style={{
           background: theme.background.secondary,
           borderColor: theme.background.quaternary,
@@ -233,6 +218,14 @@ const EditMode: React.FC<EditModeProps> = ({
           </svg>
         </div>
       </div>
+      <NodeCreator
+        minCanvas={minCanvas}
+        nodes={nodes}
+        dispatch={dispatch}
+        activeNode={activeNode}
+        setActiveNode={setActiveNode}
+        setAlert={setAlert}
+      />
     </div>
   );
 };

@@ -73,7 +73,7 @@ const TraverseCode: React.FC<TraverseCodeProps> = ({
         wrapLines={true}
         wrapLongLines={false}
         showLineNumbers={true}
-        customStyle={{ fontSize: "10px" }}
+        customStyle={{ fontSize: "15px" }}
         lineProps={(lineNumber) => {
           const style: React.CSSProperties = {
             display: "block",

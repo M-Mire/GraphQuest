@@ -23,7 +23,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`font-sans ${inconsolata.variable}`}>
+      <body
+        className={`font-sans ${inconsolata.variable}`}
+        suppressHydrationWarning={true}
+      >
         <TRPCReactProvider headers={headers()}>{children}</TRPCReactProvider>
       </body>
     </html>

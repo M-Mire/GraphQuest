@@ -9,6 +9,8 @@ import { getNodeColour } from "~/app/utils/getNodeColour";
 import type Node from "~/app/model/Node";
 import { useThemeContext } from "~/app/context/ThemeContext";
 import { Theme } from "~/app/types";
+import { useSearchParams } from "next/navigation";
+import convertToLetter from "~/app/utils/convertToLetter";
 
 interface NodeElementProps {
   node: Node;
@@ -20,6 +22,8 @@ const NodeElement: React.FC<NodeElementProps> = memo(
   ({ node, activeNode, rootValue }) => {
     const [isClicked, setClicked] = useState<boolean>(false);
     const { theme } = useThemeContext();
+    const searchParams = useSearchParams();
+    const isLetter = searchParams?.get("lettered") === "true";
     const handleClick = (e: React.MouseEvent) => {
       if (e.button === 2) {
         return;
@@ -72,7 +76,7 @@ const NodeElement: React.FC<NodeElementProps> = memo(
             handleClick(e);
           }}
         >
-          {node.val}
+          {isLetter ? convertToLetter(node.val) : node.val}
         </text>
       </>
     );
@@ -100,6 +104,7 @@ export const ACTIONS_NODE = {
   UPDATE_COORDS: "UPDATE_COORDS",
   CHANGE_NODE_WEIGHT: "CHANGE_NODE_WEIGHT",
   DELETE_ALL: "DELETE_ALL",
+  REMOVE_CHILD_NODE: "REMOVE_CHILD_NODE",
   TEST_NODE_DIAGNOSTIC: "TEST_NODE_DIAGNOSTIC",
 };
 export type ActionNode = {
@@ -124,6 +129,11 @@ export type ActionNode = {
         x: number;
         y: number;
       }
+    | {
+        parent: number;
+        childRemove: number;
+      }
+    | { deleteId: string }
     | number
     | Node;
 };

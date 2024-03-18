@@ -4,8 +4,8 @@ import { calculateNewNodePosition } from "~/app/utils/calculateNewNodePosition";
 import type Node from "~/app/model/Node";
 import { ACTIONS_NODE } from "~/app/_components/GraphUI/NodeElement";
 import type { ActionNode } from "~/app/_components/GraphUI/NodeElement";
-import useDeleteNodeQueryString from "~/app/hooks/useDeleteNodeQueryString";
-import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
+// import useDeleteNodeQueryString from "~/app/hooks/useDeleteNodeQueryString";
+// import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
 import updateNodeCoordEncoded from "~/app/utils/EncodeNode/updateNodeCoordEncoded";
 
 const CTX_WIDTH = 150;
@@ -52,14 +52,14 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   const x = xNode + CTX_WIDTH > canvasBounds.xBound ? xNode - CTX_WIDTH : xNode;
   const [hoveredText, setHoveredText] = useState<string | null>(null);
   const router = useRouter();
-  const deleteNodeQueryString = useDeleteNodeQueryString(router);
-  const updateNodeQueryString = useUpdateNodeQueryString(router);
+  // const deleteNodeQueryString = useDeleteNodeQueryString(router);
+  // const updateNodeQueryString = useUpdateNodeQueryString(router);
   const searchParams = useSearchParams();
   const handleDelete = () => {
-    deleteNodeQueryString(searchParams.toString(), node);
+    // deleteNodeQueryString(searchParams.toString(), node);
     dispatch({
       type: ACTIONS_NODE.DELETE_NODE,
-      payload: node,
+      payload: { deleteId: node.id },
     });
   };
 
@@ -100,11 +100,11 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
       window.removeEventListener("mouseup", handleMouseUp);
       setMoveNode(false);
       setCtxMenu(-1);
-      updateNodeQueryString(
-        searchParams.toString(),
-        node,
-        updateNodeCoordEncoded(node, node_x, node_y),
-      );
+      // updateNodeQueryString(
+      //   searchParams.toString(),
+      //   node,
+      //   updateNodeCoordEncoded(node, node_x, node_y),
+      // );
     };
 
     window.addEventListener("mouseup", handleMouseUp);

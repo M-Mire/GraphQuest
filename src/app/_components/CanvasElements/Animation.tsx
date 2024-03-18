@@ -22,6 +22,7 @@ import type {
 } from "~/app/_GraphAlgorithm/Graph";
 import { pageEnum } from "~/app/_pageConfigs/config";
 import { useThemeContext } from "~/app/context/ThemeContext";
+import { Alerts } from "../SharedUI/Alert";
 
 interface AnimationProps {
   handleNodeReset: () => void;
@@ -49,6 +50,7 @@ interface AnimationProps {
   minCanvas: { minHeight: number; minWidth: number };
   isUndirectedGraph: boolean;
   setPlay: React.Dispatch<React.SetStateAction<boolean>>;
+  setAlert: React.Dispatch<React.SetStateAction<Alerts | null>>;
 }
 
 function isCommand(type: InstructionType): type is Command {
@@ -88,6 +90,7 @@ const Animation: React.FC<AnimationProps> = ({
   minCanvas,
   isUndirectedGraph,
   setPlay,
+  setAlert,
 }) => {
   const { theme } = useThemeContext();
   const [tracker, setTracker] = useState<TrackerArray>([]);
@@ -109,8 +112,14 @@ const Animation: React.FC<AnimationProps> = ({
   };
 
   useEffect(() => {
+    if (rootValue === null && isPlay) {
+      setAlert(Alerts.SelectRoot);
+    }
     if (rootValue !== null && isPlay) {
-      handleNodeReset();
+      console.log(currentIndex, tracker.length);
+      if (currentIndex === tracker.length) {
+        handleNodeReset();
+      }
       const g = isWeighted === false ? new Graph() : new GraphDistance();
       nodes
         .filter((node) => node.childNodes && node.childNodes.length > 0)
@@ -217,6 +226,7 @@ const Animation: React.FC<AnimationProps> = ({
               currentIndex={currentIndex}
               tracker={tracker}
               isPlay={isPlay}
+              rootValue={rootValue}
             />
           ) : pageID === pageEnum.DFS ? (
             <TraverseAnimationDFS

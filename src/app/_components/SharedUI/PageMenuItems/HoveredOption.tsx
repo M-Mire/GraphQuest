@@ -20,7 +20,7 @@ const HoveredOption = ({
         Array.from(pageConfigurationMap).map(([id, config]) => (
           <div
             key={id}
-            className="absolute left-64 z-10 mt-16 h-48 w-64 rounded-r-lg border-y-2 border-r-2 border-solid border-inherit bg-inherit"
+            className="absolute z-10 mt-16 h-48 w-64 rounded-l-lg rounded-r-lg border-y-2 border-l-2 border-r-2 border-solid border-inherit bg-inherit md:left-64 md:rounded-l-none"
             style={{
               display: hoveredDiv === id ? "block" : "none",
             }}

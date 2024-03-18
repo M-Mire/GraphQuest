@@ -58,14 +58,14 @@ const Navbar: React.FC<NavbarProps> = ({
             </Link>
           </div>
           <div
-            className="ml-2 flex items-center text-sm font-bold "
+            className="ml-1 flex w-28 items-center text-xs font-bold md:ml-2 md:w-full md:text-sm"
             style={{ color: theme.text.title }}
           >
             GraphQuest
             {pageConfiguration && algorithmName && `:${algorithmName}`}
           </div>
           <div
-            className="ml-1 flex items-center text-sm font-bold "
+            className="flex items-center text-sm font-bold md:ml-1 "
             style={{ color: theme.text.title }}
           >
             <button
@@ -83,8 +83,8 @@ const Navbar: React.FC<NavbarProps> = ({
               </svg>
             </button>
           </div>
-
           {children}
+
           {showMenu ? <ShowMenuItems /> : null}
         </div>
         <label

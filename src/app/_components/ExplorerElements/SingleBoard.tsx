@@ -63,6 +63,7 @@ const SingleBoard = ({
               distance: Infinity,
               isBlock: false,
               type: "normal",
+              isCost: false,
             };
           }),
         );

@@ -50,3 +50,10 @@ export type GridNode = {
 export type Grid = GridNode[][];
 
 export type MousePressedNode = "start" | "end" | "normal";
+
+export type GifType = {
+  title: string;
+  text: string;
+  img: string;
+  description: string;
+};

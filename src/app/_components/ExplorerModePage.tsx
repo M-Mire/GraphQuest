@@ -11,6 +11,8 @@ import { useSearchParams } from "next/navigation";
 import CompareBoard from "./ExplorerElements/CompareBoard";
 import { renderBoard } from "../utils/renderGridBoard";
 import SingleBoard from "./ExplorerElements/SingleBoard";
+import SlideShow from "./SharedUI/SlideShow";
+import { explorerGifs } from "../gifs";
 
 const ROWS = 15;
 const COLS = 40;
@@ -60,6 +62,7 @@ const ExplorerModePage = () => {
   const searchParams = useSearchParams();
 
   const mode = searchParams && searchParams.get("compareMode") === "true";
+  const isSlideShow = searchParams && searchParams.get("slideShow") === "true";
   const [isDeleteClicked, setDeleteClicked] = useState<boolean>(false);
 
   const [isStatisticButtonOpen, setStatisticButton] = useState<boolean>(false);
@@ -102,7 +105,9 @@ const ExplorerModePage = () => {
           isEditMode={mode}
         />
       </Navbar>
+
       <div className="flex w-full justify-center">
+        {isSlideShow && <SlideShow gif={explorerGifs} />}
         <div className="bg-red my-2 mt-[50px] overflow-auto rounded-2xl border-2">
           <InformationBoard>
             <InformationBoardExplorerNode
@@ -125,10 +130,13 @@ const ExplorerModePage = () => {
               name="Block"
               nodeClassName="node-block"
             />
-            <InformationBoardExplorerNode
-              name="Weight"
-              nodeClassName="node-weight"
-            />
+            {selectedAlgorithm !== AlgorithmEnum.BFS &&
+              selectedAlgorithm !== AlgorithmEnum.DFS && (
+                <InformationBoardExplorerNode
+                  name="Weight"
+                  nodeClassName="node-weight"
+                />
+              )}
           </InformationBoard>
           {!mode ? (
             <SingleBoard

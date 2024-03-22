@@ -378,6 +378,10 @@ const Board = ({
                     nodeRef.current[i] = nodeRef.current[i] ?? [];
                     nodeRef.current[i]![j] = el!;
                   }}
+                  isWeight={
+                    selectedAlgorithm !== AlgorithmEnum.BFS &&
+                    selectedAlgorithm !== AlgorithmEnum.DFS
+                  }
                 />
               );
             })}

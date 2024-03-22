@@ -115,11 +115,7 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
               y={midpointY}
               width={rectWidth}
               height={rectHeight}
-              fill={getNodeColour(
-                false,
-                poppedStack.visited,
-                poppedStack.visitedChildrens,
-              )}
+              fill={theme.node.completed}
               stroke="white"
               strokeWidth={3}
             />

@@ -3,6 +3,7 @@ import type { GridNode } from "~/app/types";
 import HikingIcon from "@mui/icons-material/Hiking";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import { AlgorithmEnum } from "~/app/_pageConfigs/configExplorer";
 
 interface NodeProps {
   node: GridNode;
@@ -12,6 +13,7 @@ interface NodeProps {
   startNode: GridNode;
   endNode: GridNode;
   isMovedWhilstAnimated: boolean;
+  isWeight: boolean;
 }
 
 const Node = forwardRef<HTMLElement, NodeProps>(
@@ -24,6 +26,7 @@ const Node = forwardRef<HTMLElement, NodeProps>(
       startNode,
       endNode,
       isMovedWhilstAnimated,
+      isWeight,
     }: NodeProps,
     ref,
   ) => {
@@ -46,7 +49,7 @@ const Node = forwardRef<HTMLElement, NodeProps>(
         ? `bg-purple-300 ${!isMovedWhilstAnimated ? "node-shortest-path" : ""}`
         : type === "visited"
         ? `bg-blue-500 ${!isMovedWhilstAnimated ? "node-visited" : ""}`
-        : isCost
+        : isCost && isWeight
         ? "bg-yellow-500"
         : ""
     }`;
@@ -67,7 +70,7 @@ const Node = forwardRef<HTMLElement, NodeProps>(
           {isEndNode && (
             <LocationOnIcon style={{ width: iconSize, height: iconSize }} />
           )}
-          {isCost && !isStartNode && !isEndNode && !isBlock && (
+          {isCost && !isStartNode && !isEndNode && !isBlock && isWeight && (
             <FitnessCenterIcon style={{ width: iconSize, height: iconSize }} />
           )}
         </div>

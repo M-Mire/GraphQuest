@@ -15,6 +15,9 @@ import useNodeManagement from "../hooks/useNodeManagement";
 import useAnimationManagement from "../hooks/useAnimationManagement";
 import ControlButtons from "./SharedUI/ControlButtons";
 import useThemeBackground from "../hooks/useThemeBackground";
+import SlideShow from "./SharedUI/SlideShow";
+import { GifType } from "../types";
+import { graphGifs } from "../gifs";
 
 interface PageProps {
   pageConfiguration: pageConfigurationType;
@@ -41,6 +44,7 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
   const { nodes, dispatch } = useNodeManagement();
 
   const isEditMode = searchParams && searchParams.get("edit") === "true";
+  const isSlideShow = searchParams && searchParams.get("slideShow") === "true";
 
   const [alert, setAlert] = useState<Alerts | null>(null);
   const minCanvas = useMinCanvas(nodes, urlNodes);
@@ -61,19 +65,6 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
       });
     }
   }, [isEditMode]);
-
-  const clearNodes = () => {
-    dispatch({
-      type: ACTIONS_NODE.DELETE_ALL,
-      payload: -1,
-    });
-    setCurrentIndex(0);
-    setPlay(false);
-    dispatchLineNumbers({
-      type: Line.LineReset,
-      payload: 0,
-    });
-  };
 
   const handleNodeReset = () => {
     dispatch({
@@ -108,6 +99,8 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
           className="relative h-full"
           style={{ background: theme.background.primary }}
         >
+          {isSlideShow && <SlideShow gif={graphGifs} />}
+
           <Alert alert={alert} setAlert={setAlert} />
           {isEditMode ? (
             <>

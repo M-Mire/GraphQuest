@@ -9,6 +9,8 @@ import pageConfigurationType from "~/app/_pageConfigs/config";
 import ToggleMode from "./NavItems/ToggleMode";
 import ShowMenuItems from "./NavItems/ShowMenuItems";
 import Link from "next/link";
+import useQueryString from "~/app/hooks/useQueryString";
+import { usePathname, useSearchParams } from "next/navigation";
 
 export interface NavbarProps {
   algorithmName?: string;
@@ -22,8 +24,22 @@ const Navbar: React.FC<NavbarProps> = ({
   pageConfiguration,
 }) => {
   const { theme } = useThemeContext();
-
   const [showMenu, setShowMenu] = useState(false);
+  const { createQueryString, deleteQueryString } = useQueryString();
+  const pathname = usePathname();
+  const searchParams = useSearchParams()!;
+
+  const targetQueryName = "slideShow";
+
+  const toggle = () => {
+    if (targetQueryName) {
+      return searchParams.get(targetQueryName)
+        ? pathname + "?" + deleteQueryString(targetQueryName)
+        : pathname + "?" + createQueryString(targetQueryName, "true");
+    } else {
+      return pathname;
+    }
+  };
 
   const toggleMenu = () => {
     setShowMenu(!showMenu);
@@ -133,13 +149,15 @@ const Navbar: React.FC<NavbarProps> = ({
             </IconButton>
           </li>
           <li className="">
-            <IconButton
-              color="primary"
-              size="small"
-              style={{ color: theme.background.quaternary }}
-            >
-              <HelpOutlineIcon style={{ fontSize: "2rem" }} />
-            </IconButton>
+            <Link href={toggle()}>
+              <IconButton
+                color="primary"
+                size="small"
+                style={{ color: theme.background.quaternary }}
+              >
+                <HelpOutlineIcon style={{ fontSize: "2rem" }} />
+              </IconButton>
+            </Link>
           </li>
         </ul>
       </nav>

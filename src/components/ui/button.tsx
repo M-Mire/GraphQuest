@@ -94,6 +94,6 @@ const ButtonExplorer = React.forwardRef<HTMLButtonElement, ButtonProps>(
     );
   },
 );
-Button.displayName = "Button";
+ButtonExplorer.displayName = "ButtonExplorer";
 
 export { Button, ButtonExplorer, buttonVariants };

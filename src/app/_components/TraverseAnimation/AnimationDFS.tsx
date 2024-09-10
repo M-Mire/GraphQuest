@@ -101,7 +101,7 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
     connectedTo: [],
   };
 
-  const renderNode = (node: Node, x: number, isPopped: boolean = false) => (
+  const renderNode = (node: Node, x: number, isPopped = false) => (
     <g key={`node-${node.id}`}>
       <rect
         x={x}
@@ -136,7 +136,7 @@ const TraverseAnimationDFS: React.FC<TraverseAnimationProps> = ({
         height={containerHeight}
         className="relative h-full"
       >
-        {renderNode(poppedStack || placeholderNode, padding, !!poppedStack)}
+        {renderNode(poppedStack ?? placeholderNode, padding, !!poppedStack)}
 
         <line
           x1={padding / 2 + rectDimensions.width + rectDimensions.margin}

@@ -2,8 +2,6 @@ import pageConfigurationType, {
   pageConfigurationMap,
   pageEnum,
 } from "~/app/_pageConfigs/config";
-import BottomButton from "./BottomButton";
-import TopButton from "./TopButton";
 
 interface HoveredOptionProps {
   hoveredDiv: pageEnum | null;
@@ -29,18 +27,8 @@ const HoveredOption = ({
               <p className="m-auto">{id}</p>
             </div>
 
-            <div className="px-4">
-              <TopButton
-                pageConfiguration={pageConfiguration}
-                config={[id, config]}
-              />
-            </div>
-            <div className="px-4 py-2">
-              <BottomButton
-                pageConfiguration={pageConfiguration}
-                config={[id, config]}
-              />
-            </div>
+            <div className="px-4"></div>
+            <div className="px-4 py-2"></div>
           </div>
         ))}
     </>

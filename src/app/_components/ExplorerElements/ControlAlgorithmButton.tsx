@@ -3,12 +3,23 @@ import IconButton from "@mui/material/IconButton";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import MazeIcon from "@mui/icons-material/BorderClear";
-
-import { useThemeContext } from "~/app/context/ThemeContext";
 import { AlgorithmEnum, algorithmMap } from "~/app/_pageConfigs/configExplorer";
-import { Grid } from "~/app/types";
-
-const style = { fontSize: "1rem" };
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "~/components/ui/command";
+import { ButtonExplorer } from "~/components/ui/button";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "~/lib/utils";
 
 interface ControlButtonsProps {
   setPlay: React.Dispatch<React.SetStateAction<boolean>>;
@@ -32,9 +43,6 @@ const ControlAlgorithmButton: React.FC<ControlButtonsProps> = ({
   setDeleteClicked,
   isEditMode,
 }) => {
-  const { theme } = useThemeContext();
-  const colour = theme.background.quaternary;
-
   const algorithmObjects = Object.entries(algorithmMap).map(
     ([name, algorithm]) => ({
       name,
@@ -43,12 +51,7 @@ const ControlAlgorithmButton: React.FC<ControlButtonsProps> = ({
   );
 
   const [isOpen, setDropDown] = useState<boolean>(false);
-
-  const themeStyle = {
-    background: theme.background.primary,
-    color: theme.text.primary,
-    borderColor: theme.background.quaternary,
-  };
+  const [value, setValue] = useState<string>("");
 
   const handlePlayClick = () => {
     setPlay(true);
@@ -73,130 +76,98 @@ const ControlAlgorithmButton: React.FC<ControlButtonsProps> = ({
       setDropDown(false);
     }
   }, [isPlay]);
+
   return (
     <div className="relative ml-5 flex items-center text-sm font-bold">
-      <div
-        className="ml-3 flex
- h-8 items-center rounded-l-lg border-2"
-        style={themeStyle}
-      >
-        <div className={`flex items-center rounded-full `}>
-          <IconButton
-            color="primary"
-            size="small"
-            onClick={handlePlayClick}
-            style={{ color: colour }}
-          >
-            <PlayArrowIcon style={style} />
+      <div className="ml-3 flex h-8 items-center rounded-l-lg border-2 bg-inherit">
+        <div className="flex items-center rounded-full">
+          <IconButton color="primary" size="small" onClick={handlePlayClick}>
+            <PlayArrowIcon style={{ fontSize: "1rem" }} />
           </IconButton>
         </div>
       </div>
+
       {!isEditMode && (
-        <button
-          name="changeView"
-          className="h-8 w-32 border-y-2 text-sm transition duration-300 ease-in-out hover:bg-gray-400 "
-          style={themeStyle}
-          onClick={() => {
-            if (!isPlay) {
-              setDropDown(!isOpen);
-            }
-          }}
-        >
-          {selectedAlgorithm ? (
-            ` ${selectedAlgorithm}`
-          ) : (
-            <p className="text-sm">Pick Algorithm</p>
-          )}
-        </button>
+        <Popover open={isOpen} onOpenChange={setDropDown}>
+          <PopoverTrigger asChild>
+            <ButtonExplorer
+              variant="outline"
+              role="combobox"
+              aria-expanded={isOpen}
+              className="h-8 w-[200px] justify-between"
+            >
+              {value
+                ? algorithmObjects.find((algorithm) => algorithm.name === value)
+                    ?.name
+                : "Pick Algorithm"}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </ButtonExplorer>
+          </PopoverTrigger>
+          <PopoverContent className="w-[200px] p-0">
+            <Command>
+              <CommandInput placeholder="Search algorithm..." />
+              <CommandList>
+                <CommandEmpty>No algorithm found.</CommandEmpty>
+                <CommandGroup>
+                  {algorithmObjects.map(({ name }) => (
+                    <CommandItem
+                      key={name}
+                      value={name}
+                      onSelect={(currentValue) => {
+                        setValue(currentValue === value ? "" : currentValue);
+                        setSelectedAlgorithm(currentValue as AlgorithmEnum);
+                        setDropDown(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          value === name ? "opacity-100" : "opacity-0",
+                        )}
+                      />
+                      {name}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
       )}
 
       <div
-        className={`flex
- h-8 items-center border-y-2 ${!isEditMode && "border-l-2"}`}
-        style={themeStyle}
+        className={`flex h-8 items-center border-y-2 ${
+          !isEditMode && "border-l-2"
+        }`}
       >
-        <div className={`flex items-center rounded-full `}>
+        <div className="flex items-center rounded-full">
           <IconButton
             color="primary"
             size="small"
             onClick={handleMazeClick}
-            style={{ color: colour }}
+            className="text-inherit"
           >
-            <MazeIcon style={style} />
-            <p className="ml-2 mr-2 text-sm"> Maze</p>
+            <MazeIcon className="text-[1rem]" />
+            <p className="ml-2 mr-2 text-sm">Maze</p>
           </IconButton>
         </div>
       </div>
-      <div
-        className="flex
- h-8 items-center rounded-r-lg border-2"
-        style={themeStyle}
-      >
-        <div className={`flex items-center rounded-full `}>
+
+      <div className="flex h-8 items-center rounded-r-lg border-2">
+        <div className="flex items-center rounded-full">
           <IconButton
             color="primary"
             size="small"
             onClick={handleDeleteClick}
-            style={{ color: colour }}
+            className="text-inherit"
           >
-            <DeleteForeverIcon style={style} />
-            <p className="ml-2 mr-2 text-sm"> Clear </p>
+            <DeleteForeverIcon className="text-[1rem] text-red-500" />
+            <p className="ml-2 mr-2 text-sm">Clear</p>
           </IconButton>
         </div>
       </div>
-      {isOpen && (
-        <>
-          <div
-            className="absolute right-20 top-full z-10 mt-2 w-48 rounded-lg border-2 border-solid border-slate-700"
-            style={themeStyle}
-          >
-            {algorithmObjects.map(({ name, algorithm: algorithm }, index) => (
-              <ExplorerItems
-                key={algorithm.name}
-                themeStyle={themeStyle}
-                name={algorithm.name}
-                roundedB={index + 1 === algorithmObjects.length}
-                onClick={() => {
-                  setSelectedAlgorithm(algorithm.name as AlgorithmEnum);
-                  setDropDown(!isOpen);
-                }}
-              />
-            ))}
-          </div>
-        </>
-      )}
     </div>
   );
 };
 
 export default ControlAlgorithmButton;
-
-interface ExplorerItemsProps {
-  themeStyle: {
-    background: string;
-    color: string;
-    borderColor: string;
-  };
-  name: string;
-  roundedB?: boolean;
-  onClick?: () => void;
-}
-
-const ExplorerItems = ({
-  themeStyle,
-  name,
-  roundedB,
-  onClick,
-}: ExplorerItemsProps) => {
-  return (
-    <button
-      className={`flex h-12 w-full items-center justify-between rounded-t-lg border-solid ${
-        roundedB ? "rounded-b-lg" : "border-b-2"
-      }`}
-      style={themeStyle}
-      onClick={onClick}
-    >
-      <span className="p-2">{name}</span>
-    </button>
-  );
-};

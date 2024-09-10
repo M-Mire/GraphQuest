@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import Navbar from "~/app/_components/SharedUI/Navbar";
 import EditMode from "~/app/_components/CanvasElements/Edit/EditMode";
 import { ACTIONS_NODE } from "~/app/_components/GraphUI/NodeElement";
 import Animation from "~/app/_components/CanvasElements/Animation";
@@ -9,22 +8,17 @@ import { useState } from "react";
 import type pageConfigurationType from "~/app/_pageConfigs/config";
 import Alert from "~/app/_components/SharedUI/Alert";
 import type { Alerts } from "~/app/_components/SharedUI/Alert";
-import { useThemeContext } from "../context/ThemeContext";
-import useMinCanvas from "../hooks/useMinCanvas";
-import useNodeManagement from "../hooks/useNodeManagement";
-import useAnimationManagement from "../hooks/useAnimationManagement";
-import ControlButtons from "./SharedUI/ControlButtons";
-import useThemeBackground from "../hooks/useThemeBackground";
-import SlideShow from "./SharedUI/SlideShow";
-import { GifType } from "../types";
-import { graphGifs } from "../gifs";
+import useMinCanvas from "../../app/hooks/useMinCanvas";
+import useNodeManagement from "../../app/hooks/useNodeManagement";
+import useAnimationManagement from "../../app/hooks/useAnimationManagement";
+import ControlButtons from "../../app/_components/SharedUI/ControlButtons";
+import { NavigationBar } from "~/components/navigation-header/navigation-bar";
 
 interface PageProps {
   pageConfiguration: pageConfigurationType;
 }
 
 const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
-  const { theme } = useThemeContext();
   const searchParams = useSearchParams();
   const urlNodes = searchParams?.getAll("node") || [];
 
@@ -44,12 +38,8 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
   const { nodes, dispatch } = useNodeManagement();
 
   const isEditMode = searchParams && searchParams.get("edit") === "true";
-  const isSlideShow = searchParams && searchParams.get("slideShow") === "true";
-
   const [alert, setAlert] = useState<Alerts | null>(null);
   const minCanvas = useMinCanvas(nodes, urlNodes);
-
-  useThemeBackground();
 
   useEffect(() => {
     if (isEditMode) {
@@ -77,11 +67,10 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
       payload: 0,
     });
   };
-
   return (
     <>
       <div className="relative flex h-screen flex-col">
-        <Navbar
+        <NavigationBar
           algorithmName={pageConfiguration.algorithmName}
           pageConfiguration={pageConfiguration}
         >
@@ -94,13 +83,8 @@ const MainPage: React.FC<PageProps> = ({ pageConfiguration }) => {
             isPlay={isPlay}
             dispatchLineNumbers={dispatchLineNumbers}
           />
-        </Navbar>
-        <div
-          className="relative h-full"
-          style={{ background: theme.background.primary }}
-        >
-          {isSlideShow && <SlideShow gif={graphGifs} />}
-
+        </NavigationBar>
+        <div className="relative h-full">
           <Alert alert={alert} setAlert={setAlert} />
           {isEditMode ? (
             <>

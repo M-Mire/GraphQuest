@@ -192,7 +192,7 @@ export const pageConfigurationMap: Map<pageEnum, pageConfigurationType> =
     [pageEnum.BFS, pageConfigurationBFS],
     [pageEnum.DFS, pageConfigurationDFS],
     [pageEnum.DIJKSTRA, pageConfigurationDijkstra],
-    [pageEnum.PRIMS_JARNIK, pageConfigurationPrimJarnik],
+    // [pageEnum.PRIMS_JARNIK, pageConfigurationPrimJarnik],
     [pageEnum.EXPLORERS, pageConfigurationEXPLORER],
   ]);
 

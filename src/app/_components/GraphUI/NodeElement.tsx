@@ -5,10 +5,7 @@ import {
   DEFAULT_RADIUS_BIG_CIRCLE,
   DEFAULT_NODE_ROOT_STROKE_COLOUR,
 } from "~/app/constants/Node/index";
-import { getNodeColour } from "~/app/utils/getNodeColour";
 import type Node from "~/app/model/Node";
-import { useThemeContext } from "~/app/context/ThemeContext";
-import { Theme } from "~/app/types";
 import { useSearchParams } from "next/navigation";
 import convertToLetter from "~/app/utils/convertToLetter";
 
@@ -21,7 +18,6 @@ interface NodeElementProps {
 const NodeElement: React.FC<NodeElementProps> = memo(
   ({ node, activeNode, rootValue }) => {
     const [isClicked, setClicked] = useState<boolean>(false);
-    const { theme } = useThemeContext();
     const searchParams = useSearchParams();
     const isLetter = searchParams?.get("lettered") === "true";
     const handleClick = (e: React.MouseEvent) => {
@@ -41,24 +37,18 @@ const NodeElement: React.FC<NodeElementProps> = memo(
           cx={node.x}
           cy={node.y}
           r={DEFAULT_RADIUS_SMALL_CIRCLE}
-          fill={getNodeColour(isClicked, node.visited, node.visitedChildrens)}
         />
         <circle
           name={"" + node.val}
           cx={node.x}
           cy={node.y}
           r={DEFAULT_RADIUS_BIG_CIRCLE}
-          stroke={
-            rootValue === node.val
-              ? DEFAULT_NODE_ROOT_STROKE_COLOUR
-              : theme.background.quaternary
-          }
           strokeWidth="3"
-          fill={getNodeThemeColour(
+          className={getNodeClassName(
             isClicked,
             node.visited,
             node.visitedChildrens,
-            theme,
+            rootValue === node.val,
           )}
           onMouseDown={(e) => {
             handleClick(e);
@@ -69,7 +59,6 @@ const NodeElement: React.FC<NodeElementProps> = memo(
           x={node.x}
           y={node.y + 5.333333}
           fontSize="16"
-          fill={theme.text.secondary}
           textAnchor="middle"
           className="no-select"
           onMouseDown={(e) => {
@@ -138,17 +127,26 @@ export type ActionNode = {
     | Node;
 };
 
-const getNodeThemeColour = (
+const getNodeClassName = (
   isClicked: boolean,
   visited: boolean,
   visitedChildrens: boolean,
-  currentTheme: Theme,
+  isRoot: boolean,
 ) => {
-  return isClicked
-    ? currentTheme.node.active
-    : visited
-    ? visitedChildrens
-      ? currentTheme.node.completed
-      : currentTheme.node.visited
-    : currentTheme.node.unvisited;
+  if (isClicked) return "fill-blue-500 stroke-blue-700";
+
+  if (isRoot) {
+    if (visited) {
+      return visitedChildrens
+        ? "fill-green-500 stroke-destructive"
+        : "fill-blue-500 stroke-destructive";
+    }
+    return "fill-white stroke-destructive";
+  }
+  if (visited) {
+    return visitedChildrens
+      ? "fill-green-500 stroke-green-700"
+      : "fill-blue-500 stroke-blue-700";
+  }
+  return "fill-white stroke-primary";
 };

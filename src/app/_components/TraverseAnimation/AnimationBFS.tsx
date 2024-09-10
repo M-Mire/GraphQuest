@@ -3,7 +3,6 @@ import { getNodeColour } from "~/app/utils/getNodeColour";
 import type Node from "~/app/model/Node";
 import { useSearchParams } from "next/navigation";
 import convertToLetter from "~/app/utils/convertToLetter";
-import { useThemeContext } from "~/app/context/ThemeContext";
 interface TraverseAnimationProps {
   nodes: Node[];
 }
@@ -23,7 +22,6 @@ const TraverseAnimationBFS: React.FC<TraverseAnimationProps> = ({ nodes }) => {
   const [arrowPoint, setArrowPoint] = useState<[number, string] | null>(null);
   const [visitStack, setVisitStack] = useState<Node[]>([]);
   const [containerHeight, setContainerHeight] = useState<number>(400);
-  const { theme } = useThemeContext();
   const searchParams = useSearchParams();
   const isLetter = searchParams?.get("lettered") === "true";
 
@@ -135,7 +133,7 @@ const TraverseAnimationBFS: React.FC<TraverseAnimationProps> = ({ nodes }) => {
                 y={y}
                 width={rectWidth}
                 height={rectHeight}
-                fill={theme.node.visited}
+                className="fill-blue-500"
                 stroke="white"
                 strokeWidth={3}
               />
@@ -145,17 +143,16 @@ const TraverseAnimationBFS: React.FC<TraverseAnimationProps> = ({ nodes }) => {
                 y={y + rectHeight / 2}
                 textAnchor="middle"
                 alignmentBaseline="middle"
-                fill={theme.node.text}
               >
                 {isLetter ? convertToLetter(node.val) : node.val}
               </text>
               {arrowPoint !== null && i === arrowPoint[0] ? (
                 <polygon
                   key={`arrow-${node.id}`}
+                  className="fill-primary"
                   points={`${x + rectWidth / 2},${y - arrowSize} ${
                     x + rectWidth / 2 - arrowSize / 2
                   },${y} ${x + rectWidth / 2 + arrowSize / 2},${y}`}
-                  fill={theme.node.defaultStroke}
                 />
               ) : null}
             </g>

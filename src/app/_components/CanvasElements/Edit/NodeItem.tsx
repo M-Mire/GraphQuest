@@ -3,7 +3,6 @@ import Node from "~/app/model/Node";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import IconButton from "@mui/material/IconButton";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { useThemeContext } from "~/app/context/ThemeContext";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { useSearchParams, useRouter } from "next/navigation";
 
@@ -26,7 +25,6 @@ export default function NodeItem({
   activeNode,
   setActiveNode,
 }: NodeItemProps) {
-  const { theme } = useThemeContext();
   const searchParams = useSearchParams();
   const isLetter = searchParams?.get("lettered") === "true";
 
@@ -83,34 +81,21 @@ export default function NodeItem({
   };
 
   return (
-    <div className="m-2" style={{ color: theme.text.title }}>
+    <div className="m-2">
       <div
-        className={`${
+        className={` ${
           isSelected ? "flex min-h-[3rem]" : ""
         } rounded-lg border-2`}
-        style={{ background: theme.background.tertiary }}
       >
         <div className={`m-2 flex items-center`}>
           {isLetter ? <p>{convertToLetter(node.val)}</p> : <p>{node.val}</p>}
           {isSelected ? (
             <IconButton onClick={handleArrowUp}>
-              <ArrowDropUpIcon
-                style={{
-                  fill: theme.text.secondary,
-                  fontSize: "1.5rem",
-                  marginLeft: "0.2rem",
-                }}
-              />
+              <ArrowDropUpIcon className="fill-primary ml-[0.2rem] text-[1.7rem]" />
             </IconButton>
           ) : (
             <IconButton onClick={handleArrowDown}>
-              <ArrowDropDownIcon
-                style={{
-                  fill: theme.text.secondary,
-                  fontSize: "1.5rem",
-                  marginLeft: "0.2rem",
-                }}
-              />
+              <ArrowDropDownIcon className="fill-primary ml-[0.2rem] text-[1.7rem]" />
             </IconButton>
           )}
 
@@ -119,9 +104,7 @@ export default function NodeItem({
               onClick={() => handleDelete()}
               className={`ml-auto h-4 w-4`}
             >
-              <DeleteForeverIcon
-                style={{ fill: "#FF0000" }} // red
-              />
+              <DeleteForeverIcon className="fill-[#FF0000]" />
             </IconButton>
           )}
         </div>
@@ -146,10 +129,6 @@ export default function NodeItem({
                     <div
                       key={index}
                       className={`${classStyles}`}
-                      style={{
-                        backgroundColor: theme.background.secondary,
-                        borderColor: theme.background.quaternary,
-                      }}
                       onClick={() => handleDeselectNode(selectedNode, nodeItem)}
                     >
                       {isLetter ? (
@@ -165,7 +144,6 @@ export default function NodeItem({
                     <div
                       key={index}
                       className={`${classStyles}`}
-                      style={{ backgroundColor: theme.background.tertiary }}
                       onClick={() => handleSelectNode(selectedNode, nodeItem)}
                     >
                       {isLetter ? (

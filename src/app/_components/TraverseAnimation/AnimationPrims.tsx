@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { getNodeColour } from "~/app/utils/getNodeColour";
 import type Node from "~/app/model/Node";
 import { Command } from "~/app/_GraphAlgorithm/Graph";
 import type { Line, TrackerArray } from "~/app/_GraphAlgorithm/Graph";
@@ -9,7 +8,6 @@ import {
   SingleInstruction,
   TrackerElementType,
 } from "~/app/_GraphAlgorithm/Graph";
-import { useThemeContext } from "~/app/context/ThemeContext";
 
 interface TraverseAnimationProps {
   tracker: TrackerArray;
@@ -37,7 +35,6 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
   const [currentWeight, setCurrentWeight] = useState<number>(0);
   const [previousCost, setPrevCost] = useState<number | null>(null);
   const [containerHeight, setContainerHeight] = useState<number>(400);
-  const { theme } = useThemeContext();
 
   useEffect(() => {
     if (currentIndex === -1) {
@@ -69,7 +66,6 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
   }, [currentIndex, tracker, isPlay]);
 
   const handleCommand = (command: InstructionType, val: TrackerElementType) => {
-    console.log(command);
     const getNode = nodes.find((node) => node.val === val)!;
     if (command === Command.Visited) {
       const updatedNode = { ...getNode, visited: true };
@@ -94,6 +90,7 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
       }
     }
   };
+
   useEffect(() => {
     const updateContainerHeight = () => {
       if (containerRef.current) {
@@ -113,7 +110,9 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
     setPrevCost(null);
     setCurrentWeight(0);
   };
+
   const lineX = padding + rectWidth + (rectWidth + rectMargin) / 2;
+
   return (
     <div
       ref={containerRef}
@@ -131,7 +130,7 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
             y={26}
             textAnchor="middle"
             alignmentBaseline="middle"
-            fill={theme.text.title}
+            className="fill-primary"
             fontSize={20}
           >
             Total Weight
@@ -141,8 +140,7 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
             y={rectHeight / 2 + 5}
             width={rectWidth}
             height={rectHeight}
-            fill={theme.node.completed}
-            stroke="white"
+            className="fill-primary stroke-secondary"
             strokeWidth={3}
           />
           <text
@@ -150,7 +148,7 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
             y={rectHeight + 5}
             textAnchor="middle"
             alignmentBaseline="middle"
-            fill={theme.node.text}
+            className="fill-br-primary"
             key={`text-none`}
           >
             {currentWeight}
@@ -162,7 +160,7 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
           x2={lineX}
           y2={containerHeight * 5}
           strokeWidth={4}
-          stroke={theme.background.quaternary}
+          className="stroke-tertiary"
         />
 
         <text
@@ -170,7 +168,7 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
           y={26}
           textAnchor="middle"
           alignmentBaseline="middle"
-          fill={theme.text.title}
+          className="fill-primary"
           fontSize={20}
         >
           Visited
@@ -188,8 +186,7 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
                     y={y + 5}
                     width={rectWidth}
                     height={rectHeight}
-                    fill={theme.node.visited}
-                    stroke="white"
+                    className="fill-primary stroke-secondary"
                     strokeWidth={3}
                   />
                   <text
@@ -197,7 +194,7 @@ const TraverseAnimationPrims: React.FC<TraverseAnimationProps> = ({
                     y={y + 5 + rectHeight / 2}
                     textAnchor="middle"
                     alignmentBaseline="middle"
-                    fill={theme.node.defaultStroke}
+                    className="fill-br-primary"
                     key={`text-${node.val}-${i}`}
                   >
                     {node.val}

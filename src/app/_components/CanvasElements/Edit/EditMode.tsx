@@ -1,6 +1,4 @@
 import { useRef, useState } from "react";
-import { useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import type Node from "~/app/model/Node";
 import createNewNode from "~/app/utils/createNewNode";
 import NodeElement, {
@@ -11,12 +9,9 @@ import Edge from "~/app/_components/GraphUI/Edge";
 import ContextMenu from "~/app/_components/SharedUI/ContextMenu";
 import InputWeight from "~/app/_components/GraphUI/InputWeight";
 import { calculateNewNodePosition } from "../../../utils/calculateNewNodePosition";
-import useUpdateNodeQueryString from "~/app/hooks/useUpdateNodeQueryString";
-import updateNodeEncoded from "~/app/utils/EncodeNode/updateNodeEncoded";
 import { Alerts } from "~/app/_components/SharedUI/Alert";
 import InformationBoardGraphNode from "../../SharedUI/InformationBoardItems/InformationBoardGraphNode";
 import InformationBoard from "../../SharedUI/InformationBoard";
-import { useThemeContext } from "~/app/context/ThemeContext";
 import NodeCreator from "./NodeCreator";
 
 interface EditModeProps {
@@ -45,12 +40,8 @@ const EditMode: React.FC<EditModeProps> = ({
     height: "calc(100% - 50px)",
   };
 
-  const { theme } = useThemeContext();
-
   const elementRef = useRef<HTMLDivElement | null>(null);
   const [activeNode, setActiveNode] = useState<number>(-1);
-  const router = useRouter();
-  const searchParams = useSearchParams()!;
   const [isCtxMenu, setCtxMenu] = useState<number>(-1);
   const [isInputWeight, setInputWeight] = useState<boolean>(false);
   const [inputWeightNums, setInputWeightNums] = useState<number[]>([]);
@@ -125,21 +116,15 @@ const EditMode: React.FC<EditModeProps> = ({
   };
   return (
     <div className="absolute h-full w-full p-4">
-      <div
-        className="h-2/3 overflow-auto rounded-2xl border-2 sm:mb-2 md:relative md:left-0 md:top-0 md:w-[65%] lg:w-[70%]"
-        style={{
-          background: theme.background.secondary,
-          borderColor: theme.background.quaternary,
-        }}
-      >
+      <div className="h-2/3 overflow-auto rounded-2xl border-2 sm:mb-2 md:relative md:left-0 md:top-0 md:w-[65%] lg:w-[70%]">
         <InformationBoard minCanvas={minCanvas}>
           <InformationBoardGraphNode
-            name={"Active Node"}
-            colour={theme.node.active}
+            text={"Active Node"}
+            classname="fill-blue-500 stroke-blue-700"
           />
           <InformationBoardGraphNode
-            name={"Node"}
-            colour={theme.node.unvisited}
+            text={"Node"}
+            classname="fill-white stroke-primary"
           />
         </InformationBoard>
         <div style={style} id="editMode" ref={elementRef} className="">

@@ -8,7 +8,6 @@ import {
   SingleInstruction,
   TrackerElementType,
 } from "~/app/_GraphAlgorithm/Graph";
-import { useThemeContext } from "~/app/context/ThemeContext";
 import { useSearchParams } from "next/navigation";
 import convertToLetter from "~/app/utils/convertToLetter";
 
@@ -20,6 +19,12 @@ interface TraverseAnimationProps {
   rootValue: number | null;
 }
 
+const rectHeight = 80;
+const rectWidth = 70;
+const rectMargin = 20;
+const arrowSize = 20;
+const padding = 20;
+
 const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
   tracker,
   currentIndex,
@@ -27,11 +32,6 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
   isPlay,
   rootValue,
 }) => {
-  const rectHeight = 80;
-  const rectWidth = 70;
-  const rectMargin = 20;
-  const arrowSize = 20;
-  const padding = 20;
   const totalWidth =
     nodes.length * rectWidth + (nodes.length - 1) * rectMargin + 2 * padding;
 
@@ -39,8 +39,6 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
   const [visitedNodes, setVisitedNodes] = useState<Node[]>([]);
   const [arrowPoint, setArrowPoint] = useState<[number, string] | null>(null);
   const [mapDetail, setMapDetail] = useState<Map<number, number>>(new Map());
-
-  const { theme } = useThemeContext();
 
   const searchParams = useSearchParams();
   const isLetter = searchParams?.get("lettered") === "true";
@@ -119,8 +117,7 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
                 y={y + 5}
                 width={rectWidth}
                 height={rectHeight}
-                fill={theme.node.visited}
-                stroke={theme.node.defaultStroke}
+                className="fill-primary stroke-secondary" // Replace with primary and secondary colors
                 strokeWidth={3}
               />
               <text
@@ -128,7 +125,7 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
                 y={y + 5 + rectHeight / 2}
                 textAnchor="middle"
                 alignmentBaseline="middle"
-                fill={theme.node.text}
+                className="fill-br-primary"
                 key={`text-${node.val}-${i}`}
               >
                 {mapDetail.get(node.val) === undefined
@@ -141,7 +138,7 @@ const TraverseAnimationDijkstra: React.FC<TraverseAnimationProps> = ({
                 textAnchor="middle"
                 alignmentBaseline="middle"
                 fontSize={32}
-                fill={theme.text.title}
+                className="fill-primary" // Replace with br-primary color for title
                 key={`arrow-text-${i}`}
               >
                 {isLetter ? convertToLetter(node.val) : node.val}

@@ -21,7 +21,6 @@ import type {
   SingleInstruction,
 } from "~/app/_GraphAlgorithm/Graph";
 import { pageEnum } from "~/app/_pageConfigs/config";
-import { useThemeContext } from "~/app/context/ThemeContext";
 import { Alerts } from "../SharedUI/Alert";
 
 interface AnimationProps {
@@ -92,7 +91,6 @@ const Animation: React.FC<AnimationProps> = ({
   setPlay,
   setAlert,
 }) => {
-  const { theme } = useThemeContext();
   const [tracker, setTracker] = useState<TrackerArray>([]);
   const handleSingleCall = (
     Instruction: InstructionType,
@@ -211,13 +209,7 @@ const Animation: React.FC<AnimationProps> = ({
           minCanvas={minCanvas}
           isUndirectedGraph={isUndirectedGraph}
         />
-        <div
-          className="mt-2 h-1/3 rounded-2xl  border-2 md:h-1/3 md:w-[65%] lg:h-1/3 lg:w-[70%]"
-          style={{
-            background: theme.background.secondary,
-            borderColor: theme.background.quaternary,
-          }}
-        >
+        <div className="mt-2 h-1/3 rounded-2xl  border-2 md:h-1/3 md:w-[65%] lg:h-1/3 lg:w-[70%]">
           {pageID === pageEnum.BFS ? (
             <TraverseAnimationBFS nodes={nodes} />
           ) : pageID === pageEnum.DIJKSTRA ? (
@@ -243,10 +235,7 @@ const Animation: React.FC<AnimationProps> = ({
             />
           ) : null}
         </div>
-        <div
-          className="mx-auto w-2/3 md:absolute md:right-0 md:top-4 md:mr-3 md:h-[calc(100%_-_1.5rem)] md:w-[33%] lg:mr-4 lg:w-[28%]"
-          style={{ background: theme.background.primary }}
-        >
+        <div className="mx-auto w-2/3 md:absolute md:right-0 md:top-4 md:mr-3 md:h-[calc(100%_-_1.5rem)] md:w-[33%] lg:mr-4 lg:w-[28%]">
           <TraverseCode
             lineNumbers={lineNumbers}
             code={code}

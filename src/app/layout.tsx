@@ -4,6 +4,7 @@ import { Inconsolata } from "next/font/google";
 import { headers } from "next/headers";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import { ThemeProvider } from "./_components/theme-toggle/theme-provider";
 
 const inconsolata = Inconsolata({
   subsets: ["latin"],
@@ -27,7 +28,16 @@ export default function RootLayout({
         className={`font-sans ${inconsolata.variable}`}
         suppressHydrationWarning={true}
       >
-        <TRPCReactProvider headers={headers()}>{children}</TRPCReactProvider>
+        <TRPCReactProvider headers={headers()}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark" //TODO: "system" working on lightmode
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </TRPCReactProvider>
       </body>
     </html>
   );

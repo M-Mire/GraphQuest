@@ -3,7 +3,6 @@ import type Node from "~/app/model/Node";
 import Edge from "~/app/_components/GraphUI/Edge";
 import InformationBoardGraphNode from "../SharedUI/InformationBoardItems/InformationBoardGraphNode";
 import InformationBoard from "../SharedUI/InformationBoard";
-import { useThemeContext } from "~/app/context/ThemeContext";
 interface CanvasProps {
   isPlay: boolean;
   rootValue: number | null;
@@ -23,7 +22,6 @@ const Canvas: React.FC<CanvasProps> = ({
   minCanvas,
   isUndirectedGraph,
 }) => {
-  const { theme } = useThemeContext();
   const style = {
     minWidth: `${minCanvas.minWidth ? `${minCanvas.minWidth + 16}` : "100%"}`,
     width: "100%",
@@ -55,28 +53,23 @@ const Canvas: React.FC<CanvasProps> = ({
       <div
         id="editMode"
         className="h-2/3 overflow-auto rounded-2xl border-2 sm:mb-2 md:relative md:left-0 md:top-0 md:w-[65%] lg:w-[70%]"
-        style={{
-          background: theme.background.secondary,
-          borderColor: theme.background.quaternary,
-        }}
       >
         <InformationBoard minCanvas={minCanvas}>
           <InformationBoardGraphNode
-            name={"Root Node"}
-            colour={theme.node.root}
-            stroke={theme.node.rootStroke}
+            text={"Root Node"}
+            classname="fill-white stroke-destructive"
           />
           <InformationBoardGraphNode
-            name={"Visited Node"}
-            colour={theme.node.visited}
+            text={"Visited Node"}
+            classname="fill-blue-500 stroke-blue-700"
           />
           <InformationBoardGraphNode
-            name={"Completed Node"}
-            colour={theme.node.completed}
+            text={"Completed Node"}
+            classname="fill-green-500 stroke-green-700"
           />
           <InformationBoardGraphNode
-            name={"Unvisited Node"}
-            colour={theme.node.unvisited}
+            text={"Unvisited Node"}
+            classname="fill-white stroke-primary"
           />
         </InformationBoard>
         <div style={style}>

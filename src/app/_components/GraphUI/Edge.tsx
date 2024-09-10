@@ -4,7 +4,6 @@ import type Node from "~/app/model/Node";
 import { useState } from "react";
 import isStringNumber from "~/app/utils/isStringNumber";
 import { useSearchParams } from "next/navigation";
-import { useThemeContext } from "~/app/context/ThemeContext";
 
 interface EdgeProps {
   x1: number;
@@ -29,9 +28,6 @@ const Edge: React.FC<EdgeProps> = ({
   dispatch,
   isUndirectedGraph,
 }) => {
-  const { theme } = useThemeContext();
-  const arrowStyle = theme.edge.color;
-
   const getNodeDistance = () => {
     if (node && childNode?.val !== undefined) {
       const indexOfChild = node.childNodes.indexOf(childNode.val);
@@ -107,12 +103,7 @@ const Edge: React.FC<EdgeProps> = ({
             refY="6"
             orient="auto"
           >
-            <path
-              d="M2,2 L2,11 L10,6 L2,2"
-              style={{
-                fill: arrowStyle,
-              }}
-            />
+            <path d="M2,2 L2,11 L10,6 L2,2" className="fill-primary" />
           </marker>
         </defs>
       )}
@@ -123,8 +114,8 @@ const Edge: React.FC<EdgeProps> = ({
         x2={edgeEndX}
         y2={edgeEndY}
         markerEnd={"url(#markerArrow)"}
+        className="stroke-primary"
         style={{
-          stroke: arrowStyle,
           strokeWidth: 2,
         }}
       />
@@ -148,9 +139,7 @@ const Edge: React.FC<EdgeProps> = ({
               onKeyDown={handleInputKeyDown}
             />
           ) : (
-            <span onClick={handleTextClick} style={{ color: theme.edge.color }}>
-              {inputValue}
-            </span>
+            <span onClick={handleTextClick}>{inputValue}</span>
           )}
         </foreignObject>
       ) : null}

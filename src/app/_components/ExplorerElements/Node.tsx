@@ -36,15 +36,15 @@ const Node = forwardRef<HTMLElement, NodeProps>(
 
     const iconSize = "100%";
 
-    const nodeClassName = `h-6 w-6 border-2 border-zinc-50 flex items-center justify-center ${
+    const nodeClassName = `h-6 w-6 border-2 flex items-center justify-center ${
       isStartNode && type !== "shortestPath" && type !== "visited"
         ? "bg-green-500 node-start"
         : isEndNode && type !== "shortestPath" && type !== "visited"
         ? "bg-red-500"
-        : isBlock
-        ? "node-block"
         : (isStartNode || isEndNode) && type === "shortestPath"
         ? "bg-red-300 node-shortest-path" // Lighter shade different from the shortestPath
+        : isBlock
+        ? "node-block"
         : type === "shortestPath"
         ? `bg-purple-300 ${!isMovedWhilstAnimated ? "node-shortest-path" : ""}`
         : type === "visited"

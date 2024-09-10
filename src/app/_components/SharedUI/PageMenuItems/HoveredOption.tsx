@@ -2,8 +2,8 @@ import pageConfigurationType, {
   pageConfigurationMap,
   pageEnum,
 } from "~/app/_pageConfigs/config";
-import BottomButton from "./BottomButton";
-import TopButton from "./TopButton";
+import BottomButton from "../../../../components/navigation-header/burger-menu/bottom-button";
+import TopButton from "../../../../components/navigation-header/burger-menu/top-button";
 
 interface HoveredOptionProps {
   hoveredDiv: pageEnum | null;

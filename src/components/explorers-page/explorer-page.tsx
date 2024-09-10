@@ -1,18 +1,18 @@
-import Navbar from "./SharedUI/Navbar";
-import { pageConfigurationEXPLORER as pageConfiguration } from "../_pageConfigs/config";
-import useThemeBackground from "../hooks/useThemeBackground";
+import Navbar from "../../app/_components/SharedUI/Navbar";
+import { pageConfigurationEXPLORER as pageConfiguration } from "../../app/_pageConfigs/config";
 import { useEffect, useRef, useState } from "react";
-import InformationBoard from "./SharedUI/InformationBoard";
-import InformationBoardExplorerNode from "./SharedUI/InformationBoardItems/InformationBoardExplorerNode";
-import { Grid, GridNode } from "../types";
-import ControlAlgorithmButton from "./ExplorerElements/ControlAlgorithmButton";
-import { AlgorithmEnum } from "../_pageConfigs/configExplorer";
+import InformationBoard from "../../app/_components/SharedUI/InformationBoard";
+import InformationBoardExplorerNode from "../../app/_components/SharedUI/InformationBoardItems/InformationBoardExplorerNode";
+import { Grid, GridNode } from "../../app/types";
+import ControlAlgorithmButton from "../../app/_components/ExplorerElements/ControlAlgorithmButton";
+import { AlgorithmEnum } from "../../app/_pageConfigs/configExplorer";
 import { useSearchParams } from "next/navigation";
-import CompareBoard from "./ExplorerElements/CompareBoard";
-import { renderBoard } from "../utils/renderGridBoard";
-import SingleBoard from "./ExplorerElements/SingleBoard";
-import SlideShow from "./SharedUI/SlideShow";
-import { explorerGifs } from "../gifs";
+import CompareBoard from "../../app/_components/ExplorerElements/CompareBoard";
+import { renderBoard } from "../../app/utils/renderGridBoard";
+import SingleBoard from "../../app/_components/ExplorerElements/SingleBoard";
+import SlideShow from "../../app/_components/SharedUI/SlideShow";
+import { explorerGifs } from "../../app/gifs";
+import NavigationBar from "~/components/navigation-header/navigation-bar";
 
 const ROWS = 15;
 const COLS = 40;
@@ -44,8 +44,6 @@ const END_NODE: GridNode = {
 };
 
 const ExplorerModePage = () => {
-  useThemeBackground();
-
   //States
   const [isPlay, setPlay] = useState<boolean>(false);
   const [startNode, setStartNode] = useState(START_NODE);
@@ -90,7 +88,7 @@ const ExplorerModePage = () => {
 
   return (
     <div className="relative flex h-screen flex-col">
-      <Navbar
+      <NavigationBar
         algorithmName="Explorer's Mode"
         pageConfiguration={pageConfiguration}
       >
@@ -104,10 +102,9 @@ const ExplorerModePage = () => {
           setDeleteClicked={setDeleteClicked}
           isEditMode={mode}
         />
-      </Navbar>
+      </NavigationBar>
 
       <div className="flex w-full justify-center">
-        {isSlideShow && <SlideShow gif={explorerGifs} />}
         <div className="bg-red my-2 mt-[50px] overflow-auto rounded-2xl border-2">
           <InformationBoard>
             <InformationBoardExplorerNode

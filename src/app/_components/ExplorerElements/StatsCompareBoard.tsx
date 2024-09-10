@@ -31,7 +31,7 @@ const StatsCompareBoard = ({
     }
   };
   return (
-    <div className="z-5 absolute left-0 top-0 h-full  w-full bg-inherit opacity-90">
+    <div className="z-5 absolute left-0 top-0 h-full  w-full bg-black opacity-60">
       <div className="flex h-full flex-col items-center justify-start">
         <div className="flex w-full items-center justify-between">
           <h1 className="mb-2 mt-4 flex-grow text-center text-white">

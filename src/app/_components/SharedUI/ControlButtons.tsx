@@ -12,7 +12,6 @@ import {
 import { useSearchParams } from "next/navigation";
 import { ActionLine } from "../CanvasElements/Animation";
 import { Line } from "~/app/_GraphAlgorithm/Graph";
-import { useThemeContext } from "~/app/context/ThemeContext";
 
 const style = { fontSize: "1rem" };
 
@@ -75,44 +74,26 @@ const ControlButtons: React.FC<ControlButtonsProps> = ({
       setSpeed(speed + 250);
     }
   };
-  const { theme } = useThemeContext();
-  const colour = theme.background.quaternary;
 
   return (
     <div className="relative flex items-center text-sm font-bold md:ml-5">
       <div
         className="ml-3 mr-2 flex items-center rounded-full
 border-2  p-[0.2rem]"
-        style={{ background: theme.background.primary, borderColor: colour }}
       >
         <div className={`flex items-center rounded-full`}>
-          <IconButton
-            size="small"
-            color="primary"
-            onClick={handleRewindClick}
-            style={{ color: colour }}
-          >
+          <IconButton size="small" color="primary" onClick={handleRewindClick}>
             <FastRewindIcon style={style} />
           </IconButton>
         </div>
 
         <div className={`flex items-center rounded-full`}>
           {!isPlay ? (
-            <IconButton
-              size="small"
-              color="primary"
-              onClick={handlePlayClick}
-              style={{ color: colour }}
-            >
+            <IconButton size="small" color="primary" onClick={handlePlayClick}>
               <PlayArrowIcon style={style} />
             </IconButton>
           ) : (
-            <IconButton
-              size="small"
-              color="primary"
-              onClick={handlePauseClick}
-              style={{ color: colour }}
-            >
+            <IconButton size="small" color="primary" onClick={handlePauseClick}>
               <PauseIcon style={style} />
             </IconButton>
           )}
@@ -123,53 +104,16 @@ border-2  p-[0.2rem]"
             size="small"
             color="primary"
             onClick={handleFastForwardClick}
-            style={{ color: colour }}
           >
             <FastForwardIcon style={style} />
           </IconButton>
         </div>
         <div className={`flex items-center rounded-full`}>
-          <IconButton
-            size="small"
-            color="primary"
-            onClick={handleResetClick}
-            style={{ color: colour }}
-          >
+          <IconButton size="small" color="primary" onClick={handleResetClick}>
             <ReplayIcon style={style} />
           </IconButton>
         </div>
       </div>
-      {/*
-        <CustomButton onClick={handleRewindClick} colour={colour} ml={true}>
-          <FastRewindIcon style={style} />
-        </CustomButton>
-        {!isPlay ? (
-          <CustomButton onClick={handlePlayClick} colour={colour} ml={true}>
-            <PlayArrowIcon style={style} />
-          </CustomButton>
-        ) : (
-          <CustomButton onClick={handlePauseClick} colour={colour} ml={true}>
-            <PauseIcon style={style} />
-          </CustomButton>
-        )}
-
-        <CustomButton
-          onClick={handleFastForwardClick}
-          colour={colour}
-          ml={true}
-        >
-          <FastForwardIcon style={style} />
-        </CustomButton>
-
-        <CustomButton
-          onClick={handleResetClick}
-          colour={colour}
-          ml={true}
-          mr={true}
-        >
-          <ReplayIcon style={style} />
-        </CustomButton>
-      </div> */}
     </div>
   );
 };

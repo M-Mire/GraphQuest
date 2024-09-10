@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import type { Grid, GridNode, MousePressedNode } from "../../types";
 import ExplorerGraph from "~/app/ExplorersAlgorithm/ExplorerAlgorithm";
 import Node from "./Node";
-import { useThemeContext } from "~/app/context/ThemeContext";
 import { AlgorithmEnum } from "~/app/_pageConfigs/configExplorer";
 import SelectAlgorithm from "./SelectAlgorithm";
 import StatsCompareBoard from "./StatsCompareBoard";
@@ -55,8 +54,6 @@ const Board = ({
   setSelectedAlgorithm,
   otherSelectedAlgorithm,
 }: BoardProps) => {
-  const { theme } = useThemeContext();
-
   const [lastBlockEdited, setLastBlockEdited] = useState<GridNode | null>(null);
   const [lastWeightEdited, setLastWeightEdited] = useState<GridNode | null>(
     null,
@@ -349,13 +346,7 @@ const Board = ({
   };
 
   return (
-    <div
-      className="relative overflow-hidden"
-      style={{
-        background: theme.background.secondary,
-        borderColor: theme.background.quaternary,
-      }}
-    >
+    <div className="relative overflow-hidden">
       {board.map((row, i) => {
         return (
           <div key={i} className="flex justify-center">

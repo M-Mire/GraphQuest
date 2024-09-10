@@ -6,7 +6,7 @@ import { useThemeContext } from "~/app/context/ThemeContext";
 import Themes from "./NavItems/Themes";
 import PageMenu from "./PageMenu";
 import pageConfigurationType from "~/app/_pageConfigs/config";
-import ToggleMode from "./NavItems/ToggleMode";
+import ToggleMode from "../../../components/navigation-header/ToggleMode";
 import ShowMenuItems from "./NavItems/ShowMenuItems";
 import Link from "next/link";
 import useQueryString from "~/app/hooks/useQueryString";

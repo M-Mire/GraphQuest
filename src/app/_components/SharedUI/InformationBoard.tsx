@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import { useThemeContext } from "~/app/context/ThemeContext";
 
 interface InformationBoardProps {
   minCanvas?: { minHeight: number; minWidth: number };
@@ -10,14 +9,10 @@ const InformationBoard: React.FC<InformationBoardProps> = ({
   minCanvas,
   children,
 }) => {
-  const { theme } = useThemeContext();
-
   return (
     <div
-      className="flex h-[50px] justify-evenly border-b-2"
+      className="flex h-[50px] justify-evenly border-b-2 bg-secondary"
       style={{
-        borderColor: theme.background.quaternary,
-        background: theme.background.tertiary,
         minWidth: minCanvas ? `${minCanvas.minWidth + 16}px` : "100%", // Set a default value if minCanvas is not provided
         width: "100%",
       }}
